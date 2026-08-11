@@ -1,6 +1,6 @@
 @Mojica.Api_HostAddress = http://localhost:5025
 
-GET {{Mojica.Api_HostAddress}}/weatherforecast/
+GET {{Mojica.Api_HostAddress}}/health
 Accept: application/json
 
 ###
