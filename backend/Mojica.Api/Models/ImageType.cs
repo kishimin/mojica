@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Mojica.Api.Models;
 
 public sealed record ImageType
@@ -17,8 +19,8 @@ public sealed record ImageType
 
     public static bool TryCreate(
         string value,
-        out ImageType? imageType,
-        out ModelValidationError? error)
+        [NotNullWhen(true)] out ImageType? imageType,
+        [NotNullWhen(false)] out ModelValidationError? error)
     {
         imageType = value switch
         {
