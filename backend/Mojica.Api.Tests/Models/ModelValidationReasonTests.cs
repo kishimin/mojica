@@ -29,12 +29,18 @@ public sealed class ModelValidationReasonTests
             .Where(property => property.PropertyType == typeof(ModelValidationReason))
             .Select(property => ((ModelValidationReason)property.GetValue(null)!).Value)
             .Order(StringComparer.Ordinal);
-        var publicFactoryMethods = typeof(ModelValidationReason)
-            .GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
-            .Where(method => !method.IsSpecialName);
+        var publicCreationMethods = typeof(ModelValidationReason)
+            .GetMethods(
+                BindingFlags.Public
+                | BindingFlags.Static
+                | BindingFlags.Instance
+                | BindingFlags.DeclaredOnly)
+            .Where(method => method.ReturnType == typeof(ModelValidationReason))
+            .Where(method => method.Name != "<Clone>$")
+            .Where(method => !method.Name.StartsWith("get_", StringComparison.Ordinal));
 
         Assert.Equal(expectedValues, actualValues);
         Assert.Empty(typeof(ModelValidationReason).GetConstructors());
-        Assert.Empty(publicFactoryMethods);
+        Assert.Empty(publicCreationMethods);
     }
 }
