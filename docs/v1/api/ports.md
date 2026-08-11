@@ -15,7 +15,7 @@ A Port represents the input, success result, and failure result required by its 
 ```text
 generate(
     request: ImageGenerationRequest
-) -> Result<GeneratedImage, ImageGenerationPortError>
+) -> Result<GeneratedImageData, ImageGenerationPortError>
 ```
 
 ### Input
@@ -26,7 +26,7 @@ The Port does not accept unvalidated values or HTTP DTOs.
 
 ### Success Result
 
-On success, the Port returns a `GeneratedImage`. The image data included in the Port result is:
+On success, the Port returns `GeneratedImageData`, an intermediate result that contains only data supplied by the external image generation function:
 
 - `content`: Binary image data
 - `mediaType`: Image media type
@@ -63,7 +63,7 @@ Port tests verify the input, success, and failure contracts observable from the 
 
 At minimum, verify the following behaviors:
 
-- Return a `GeneratedImage` for a valid `ImageGenerationRequest`
+- Return `GeneratedImageData` for a valid `ImageGenerationRequest`
 - Include image data and media type in the success result
 - Return a rate-limit failure as `RATE_LIMITED`
 - Return a time-limit failure as `TIMEOUT`
@@ -75,5 +75,6 @@ At minimum, verify the following behaviors:
 ## 5. Decisions
 
 - Use `ImageGenerationPort` as the outbound image generation contract
-- Use `GeneratedImage` for success results and `ImageGenerationPortError` for failure results
+- Use `GeneratedImageData` for success results and `ImageGenerationPortError` for failure results
+- Keep the Service-generated download filename out of the Port contract
 - Use `RATE_LIMITED`, `TIMEOUT`, `UNAVAILABLE`, `INVALID_RESPONSE`, and `FAILED` as Port error codes

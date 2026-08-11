@@ -45,7 +45,7 @@ GlyphForgeImageGenerationAdapter
 - Send an HTTP request
 - Handle timeouts and cancellation
 - Validate the HTTP status, headers, Content-Type, and image data
-- Convert a Glyph Forge API-specific response DTO or binary data into `GeneratedImage`
+- Convert a Glyph Forge API-specific response DTO or binary data into `GeneratedImageData`
 - Convert external API-specific failures into `ImageGenerationPortError`
 
 ## 5. Port Implementation Contract
@@ -55,12 +55,12 @@ The Adapter implements the following Port contract:
 ```text
 generate(
     request: ImageGenerationRequest
-) -> Result<GeneratedImage, ImageGenerationPortError>
+) -> Result<GeneratedImageData, ImageGenerationPortError>
 ```
 
 Input is limited to an `ImageGenerationRequest` that satisfies the Port contract. The Adapter does not receive unvalidated strings or HTTP requests.
 
-On success, return a `GeneratedImage` containing image binary data and media type.
+On success, return `GeneratedImageData` containing image binary data and media type.
 
 On failure, return `ImageGenerationPortError` instead of HTTP client exceptions, JSON deserialization exceptions, or external API-specific error types.
 
@@ -135,7 +135,7 @@ The Adapter processes an external API response in the following order:
 5. Convert other communication failures or unavailable states to `UNAVAILABLE`
 6. Check the Content-Type of a successful response
 7. Verify that image binary data exists and can be read
-8. Convert the image data and media type into `GeneratedImage`
+8. Convert the image data and media type into `GeneratedImageData`
 9. Convert an uninterpretable image response to `INVALID_RESPONSE`
 
 When the Glyph Forge API indicates an image generation failure, convert it to `FAILED`. Do not pass the external API error body, stack trace, internal URL, or credentials to an upper layer.
@@ -180,7 +180,7 @@ Replace the HTTP client and verify conversion results observable from the Adapte
 - Convert `x-background` to `/images/background`
 - Convert `x-icon` to `/images/x-icon`
 - Convert `#FF69B4` to RGB values 255, 105, and 180
-- Convert a successful response to `GeneratedImage`
+- Convert a successful response to `GeneratedImageData`
 - Convert 429 to `RATE_LIMITED`
 - Convert a timeout to `TIMEOUT`
 - Convert a communication failure to `UNAVAILABLE`
@@ -241,7 +241,7 @@ Use `application/json; charset=utf-8` as the request Content-Type. Under the cur
 - HTTP status is `200 OK`
 - Content-Type is `image/png`
 - Response body is PNG image binary data
-- The Adapter creates `GeneratedImage` from the image binary data and Content-Type
+- The Adapter creates `GeneratedImageData` from the image binary data and Content-Type
 
 ### Error Response
 
