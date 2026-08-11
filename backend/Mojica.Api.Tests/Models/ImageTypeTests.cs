@@ -10,10 +10,11 @@ public sealed class ImageTypeTests
     [InlineData("x-icon")]
     public void ImageType_Create_WhenValueIsSupported_ReturnsDefinedImageType(string value)
     {
-        var succeeded = ImageType.TryCreate(value, out var imageType, out var error);
+        if (!ImageType.TryCreate(value, out var imageType, out var error))
+        {
+            Assert.Fail("A supported image type should be created.");
+        }
 
-        Assert.True(succeeded);
-        Assert.NotNull(imageType);
         Assert.Equal(value, imageType.Value);
         Assert.Null(error);
     }
@@ -21,11 +22,12 @@ public sealed class ImageTypeTests
     [Fact]
     public void ImageType_Create_WhenValueIsUndefined_ReturnsUnsupportedImageTypeError()
     {
-        var succeeded = ImageType.TryCreate("unsupported", out var imageType, out var error);
+        if (ImageType.TryCreate("unsupported", out var imageType, out var error))
+        {
+            Assert.Fail("An unsupported image type should not be created.");
+        }
 
-        Assert.False(succeeded);
         Assert.Null(imageType);
-        Assert.NotNull(error);
         Assert.Equal("UNSUPPORTED_IMAGE_TYPE", error.Code);
         Assert.Equal("type", error.Target);
         Assert.Equal(ModelValidationReason.UnsupportedImageType, error.Reason);
