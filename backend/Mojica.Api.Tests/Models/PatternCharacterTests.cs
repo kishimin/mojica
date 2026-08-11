@@ -1,50 +1,3 @@
-// Test plan source: docs/v1/api/models.md §6 PatternCharacter.
-// These comments are unimplemented Small/Unit test cases, not executable or skipped tests.
-// Namespace: Mojica.Api.Tests.Models
-// Test class: PatternCharacterTests
-
-// PATTERN-01 TODO(test): PatternCharacter_Create_WhenInputIsMissing_ReturnsRequiredError
-// Given: a missing foregroundCharacter or backgroundCharacter value (Theory candidate)
-// When: PatternCharacter creation is requested
-// Then: creation fails with code REQUIRED and the corresponding attribute target
-// Priority: High
-
-// PATTERN-02 TODO(test): PatternCharacter_Create_WhenInputIsEmpty_ReturnsLengthOutOfRangeError
-// Given: an empty string
-// When: PatternCharacter creation is requested
-// Then: creation fails with code LENGTH_OUT_OF_RANGE and the corresponding attribute target
-// Priority: High
-
-// PATTERN-03 TODO(test): PatternCharacter_Create_WhenInputContainsOneOrOneHundredTwentyEightGraphemes_Succeeds
-// Given: exactly 1 or exactly 128 Unicode grapheme clusters (Theory candidate)
-// When: PatternCharacter creation is requested
-// Then: creation succeeds and preserves the value
-// Priority: High
-
-// PATTERN-04 TODO(test): PatternCharacter_Create_WhenInputContainsOneHundredTwentyNineGraphemes_ReturnsLengthOutOfRangeError
-// Given: exactly 129 Unicode grapheme clusters
-// When: PatternCharacter creation is requested
-// Then: creation fails with code LENGTH_OUT_OF_RANGE and the corresponding attribute target
-// Priority: High
-
-// PATTERN-05 TODO(test): PatternCharacter_Create_WhenInputIsOnlyWhitespace_Succeeds
-// Given: a non-empty string consisting only of whitespace
-// When: PatternCharacter creation is requested independently
-// Then: creation succeeds because visibility is an ImageGenerationRequest cross-field invariant
-// Priority: High
-
-// PATTERN-06 TODO(test): PatternCharacter_Create_WhenEmojiOrCombiningCharacterIsUsed_CountsGraphemeClusters
-// Given: surrogate-pair emoji and combining-character inputs near the length boundary (Theory candidate)
-// When: PatternCharacter validates its character count
-// Then: each perceived character contributes one to the length
-// Priority: High
-
-// PATTERN-07 TODO(test): PatternCharacter_Create_WhenInputContainsControlCharacter_ReturnsControlCharacterError
-// Given: an otherwise valid pattern containing a control character
-// When: PatternCharacter creation is requested
-// Then: creation fails with code CONTROL_CHARACTER and the corresponding attribute target
-// Priority: High
-
 namespace Mojica.Api.Tests.Models;
 
 public sealed class PatternCharacterTests
@@ -52,42 +5,77 @@ public sealed class PatternCharacterTests
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void PatternCharacter_Create_WhenInputIsMissing_ReturnsRequiredError()
     {
-        // TODO: Implement PATTERN-01.
+        // ID: PATTERN-01
+        // Source: docs/v1/api/models.md §6 PatternCharacter.
+        // Given: a missing foregroundCharacter or backgroundCharacter value (Theory candidate)
+        // When: PatternCharacter creation is requested
+        // Then: creation fails with code REQUIRED and the corresponding attribute target
+        // Priority: High
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void PatternCharacter_Create_WhenInputIsEmpty_ReturnsLengthOutOfRangeError()
     {
-        // TODO: Implement PATTERN-02.
+        // ID: PATTERN-02
+        // Source: docs/v1/api/models.md §6 PatternCharacter.
+        // Given: an empty string
+        // When: PatternCharacter creation is requested
+        // Then: creation fails with code LENGTH_OUT_OF_RANGE and the corresponding attribute target
+        // Priority: High
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void PatternCharacter_Create_WhenInputContainsOneOrOneHundredTwentyEightGraphemes_Succeeds()
     {
-        // TODO: Implement PATTERN-03.
+        // ID: PATTERN-03
+        // Source: docs/v1/api/models.md §6 PatternCharacter.
+        // Given: exactly 1 or exactly 128 Unicode grapheme clusters (Theory candidate)
+        // When: PatternCharacter creation is requested
+        // Then: creation succeeds and preserves the value
+        // Priority: High
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void PatternCharacter_Create_WhenInputContainsOneHundredTwentyNineGraphemes_ReturnsLengthOutOfRangeError()
     {
-        // TODO: Implement PATTERN-04.
+        // ID: PATTERN-04
+        // Source: docs/v1/api/models.md §6 PatternCharacter.
+        // Given: exactly 129 Unicode grapheme clusters
+        // When: PatternCharacter creation is requested
+        // Then: creation fails with code LENGTH_OUT_OF_RANGE and the corresponding attribute target
+        // Priority: High
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void PatternCharacter_Create_WhenInputIsOnlyWhitespace_Succeeds()
     {
-        // TODO: Implement PATTERN-05.
+        // ID: PATTERN-05
+        // Source: docs/v1/api/models.md §6 PatternCharacter.
+        // Given: a non-empty string consisting only of whitespace
+        // When: PatternCharacter creation is requested independently
+        // Then: creation succeeds because visibility is an ImageGenerationRequest cross-field invariant
+        // Priority: High
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void PatternCharacter_Create_WhenEmojiOrCombiningCharacterIsUsed_CountsGraphemeClusters()
     {
-        // TODO: Implement PATTERN-06.
+        // ID: PATTERN-06
+        // Source: docs/v1/api/models.md §6 PatternCharacter.
+        // Given: surrogate-pair emoji and combining-character inputs near the length boundary (Theory candidate)
+        // When: PatternCharacter validates its character count
+        // Then: each perceived character contributes one to the length
+        // Priority: High
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void PatternCharacter_Create_WhenInputContainsControlCharacter_ReturnsControlCharacterError()
     {
-        // TODO: Implement PATTERN-07.
+        // ID: PATTERN-07
+        // Source: docs/v1/api/models.md §6 PatternCharacter.
+        // Given: an otherwise valid pattern containing a control character
+        // When: PatternCharacter creation is requested
+        // Then: creation fails with code CONTROL_CHARACTER and the corresponding attribute target
+        // Priority: High
     }
 }
