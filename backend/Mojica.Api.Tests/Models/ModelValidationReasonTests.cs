@@ -23,11 +23,15 @@ public sealed class ModelValidationReasonTests
             "VISIBLE_CHARACTER_REQUIRED",
         };
 
-        var actualValues = typeof(ModelValidationReason)
-            .GetProperties()
-            .Where(property => property.PropertyType == typeof(ModelValidationReason))
-            .Select(property => ((ModelValidationReason)property.GetValue(null)!).Value)
-            .Order(StringComparer.Ordinal);
+        var actualValues = new[]
+        {
+            ModelValidationReason.ControlCharacter.Value,
+            ModelValidationReason.InvalidHexColor.Value,
+            ModelValidationReason.LengthOutOfRange.Value,
+            ModelValidationReason.Required.Value,
+            ModelValidationReason.UnsupportedImageType.Value,
+            ModelValidationReason.VisibleCharacterRequired.Value,
+        };
 
         Assert.Equal(expectedValues, actualValues);
     }
