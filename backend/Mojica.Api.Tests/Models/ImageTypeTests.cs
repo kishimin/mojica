@@ -12,7 +12,7 @@ public sealed class ImageTypeTests
     {
         // ID: IMGTYPE-01
         // Source: docs/v1/api/models.md §4 ImageType.
-        // Given: each supported value "standard", "x-background", and "x-icon" (Theory candidate)
+        // Given: each supported value "standard", "x-background", and "x-icon"
         // When: ImageType creation is requested
         // Then: creation succeeds and preserves the corresponding predefined value
         // Error: none
