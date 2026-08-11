@@ -50,4 +50,34 @@ public sealed class ModelValidationErrorTests
 
         Assert.Empty(error.Details);
     }
+
+    [Fact]
+    public void ModelValidationError_Equality_WhenValuesMatch_UsesDetailContents()
+    {
+        // ID: ERROR-03
+        // Source: docs/v1/api/models.md §11 ModelValidationError.
+        // Given: two validation errors with the same values in separately-created detail collections
+        // When: the errors are compared as Domain values
+        // Then: they are equal and produce the same hash code regardless of detail insertion order
+        // Priority: Medium
+        var first = new ModelValidationError(
+            "text",
+            ModelValidationReason.Required,
+            new Dictionary<string, string>
+            {
+                ["minimumLength"] = "1",
+                ["actualLength"] = "0",
+            });
+        var second = new ModelValidationError(
+            "text",
+            ModelValidationReason.Required,
+            new Dictionary<string, string>
+            {
+                ["actualLength"] = "0",
+                ["minimumLength"] = "1",
+            });
+
+        Assert.Equal(first, second);
+        Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
 }
