@@ -4,35 +4,31 @@ namespace Mojica.Api.Tests.Models;
 
 public sealed class ModelValidationReasonTests
 {
-    [Fact]
-    public void ModelValidationReason_WhenReasonsAreInspected_ExposesDocumentedReasons()
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ModelValidationReason_WhenArbitraryValueIsRequested_CannotRepresentUndefinedReason()
     {
         // ID: ERROR-02
         // Source: docs/v1/api/models.md §11 ModelValidationReason.
-        // Given: the documented set of ModelValidationReason values
-        // When: the public reasons are inspected
-        // Then: every documented machine-readable reason exposes its expected value
+        // Given: a value outside the closed set of ModelValidationReason values
+        // When: the domain attempts to represent the reason
+        // Then: an undefined reason cannot be created
         // Priority: Medium
-        var expectedValues = new[]
-        {
-            "CONTROL_CHARACTER",
-            "INVALID_HEX_COLOR",
-            "LENGTH_OUT_OF_RANGE",
-            "REQUIRED",
-            "UNSUPPORTED_IMAGE_TYPE",
-            "VISIBLE_CHARACTER_REQUIRED",
-        };
+    }
 
-        var actualValues = new[]
-        {
-            ModelValidationReason.ControlCharacter.Value,
-            ModelValidationReason.InvalidHexColor.Value,
-            ModelValidationReason.LengthOutOfRange.Value,
-            ModelValidationReason.Required.Value,
-            ModelValidationReason.UnsupportedImageType.Value,
-            ModelValidationReason.VisibleCharacterRequired.Value,
-        };
-
-        Assert.Equal(expectedValues, actualValues);
+    [Fact]
+    public void ModelValidationReason_DocumentedReasons_ExposeExpectedValues()
+    {
+        // ID: REASON-01
+        // Source: docs/v1/api/models.md §12 Domain Error Examples.
+        // Given: each documented ModelValidationReason property
+        // When: its machine-readable value is read
+        // Then: it matches the corresponding documented error code
+        // Priority: Medium
+        Assert.Equal("CONTROL_CHARACTER", ModelValidationReason.ControlCharacter.Value);
+        Assert.Equal("INVALID_HEX_COLOR", ModelValidationReason.InvalidHexColor.Value);
+        Assert.Equal("LENGTH_OUT_OF_RANGE", ModelValidationReason.LengthOutOfRange.Value);
+        Assert.Equal("REQUIRED", ModelValidationReason.Required.Value);
+        Assert.Equal("UNSUPPORTED_IMAGE_TYPE", ModelValidationReason.UnsupportedImageType.Value);
+        Assert.Equal("VISIBLE_CHARACTER_REQUIRED", ModelValidationReason.VisibleCharacterRequired.Value);
     }
 }
