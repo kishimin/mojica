@@ -27,4 +27,33 @@ public sealed record ModelValidationError
     public ModelValidationReason Reason { get; }
 
     public IReadOnlyDictionary<string, string> Details { get; }
+
+    public bool Equals(ModelValidationError? other)
+    {
+        return ReferenceEquals(this, other)
+            || other is not null
+            && string.Equals(Target, other.Target, StringComparison.Ordinal)
+            && Equals(Reason, other.Reason)
+            && Details.Count == other.Details.Count
+            && Details.All(detail =>
+                other.Details.TryGetValue(detail.Key, out var value)
+                && string.Equals(detail.Value, value, StringComparison.Ordinal));
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Target, StringComparer.Ordinal);
+        hash.Add(Reason);
+
+        foreach (var detail in Details.OrderBy(
+                     detail => detail.Key,
+                     StringComparer.Ordinal))
+        {
+            hash.Add(detail.Key, StringComparer.Ordinal);
+            hash.Add(detail.Value, StringComparer.Ordinal);
+        }
+
+        return hash.ToHashCode();
+    }
 }
