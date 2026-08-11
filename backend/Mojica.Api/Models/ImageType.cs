@@ -27,7 +27,9 @@ public sealed record ImageType
             "x-icon" => XIcon,
             _ => null,
         };
-        error = null;
+        error = imageType is null
+            ? new ModelValidationError("type", ModelValidationReason.UnsupportedImageType)
+            : null;
 
         return imageType is not null;
     }
