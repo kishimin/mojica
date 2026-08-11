@@ -25,7 +25,7 @@ public sealed class ImageTypeTests
         Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void ImageType_Create_WhenValueIsUndefined_ReturnsUnsupportedImageTypeError()
     {
         // ID: IMGTYPE-02
@@ -35,5 +35,13 @@ public sealed class ImageTypeTests
         // Then: creation fails with code UNSUPPORTED_IMAGE_TYPE, target type, and a closed ModelValidationReason
         // Error: UNSUPPORTED_IMAGE_TYPE targeting type
         // Priority: High
+        var succeeded = ImageType.TryCreate("unsupported", out var imageType, out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(imageType);
+        Assert.NotNull(error);
+        Assert.Equal("UNSUPPORTED_IMAGE_TYPE", error.Code);
+        Assert.Equal("type", error.Target);
+        Assert.Equal(ModelValidationReason.UnsupportedImageType, error.Reason);
     }
 }
