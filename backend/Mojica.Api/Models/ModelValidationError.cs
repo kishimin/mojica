@@ -4,6 +4,9 @@ namespace Mojica.Api.Models;
 
 public sealed record ModelValidationError
 {
+    private static readonly IReadOnlyDictionary<string, string> EmptyDetails =
+        new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
+
     public ModelValidationError(
         string target,
         ModelValidationReason reason,
@@ -12,7 +15,7 @@ public sealed record ModelValidationError
         Target = target;
         Reason = reason;
         Details = details is null
-            ? null
+            ? EmptyDetails
             : new ReadOnlyDictionary<string, string>(
                 new Dictionary<string, string>(details));
     }
@@ -23,5 +26,5 @@ public sealed record ModelValidationError
 
     public ModelValidationReason Reason { get; }
 
-    public IReadOnlyDictionary<string, string>? Details { get; }
+    public IReadOnlyDictionary<string, string> Details { get; }
 }
