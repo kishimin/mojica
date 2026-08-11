@@ -8,3 +8,14 @@
 // When: ModelValidationError is returned
 // Then: code, target, closed ModelValidationReason, and safe optional details are available without a display message
 // Priority: High
+
+namespace Mojica.Api.Tests.Models;
+
+public sealed class ModelValidationErrorTests
+{
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ModelValidationError_Create_WhenValidationFails_ExposesMachineDetectableFields()
+    {
+        // TODO: Implement ERROR-01.
+    }
+}

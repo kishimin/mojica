@@ -15,3 +15,20 @@
 // When: ImageType creation is requested
 // Then: creation fails with code UNSUPPORTED_IMAGE_TYPE, target type, and a closed ModelValidationReason
 // Priority: High
+
+namespace Mojica.Api.Tests.Models;
+
+public sealed class ImageTypeTests
+{
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ImageType_Create_WhenValueIsSupported_ReturnsDefinedImageType()
+    {
+        // TODO: Implement IMGTYPE-01.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ImageType_Create_WhenValueIsUndefined_ReturnsUnsupportedImageTypeError()
+    {
+        // TODO: Implement IMGTYPE-02.
+    }
+}

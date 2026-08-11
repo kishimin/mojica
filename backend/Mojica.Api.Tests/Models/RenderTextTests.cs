@@ -57,3 +57,62 @@
 // When: RenderText creation is requested
 // Then: creation fails with code CONTROL_CHARACTER and target text
 // Priority: High
+
+namespace Mojica.Api.Tests.Models;
+
+public sealed class RenderTextTests
+{
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void RenderText_Create_WhenInputIsMissing_ReturnsRequiredError()
+    {
+        // TODO: Implement RENDERTEXT-01.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void RenderText_Create_WhenInputIsEmpty_ReturnsLengthOutOfRangeError()
+    {
+        // TODO: Implement RENDERTEXT-02.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void RenderText_Create_WhenInputContainsOneGrapheme_Succeeds()
+    {
+        // TODO: Implement RENDERTEXT-03.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void RenderText_Create_WhenInputContainsSixtyFourGraphemes_Succeeds()
+    {
+        // TODO: Implement RENDERTEXT-04.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void RenderText_Create_WhenInputContainsSixtyFiveGraphemes_ReturnsLengthOutOfRangeError()
+    {
+        // TODO: Implement RENDERTEXT-05.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void RenderText_Create_WhenEmojiUsesSurrogatePair_CountsItAsOneGrapheme()
+    {
+        // TODO: Implement RENDERTEXT-06.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void RenderText_Create_WhenCharacterUsesCombiningMark_CountsItAsOneGrapheme()
+    {
+        // TODO: Implement RENDERTEXT-07.
+    }
+
+    [Fact(Skip = "TODO: Blocked until the whitespace-only error code is defined.")]
+    public void RenderText_Create_WhenInputIsOnlyWhitespace_ReturnsValidationError()
+    {
+        // TODO: Implement RENDERTEXT-08 after the contract is defined.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void RenderText_Create_WhenInputContainsControlCharacter_ReturnsControlCharacterError()
+    {
+        // TODO: Implement RENDERTEXT-09.
+    }
+}

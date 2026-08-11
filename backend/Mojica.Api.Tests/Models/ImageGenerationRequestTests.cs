@@ -38,3 +38,44 @@
 // When: the caller attempts to proceed to ImageGenerationRequest creation
 // Then: no ImageGenerationRequest is produced and the original ModelValidationError remains classifiable
 // Priority: High
+
+namespace Mojica.Api.Tests.Models;
+
+public sealed class ImageGenerationRequestTests
+{
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ImageGenerationRequest_Create_WhenAllValuesAreValid_Succeeds()
+    {
+        // TODO: Implement REQUEST-01.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ImageGenerationRequest_Create_WhenRequiredValueIsMissing_ReturnsRequiredError()
+    {
+        // TODO: Implement REQUEST-02.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ImageGenerationRequest_Create_WhenBothPatternValuesAreOnlyWhitespace_ReturnsVisibleCharacterRequiredError()
+    {
+        // TODO: Implement REQUEST-03.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ImageGenerationRequest_Create_WhenOnlyForegroundPatternIsVisible_Succeeds()
+    {
+        // TODO: Implement REQUEST-04.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ImageGenerationRequest_Create_WhenOnlyBackgroundPatternIsVisible_Succeeds()
+    {
+        // TODO: Implement REQUEST-05.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void ImageGenerationRequest_Create_WhenValueObjectCreationFailed_DoesNotCreateAggregate()
+    {
+        // TODO: Implement REQUEST-06.
+    }
+}

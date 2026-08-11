@@ -44,3 +44,50 @@
 // When: PatternCharacter creation is requested
 // Then: creation fails with code CONTROL_CHARACTER and the corresponding attribute target
 // Priority: High
+
+namespace Mojica.Api.Tests.Models;
+
+public sealed class PatternCharacterTests
+{
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void PatternCharacter_Create_WhenInputIsMissing_ReturnsRequiredError()
+    {
+        // TODO: Implement PATTERN-01.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void PatternCharacter_Create_WhenInputIsEmpty_ReturnsLengthOutOfRangeError()
+    {
+        // TODO: Implement PATTERN-02.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void PatternCharacter_Create_WhenInputContainsOneOrOneHundredTwentyEightGraphemes_Succeeds()
+    {
+        // TODO: Implement PATTERN-03.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void PatternCharacter_Create_WhenInputContainsOneHundredTwentyNineGraphemes_ReturnsLengthOutOfRangeError()
+    {
+        // TODO: Implement PATTERN-04.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void PatternCharacter_Create_WhenInputIsOnlyWhitespace_Succeeds()
+    {
+        // TODO: Implement PATTERN-05.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void PatternCharacter_Create_WhenEmojiOrCombiningCharacterIsUsed_CountsGraphemeClusters()
+    {
+        // TODO: Implement PATTERN-06.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void PatternCharacter_Create_WhenInputContainsControlCharacter_ReturnsControlCharacterError()
+    {
+        // TODO: Implement PATTERN-07.
+    }
+}

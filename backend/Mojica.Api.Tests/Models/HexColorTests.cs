@@ -32,3 +32,38 @@
 // When: each color is converted to RgbColor
 // Then: every component is respectively 0 or 255
 // Priority: Medium
+
+namespace Mojica.Api.Tests.Models;
+
+public sealed class HexColorTests
+{
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void HexColor_Create_WhenInputUsesValidRrgGBbFormat_NormalizesToUppercase()
+    {
+        // TODO: Implement HEX-01.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void HexColor_Create_WhenInputIsMissing_ReturnsRequiredError()
+    {
+        // TODO: Implement HEX-02.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void HexColor_Create_WhenFormatIsInvalid_ReturnsInvalidHexColorError()
+    {
+        // TODO: Implement HEX-03.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void HexColor_ToRgb_WhenValueIsFf69b4_ReturnsExpectedComponents()
+    {
+        // TODO: Implement HEX-04.
+    }
+
+    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    public void HexColor_ToRgb_WhenComponentsAreAtBoundaries_ReturnsZeroAndTwoHundredFiftyFive()
+    {
+        // TODO: Implement HEX-05.
+    }
+}

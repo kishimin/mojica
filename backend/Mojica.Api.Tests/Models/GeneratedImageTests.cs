@@ -9,3 +9,14 @@
 // Then: it exposes the same content, mediaType, and fileName
 // Blocked by: models.md defines no validation constraints for these attributes
 // Priority: Medium
+
+namespace Mojica.Api.Tests.Models;
+
+public sealed class GeneratedImageTests
+{
+    [Fact(Skip = "TODO: Blocked until GeneratedImage constraints are defined.")]
+    public void GeneratedImage_Create_WhenGenerationSucceeds_PreservesResultData()
+    {
+        // TODO: Implement GENERATED-01 after the contract is defined.
+    }
+}
