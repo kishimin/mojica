@@ -1,5 +1,7 @@
 // Test plan source: docs/v1/api/models.md §5 RenderText.
 // These comments are unimplemented Small/Unit test cases, not executable or skipped tests.
+// Namespace: Mojica.Api.Tests.Models
+// Test class: RenderTextTests
 
 // RENDERTEXT-01 TODO(test): RenderText_Create_WhenInputIsMissing_ReturnsRequiredError
 // Given: a missing input

@@ -1,5 +1,7 @@
 // Test plan source: docs/v1/api/models.md §9 ImageGenerationRequest.
 // These comments are unimplemented Small/Unit test cases, not executable or skipped tests.
+// Namespace: Mojica.Api.Tests.Models
+// Test class: ImageGenerationRequestTests
 
 // REQUEST-01 TODO(test): ImageGenerationRequest_Create_WhenAllValuesAreValid_Succeeds
 // Given: valid ImageType, RenderText, PatternCharacter, and HexColor values for every required attribute

@@ -1,5 +1,7 @@
 // Test plan source: docs/v1/api/models.md §7 HexColor.
 // These comments are unimplemented Small/Unit test cases, not executable or skipped tests.
+// Namespace: Mojica.Api.Tests.Models
+// Test class: HexColorTests
 
 // HEX-01 TODO(test): HexColor_Create_WhenInputUsesValidRrgGBbFormat_NormalizesToUppercase
 // Given: valid uppercase, lowercase, and mixed-case #RRGGBB values (Theory candidate)

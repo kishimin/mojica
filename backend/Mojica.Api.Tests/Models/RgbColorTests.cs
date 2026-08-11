@@ -1,5 +1,7 @@
 // Test plan source: docs/v1/api/models.md §8 RgbColor.
 // These comments are unimplemented Small/Unit test cases, not executable or skipped tests.
+// Namespace: Mojica.Api.Tests.Models
+// Test class: RgbColorTests
 
 // RGB-01 TODO(test): RgbColor_Create_WhenEveryComponentIsWithinRange_Succeeds
 // Given: component combinations containing the boundaries 0 and 255 (Theory candidate)

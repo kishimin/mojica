@@ -1,5 +1,7 @@
 // Test plan source: docs/v1/api/models.md §6 PatternCharacter.
 // These comments are unimplemented Small/Unit test cases, not executable or skipped tests.
+// Namespace: Mojica.Api.Tests.Models
+// Test class: PatternCharacterTests
 
 // PATTERN-01 TODO(test): PatternCharacter_Create_WhenInputIsMissing_ReturnsRequiredError
 // Given: a missing foregroundCharacter or backgroundCharacter value (Theory candidate)

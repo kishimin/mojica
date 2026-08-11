@@ -1,5 +1,7 @@
 // Test plan source: docs/v1/api/models.md §4 ImageType.
 // These comments are unimplemented Small/Unit test cases, not executable or skipped tests.
+// Namespace: Mojica.Api.Tests.Models
+// Test class: ImageTypeTests
 
 // IMGTYPE-01 TODO(test): ImageType_Create_WhenValueIsSupported_ReturnsDefinedImageType
 // Given: each supported value "standard", "x-background", and "x-icon" (Theory candidate)

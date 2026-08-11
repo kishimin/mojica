@@ -1,5 +1,7 @@
 // Test plan source: docs/v1/api/models.md §11 ModelValidationReason.
 // These comments are unimplemented Small/Unit test cases, not executable or skipped tests.
+// Namespace: Mojica.Api.Tests.Models
+// Test class: ModelValidationReasonTests
 
 // ERROR-02 TODO(test): ModelValidationReason_WhenArbitraryValueIsRequested_CannotRepresentUndefinedReason
 // Given: a value outside the closed set of ModelValidationReason values
