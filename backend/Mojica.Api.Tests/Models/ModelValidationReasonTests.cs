@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Models;
@@ -28,8 +29,12 @@ public sealed class ModelValidationReasonTests
             .Where(property => property.PropertyType == typeof(ModelValidationReason))
             .Select(property => ((ModelValidationReason)property.GetValue(null)!).Value)
             .Order(StringComparer.Ordinal);
+        var publicFactoryMethods = typeof(ModelValidationReason)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .Where(method => !method.IsSpecialName);
 
         Assert.Equal(expectedValues, actualValues);
         Assert.Empty(typeof(ModelValidationReason).GetConstructors());
+        Assert.Empty(publicFactoryMethods);
     }
 }
