@@ -86,4 +86,52 @@ public sealed class ModelValidationErrorTests
         Assert.Equal(first, second);
         Assert.Equal(first.GetHashCode(), second.GetHashCode());
     }
+
+    [Fact]
+    public void ModelValidationError_Equality_WhenValuesDiffer_DistinguishesErrors()
+    {
+        // ID: ERROR-04
+        // Source: docs/v1/api/models.md §11 ModelValidationError.
+        // Given: validation errors that differ by target or detail contents
+        // When: each error is compared with a baseline Domain value
+        // Then: only the same instance is equal and every distinct value is unequal
+        // Priority: Medium
+        var baseline = new ModelValidationError(
+            "text",
+            ModelValidationReason.Required,
+            new Dictionary<string, string>
+            {
+                ["minimumLength"] = "1",
+            });
+
+        Assert.True(baseline.Equals(baseline));
+        Assert.False(baseline.Equals(null));
+        Assert.NotEqual(
+            baseline,
+            new ModelValidationError(
+                "foregroundCharacter",
+                ModelValidationReason.Required,
+                baseline.Details));
+        Assert.NotEqual(
+            baseline,
+            new ModelValidationError("text", ModelValidationReason.Required));
+        Assert.NotEqual(
+            baseline,
+            new ModelValidationError(
+                "text",
+                ModelValidationReason.Required,
+                new Dictionary<string, string>
+                {
+                    ["maximumLength"] = "1",
+                }));
+        Assert.NotEqual(
+            baseline,
+            new ModelValidationError(
+                "text",
+                ModelValidationReason.Required,
+                new Dictionary<string, string>
+                {
+                    ["minimumLength"] = "2",
+                }));
+    }
 }
