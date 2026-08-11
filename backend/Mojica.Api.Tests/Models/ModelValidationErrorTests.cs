@@ -23,4 +23,21 @@ public sealed class ModelValidationErrorTests
         Assert.Equal("1", error.Details?["minimumLength"]);
         Assert.Null(typeof(ModelValidationError).GetProperty("Message"));
     }
+
+    [Fact]
+    public void ModelValidationError_Create_WhenSourceDetailsChange_PreservesOriginalDetails()
+    {
+        var details = new Dictionary<string, string>
+        {
+            ["minimumLength"] = "1",
+        };
+        var error = new ModelValidationError(
+            "text",
+            ModelValidationReason.Required,
+            details);
+
+        details["minimumLength"] = "999";
+
+        Assert.Equal("1", error.Details?["minimumLength"]);
+    }
 }
