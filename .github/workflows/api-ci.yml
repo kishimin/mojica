@@ -1,0 +1,52 @@
+name: API CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/**
+      - .github/workflows/api-ci.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - backend/**
+      - .github/workflows/api-ci.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test API
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore Mojica.Backend.sln
+
+      - name: Build API
+        run: dotnet build Mojica.Backend.sln --configuration Release --no-restore
+
+      - name: Run API tests
+        run: dotnet test Mojica.Backend.sln --configuration Release --no-build
