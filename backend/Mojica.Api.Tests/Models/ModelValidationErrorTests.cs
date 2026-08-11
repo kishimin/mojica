@@ -40,4 +40,14 @@ public sealed class ModelValidationErrorTests
 
         Assert.Equal("1", error.Details?["minimumLength"]);
     }
+
+    [Fact]
+    public void ModelValidationError_Create_WhenDetailsAreOmitted_ExposesEmptyDetails()
+    {
+        var error = new ModelValidationError(
+            "text",
+            ModelValidationReason.Required);
+
+        Assert.Empty(error.Details);
+    }
 }
