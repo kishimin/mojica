@@ -22,6 +22,7 @@ public sealed class ImageTypeTests
         // Given: an arbitrary value that is not one of the three supported values
         // When: ImageType creation is requested
         // Then: creation fails with code UNSUPPORTED_IMAGE_TYPE, target type, and a closed ModelValidationReason
+        // Error: UNSUPPORTED_IMAGE_TYPE targeting type
         // Priority: High
     }
 }
