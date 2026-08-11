@@ -11,7 +11,7 @@ public sealed class ModelValidationReasonTests
         // Source: docs/v1/api/models.md §11 ModelValidationReason.
         // Given: the documented set of ModelValidationReason values
         // When: the public reasons are inspected
-        // Then: every documented machine-readable reason is exposed without extra values
+        // Then: every documented machine-readable reason exposes its expected value
         // Priority: Medium
         var expectedValues = new[]
         {
