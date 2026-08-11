@@ -13,12 +13,11 @@ public sealed class ModelValidationErrorTests
         };
 
         var error = new ModelValidationError(
-            "REQUIRED",
             "text",
             ModelValidationReason.Required,
             details);
 
-        Assert.Equal("REQUIRED", error.Code);
+        Assert.Equal(error.Reason.Value, error.Code);
         Assert.Equal("text", error.Target);
         Assert.Same(ModelValidationReason.Required, error.Reason);
         Assert.Equal("1", error.Details?["minimumLength"]);
