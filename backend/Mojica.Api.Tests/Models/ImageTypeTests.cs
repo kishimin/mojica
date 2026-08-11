@@ -1,9 +1,14 @@
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Tests.Models;
 
 public sealed class ImageTypeTests
 {
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void ImageType_Create_WhenValueIsSupported_ReturnsDefinedImageType()
+    [Theory]
+    [InlineData("standard")]
+    [InlineData("x-background")]
+    [InlineData("x-icon")]
+    public void ImageType_Create_WhenValueIsSupported_ReturnsDefinedImageType(string value)
     {
         // ID: IMGTYPE-01
         // Source: docs/v1/api/models.md §4 ImageType.
@@ -12,6 +17,12 @@ public sealed class ImageTypeTests
         // Then: creation succeeds and preserves the corresponding predefined value
         // Error: none
         // Priority: High
+        var succeeded = ImageType.TryCreate(value, out var imageType, out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(imageType);
+        Assert.Equal(value, imageType.Value);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
