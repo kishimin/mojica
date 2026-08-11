@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace Mojica.Api.Models;
 
 public sealed record ModelValidationError
@@ -9,7 +11,10 @@ public sealed record ModelValidationError
     {
         Target = target;
         Reason = reason;
-        Details = details;
+        Details = details is null
+            ? null
+            : new ReadOnlyDictionary<string, string>(
+                new Dictionary<string, string>(details));
     }
 
     public string Code => Reason.Value;
