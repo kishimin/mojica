@@ -7,6 +7,12 @@ public sealed class ModelValidationErrorTests
     [Fact]
     public void ModelValidationError_Create_WhenValidationFails_ExposesMachineDetectableFields()
     {
+        // ID: ERROR-01
+        // Source: docs/v1/api/models.md §11-12 ModelValidationError.
+        // Given: a representative validation failure
+        // When: ModelValidationError is returned
+        // Then: code, target, closed ModelValidationReason, and safe optional details are available without a display message
+        // Priority: High
         var details = new Dictionary<string, string>
         {
             ["minimumLength"] = "1",
@@ -17,7 +23,7 @@ public sealed class ModelValidationErrorTests
             ModelValidationReason.Required,
             details);
 
-        Assert.Equal(error.Reason.Value, error.Code);
+        Assert.Equal("REQUIRED", error.Code);
         Assert.Equal("text", error.Target);
         Assert.Same(ModelValidationReason.Required, error.Reason);
         Assert.Equal("1", error.Details?["minimumLength"]);
