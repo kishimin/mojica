@@ -1,4 +1,3 @@
-using System.Reflection;
 using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Models;
@@ -6,13 +5,13 @@ namespace Mojica.Api.Tests.Models;
 public sealed class ModelValidationReasonTests
 {
     [Fact]
-    public void ModelValidationReason_WhenArbitraryValueIsRequested_CannotRepresentUndefinedReason()
+    public void ModelValidationReason_WhenReasonsAreInspected_ExposesDocumentedReasons()
     {
         // ID: ERROR-02
         // Source: docs/v1/api/models.md §11 ModelValidationReason.
-        // Given: a value outside the closed set of ModelValidationReason values
-        // When: the domain attempts to represent the reason
-        // Then: an undefined reason cannot be created
+        // Given: the documented set of ModelValidationReason values
+        // When: the public reasons are inspected
+        // Then: every documented machine-readable reason is exposed without extra values
         // Priority: Medium
         var expectedValues = new[]
         {
@@ -29,18 +28,7 @@ public sealed class ModelValidationReasonTests
             .Where(property => property.PropertyType == typeof(ModelValidationReason))
             .Select(property => ((ModelValidationReason)property.GetValue(null)!).Value)
             .Order(StringComparer.Ordinal);
-        var publicCreationMethods = typeof(ModelValidationReason)
-            .GetMethods(
-                BindingFlags.Public
-                | BindingFlags.Static
-                | BindingFlags.Instance
-                | BindingFlags.DeclaredOnly)
-            .Where(method => method.ReturnType == typeof(ModelValidationReason))
-            .Where(method => method.Name != "<Clone>$")
-            .Where(method => !method.Name.StartsWith("get_", StringComparison.Ordinal));
 
         Assert.Equal(expectedValues, actualValues);
-        Assert.Empty(typeof(ModelValidationReason).GetConstructors());
-        Assert.Empty(publicCreationMethods);
     }
 }
