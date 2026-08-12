@@ -97,16 +97,19 @@ public sealed class RenderTextTests
         Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Blocked until the whitespace-only error code is defined.")]
-    public void RenderText_Create_WhenInputIsOnlyWhitespace_ReturnsValidationError()
+    [Fact]
+    public void RenderText_Create_WhenInputIsOnlyWhitespace_ReturnsNotBlankError()
     {
-        // ID: RENDERTEXT-08
-        // Source: docs/v1/api/models.md §5 RenderText.
-        // Given: whitespace-only values including spaces, tabs, and line separators (Theory candidate)
-        // When: RenderText creation is requested
-        // Then: creation fails with the documented whitespace validation reason and target text
-        // Blocked by: models.md does not define the language-independent error code for whitespace-only RenderText
-        // Priority: High
+        const string value = "   ";
+
+        var succeeded = RenderText.TryCreate(value, out var renderText, out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(renderText);
+        Assert.NotNull(error);
+        Assert.Equal("NOT_BLANK", error.Code);
+        Assert.Equal("text", error.Target);
+        Assert.Equal(ModelValidationReason.NotBlank, error.Reason);
     }
 
     [Fact]
