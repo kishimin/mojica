@@ -82,15 +82,17 @@ public sealed class RenderTextTests
         Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void RenderText_Create_WhenCharacterUsesCombiningMark_CountsItAsOneGrapheme()
     {
-        // ID: RENDERTEXT-07
-        // Source: docs/v1/api/models.md §5 RenderText.
-        // Given: text containing a base character followed by a combining mark
-        // When: RenderText validates its character count
-        // Then: the combined character contributes one to the length
-        // Priority: High
+        var value = string.Concat(Enumerable.Repeat("e\u0301", 64));
+
+        var succeeded = RenderText.TryCreate(value, out var renderText, out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(renderText);
+        Assert.Equal(value, renderText.Value);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Blocked until the whitespace-only error code is defined.")]
