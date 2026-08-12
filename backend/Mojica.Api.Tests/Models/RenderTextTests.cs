@@ -69,15 +69,17 @@ public sealed class RenderTextTests
         Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void RenderText_Create_WhenEmojiUsesSurrogatePair_CountsItAsOneGrapheme()
     {
-        // ID: RENDERTEXT-06
-        // Source: docs/v1/api/models.md §5 RenderText.
-        // Given: text whose perceived character is represented by a surrogate pair
-        // When: RenderText validates its character count
-        // Then: the perceived character contributes one to the length
-        // Priority: High
+        var value = string.Concat(Enumerable.Repeat("😀", 64));
+
+        var succeeded = RenderText.TryCreate(value, out var renderText, out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(renderText);
+        Assert.Equal(value, renderText.Value);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
