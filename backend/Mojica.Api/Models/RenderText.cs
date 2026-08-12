@@ -23,7 +23,7 @@ public sealed record RenderText
             return false;
         }
 
-        if (value.Length == 0)
+        if (value.Length is 0 or > 64)
         {
             renderText = null;
             error = new ModelValidationError(
