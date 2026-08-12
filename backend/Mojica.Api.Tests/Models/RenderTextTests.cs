@@ -54,15 +54,19 @@ public sealed class RenderTextTests
         // Priority: High
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void RenderText_Create_WhenInputContainsSixtyFiveGraphemes_ReturnsLengthOutOfRangeError()
     {
-        // ID: RENDERTEXT-05
-        // Source: docs/v1/api/models.md §5 RenderText.
-        // Given: a string containing exactly 65 Unicode grapheme clusters
-        // When: RenderText creation is requested
-        // Then: creation fails with code LENGTH_OUT_OF_RANGE and target text
-        // Priority: High
+        var value = new string('A', 65);
+
+        var succeeded = RenderText.TryCreate(value, out var renderText, out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(renderText);
+        Assert.NotNull(error);
+        Assert.Equal("LENGTH_OUT_OF_RANGE", error.Code);
+        Assert.Equal("text", error.Target);
+        Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
