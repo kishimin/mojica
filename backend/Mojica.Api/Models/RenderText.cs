@@ -45,6 +45,15 @@ public sealed record RenderText
             return false;
         }
 
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            renderText = null;
+            error = new ModelValidationError(
+                "text",
+                ModelValidationReason.NotBlank);
+            return false;
+        }
+
         renderText = new RenderText(value);
         error = null;
         return true;
