@@ -2,9 +2,12 @@ namespace Mojica.Api.Models;
 
 public sealed record RenderText
 {
-    private RenderText()
+    private RenderText(string value)
     {
+        Value = value;
     }
+
+    public string Value { get; }
 
     public static bool TryCreate(
         string? value,
@@ -29,7 +32,7 @@ public sealed record RenderText
             return false;
         }
 
-        renderText = new RenderText();
+        renderText = new RenderText(value);
         error = null;
         return true;
     }
