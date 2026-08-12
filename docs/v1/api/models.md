@@ -188,6 +188,7 @@ Expected validation failures are handled as a `Result<T, ModelValidationError>`-
 | --- | --- | --- |
 | `REQUIRED` | Attribute name | A required value is missing |
 | `LENGTH_OUT_OF_RANGE` | Attribute name | Character count is outside the allowed range |
+| `NOT_BLANK` | Attribute name | A present text value consists only of whitespace |
 | `CONTROL_CHARACTER` | Attribute name | Contains a control character |
 | `INVALID_HEX_COLOR` | Color attribute name | Is not in `#RRGGBB` format |
 | `UNSUPPORTED_IMAGE_TYPE` | `type` | Image type is not defined |
