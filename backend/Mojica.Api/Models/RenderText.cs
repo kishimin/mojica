@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Mojica.Api.Models;
 
 public sealed record RenderText
@@ -23,7 +25,9 @@ public sealed record RenderText
             return false;
         }
 
-        if (value.Length is 0 or > 64)
+        var characterCount = value.EnumerateRunes().Count();
+
+        if (characterCount is 0 or > 64)
         {
             renderText = null;
             error = new ModelValidationError(
