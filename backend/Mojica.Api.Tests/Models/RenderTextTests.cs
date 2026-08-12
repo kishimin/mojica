@@ -30,15 +30,17 @@ public sealed class RenderTextTests
         Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void RenderText_Create_WhenInputContainsOneGrapheme_Succeeds()
     {
-        // ID: RENDERTEXT-03
-        // Source: docs/v1/api/models.md §5 RenderText.
-        // Given: a string containing exactly one Unicode grapheme cluster
-        // When: RenderText creation is requested
-        // Then: creation succeeds and preserves the value
-        // Priority: High
+        const string value = "A";
+
+        var succeeded = RenderText.TryCreate(value, out var renderText, out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(renderText);
+        Assert.Equal(value, renderText.Value);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
