@@ -17,15 +17,17 @@ public sealed class RenderTextTests
         Assert.Equal(ModelValidationReason.Required, error.Reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void RenderText_Create_WhenInputIsEmpty_ReturnsLengthOutOfRangeError()
     {
-        // ID: RENDERTEXT-02
-        // Source: docs/v1/api/models.md §5 RenderText.
-        // Given: an empty string
-        // When: RenderText creation is requested
-        // Then: creation fails with code LENGTH_OUT_OF_RANGE and target text
-        // Priority: High
+        var succeeded = RenderText.TryCreate(string.Empty, out var renderText, out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(renderText);
+        Assert.NotNull(error);
+        Assert.Equal("LENGTH_OUT_OF_RANGE", error.Code);
+        Assert.Equal("text", error.Target);
+        Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
