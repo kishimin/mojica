@@ -1,4 +1,4 @@
-using System.Text;
+using System.Globalization;
 
 namespace Mojica.Api.Models;
 
@@ -25,7 +25,7 @@ public sealed record RenderText
             return false;
         }
 
-        var characterCount = value.EnumerateRunes().Count();
+        var characterCount = StringInfo.ParseCombiningCharacters(value).Length;
 
         if (characterCount is 0 or > 64)
         {
