@@ -43,15 +43,17 @@ public sealed class RenderTextTests
         Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void RenderText_Create_WhenInputContainsSixtyFourGraphemes_Succeeds()
     {
-        // ID: RENDERTEXT-04
-        // Source: docs/v1/api/models.md §5 RenderText.
-        // Given: a string containing exactly 64 Unicode grapheme clusters
-        // When: RenderText creation is requested
-        // Then: creation succeeds and preserves the value
-        // Priority: High
+        var value = new string('A', 64);
+
+        var succeeded = RenderText.TryCreate(value, out var renderText, out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(renderText);
+        Assert.Equal(value, renderText.Value);
+        Assert.Null(error);
     }
 
     [Fact]
