@@ -20,6 +20,15 @@ public sealed record RenderText
             return false;
         }
 
+        if (value.Length == 0)
+        {
+            renderText = null;
+            error = new ModelValidationError(
+                "text",
+                ModelValidationReason.LengthOutOfRange);
+            return false;
+        }
+
         renderText = new RenderText();
         error = null;
         return true;
