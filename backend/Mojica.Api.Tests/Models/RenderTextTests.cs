@@ -107,14 +107,18 @@ public sealed class RenderTextTests
         // Priority: High
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void RenderText_Create_WhenInputContainsControlCharacter_ReturnsControlCharacterError()
     {
-        // ID: RENDERTEXT-09
-        // Source: docs/v1/api/models.md §5 RenderText.
-        // Given: otherwise valid text containing a control character
-        // When: RenderText creation is requested
-        // Then: creation fails with code CONTROL_CHARACTER and target text
-        // Priority: High
+        const string value = "A\u0000";
+
+        var succeeded = RenderText.TryCreate(value, out var renderText, out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(renderText);
+        Assert.NotNull(error);
+        Assert.Equal("CONTROL_CHARACTER", error.Code);
+        Assert.Equal("text", error.Target);
+        Assert.Equal(ModelValidationReason.ControlCharacter, error.Reason);
     }
 }
