@@ -36,6 +36,15 @@ public sealed record RenderText
             return false;
         }
 
+        if (value.Any(char.IsControl))
+        {
+            renderText = null;
+            error = new ModelValidationError(
+                "text",
+                ModelValidationReason.ControlCharacter);
+            return false;
+        }
+
         renderText = new RenderText(value);
         error = null;
         return true;
