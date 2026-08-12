@@ -67,11 +67,11 @@ This branch already exists and is the required base for all branches below.
 | ---: | --- | --- | --- |
 | 1 | `feat/add-model-validation-errors` | Implement language-independent validation reasons, fields, and errors shared by Domain Models. | Phase 0 |
 | 2A | `feat/add-image-type-model` | Implement the closed set of `standard`, `x-background`, and `x-icon` image types. | Branch 1 |
-| 2B | `feat/add-render-text-model` | Implement required, grapheme-count, whitespace, and control-character rules for render text. | Branch 1 |
-| 2C | `feat/add-pattern-character-model` | Implement required, grapheme-count, and control-character rules for pattern characters. | Branch 1 |
-| 2D | `feat/add-rgb-color-model` | Implement valid RGB component values. | Branch 1 |
-| 3 | `feat/add-hex-color-model` | Implement `#RRGGBB` validation and conversion to `RgbColor`. | Branch 2D |
-| 4 | `feat/add-image-generation-request` | Combine the value objects and enforce the invariant that foreground and background characters cannot both contain only whitespace. | Branches 2A, 2B, 2C, and 3 |
+| 2B | `feature/add-render-text-model` | Implement required, grapheme-count, whitespace, and control-character rules for render text. | Branch 1 |
+| 2C | `feature/add-pattern-character-model` | Implement required, grapheme-count, and control-character rules for pattern characters. | Branch 1 |
+| 2D | `feature/add-rgb-color-model` | Implement valid RGB component values. | Branch 1 |
+| 3 | `feature/add-hex-color-model` | Implement `#RRGGBB` validation and conversion to `RgbColor`. | Branch 2D |
+| 4 | `feature/add-image-generation-request` | Combine the value objects and enforce the invariant that foreground and background characters cannot both contain only whitespace. | Branches 2A, 2B, 2C, and 3 |
 
 Branches 2A through 2D can be developed in parallel. Branch 3 can begin as soon as
 2D is merged. Branch 4 is the synchronization point for the complete Domain input.
@@ -83,8 +83,8 @@ the foundation branch.
 
 | Order | Branch | Responsibility | Prerequisites |
 | ---: | --- | --- | --- |
-| 5 | `feat/add-image-generation-port` | Define `ImageGenerationPort`, `GeneratedImageData`, and safe, language-independent Port errors. | Branch 4 |
-| 6 | `feat/add-image-generation-service` | Invoke the Port once, propagate failures, and create the final `GeneratedImage` with a safe UUID-based filename. | Branch 5 |
+| 5 | `feature/add-image-generation-port` | Define `ImageGenerationPort`, `GeneratedImageData`, and safe, language-independent Port errors. | Branch 4 |
+| 6 | `feature/add-image-generation-service` | Invoke the Port once, propagate failures, and create the final `GeneratedImage` with a safe UUID-based filename. | Branch 5 |
 
 The Service depends only on the Port contract. It must be testable without an HTTP
 client or a running Glyph Forge instance.
@@ -96,18 +96,18 @@ available.
 
 | Order | Branch | Responsibility | Prerequisites |
 | ---: | --- | --- | --- |
-| 7A | `feat/add-api-error-localization` | Provide Japanese and English public messages, language selection, and Japanese fallback behavior. | Branch 1 |
-| 7B | `feat/add-image-api-contracts` | Define request DTOs and stable public success and error response contracts without treating DTOs as Domain Models. | Branch 4 |
-| 7C | `feat/configure-glyph-forge-client` | Define validated Glyph Forge client options, the HTTP client registration, and timeout configuration. | Phase 0 |
-| 7D | `feat/add-api-rate-limiting` | Configure local API rate limiting and generation of a valid `Retry-After` response. | Phase 0 |
+| 7A | `feature/add-api-error-localization` | Provide Japanese and English public messages, language selection, and Japanese fallback behavior. | Branch 1 |
+| 7B | `feature/add-image-api-contracts` | Define request DTOs and stable public success and error response contracts without treating DTOs as Domain Models. | Branch 4 |
+| 7C | `feature/configure-glyph-forge-client` | Define validated Glyph Forge client options, the HTTP client registration, and timeout configuration. | Phase 0 |
+| 7D | `feature/add-api-rate-limiting` | Configure local API rate limiting and generation of a valid `Retry-After` response. | Phase 0 |
 
 ### Phase 4: Glyph Forge Adapter
 
 | Order | Branch | Responsibility | Prerequisites |
 | ---: | --- | --- | --- |
-| 8A | `feat/add-glyph-forge-request-mapping` | Select the endpoint from `ImageType` and convert validated Domain values, including HEX-to-RGB output, into Glyph Forge request DTOs. | Branches 4 and 7C |
-| 8B | `feat/add-glyph-forge-response-mapping` | Validate successful PNG responses and map rate limits, timeouts, unavailable responses, invalid responses, and other failures to Port errors. | Branches 5 and 7C |
-| 9 | `feat/add-glyph-forge-adapter` | Implement `ImageGenerationPort` with the configured HTTP client and the tested request and response mappings. | Branches 8A and 8B |
+| 8A | `feature/add-glyph-forge-request-mapping` | Select the endpoint from `ImageType` and convert validated Domain values, including HEX-to-RGB output, into Glyph Forge request DTOs. | Branches 4 and 7C |
+| 8B | `feature/add-glyph-forge-response-mapping` | Validate successful PNG responses and map rate limits, timeouts, unavailable responses, invalid responses, and other failures to Port errors. | Branches 5 and 7C |
+| 9 | `feature/add-glyph-forge-adapter` | Implement `ImageGenerationPort` with the configured HTTP client and the tested request and response mappings. | Branches 8A and 8B |
 
 Branches 8A and 8B can be developed in parallel. The Adapter branch is limited to
 the communication orchestration that connects those mappings to the Port.
@@ -116,8 +116,8 @@ the communication orchestration that connects those mappings to the Port.
 
 | Order | Branch | Responsibility | Prerequisites |
 | ---: | --- | --- | --- |
-| 10 | `feat/add-api-error-mapping` | Map malformed requests, validation failures, rate limits, unexpected failures, upstream failures, and timeouts to 400, 422, 429, 500, 502, and 504 responses. | Branches 5, 7A, 7B, and 7D |
-| 11 | `feat/add-image-generation-endpoint` | Drive `POST /images` from cross-layer API contract tests, collect validation errors, avoid downstream calls for rejected requests, invoke the Service, return raw PNG data, and wire all production dependencies. | Branches 6, 7B, 7D, 9, and 10 |
+| 10 | `feature/add-api-error-mapping` | Map malformed requests, validation failures, rate limits, unexpected failures, upstream failures, and timeouts to 400, 422, 429, 500, 502, and 504 responses. | Branches 5, 7A, 7B, and 7D |
+| 11 | `feature/add-image-generation-endpoint` | Drive `POST /images` from cross-layer API contract tests, collect validation errors, avoid downstream calls for rejected requests, invoke the Service, return raw PNG data, and wire all production dependencies. | Branches 6, 7B, 7D, 9, and 10 |
 
 The endpoint is intentionally last among production branches. This prevents the
 Controller from temporarily owning Domain, Service, or Adapter responsibilities.
