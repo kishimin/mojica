@@ -33,15 +33,45 @@ public sealed record ImageGenerationRequest
     public HexColor BackgroundColor { get; }
 
     public static bool TryCreate(
-        ImageType type,
-        RenderText text,
-        PatternCharacter foregroundCharacter,
-        HexColor foregroundColor,
-        PatternCharacter backgroundCharacter,
-        HexColor backgroundColor,
+        ImageType? type,
+        RenderText? text,
+        PatternCharacter? foregroundCharacter,
+        HexColor? foregroundColor,
+        PatternCharacter? backgroundCharacter,
+        HexColor? backgroundColor,
         [NotNullWhen(true)] out ImageGenerationRequest? request,
         [NotNullWhen(false)] out ModelValidationError? error)
     {
+        if (type is null)
+        {
+            return FailRequired("type", out request, out error);
+        }
+
+        if (text is null)
+        {
+            return FailRequired("text", out request, out error);
+        }
+
+        if (foregroundCharacter is null)
+        {
+            return FailRequired("foregroundCharacter", out request, out error);
+        }
+
+        if (foregroundColor is null)
+        {
+            return FailRequired("foregroundColor", out request, out error);
+        }
+
+        if (backgroundCharacter is null)
+        {
+            return FailRequired("backgroundCharacter", out request, out error);
+        }
+
+        if (backgroundColor is null)
+        {
+            return FailRequired("backgroundColor", out request, out error);
+        }
+
         request = new ImageGenerationRequest(
             type,
             text,
@@ -51,5 +81,15 @@ public sealed record ImageGenerationRequest
             backgroundColor);
         error = null;
         return true;
+    }
+
+    private static bool FailRequired(
+        string target,
+        out ImageGenerationRequest? request,
+        out ModelValidationError error)
+    {
+        request = null;
+        error = new ModelValidationError(target, ModelValidationReason.Required);
+        return false;
     }
 }
