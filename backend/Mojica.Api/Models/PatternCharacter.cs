@@ -15,6 +15,15 @@ public sealed record PatternCharacter
         out PatternCharacter? patternCharacter,
         out ModelValidationError? error)
     {
+        if (value is not null)
+        {
+            patternCharacter = null;
+            error = new ModelValidationError(
+                target,
+                ModelValidationReason.LengthOutOfRange);
+            return false;
+        }
+
         patternCharacter = null;
         error = new ModelValidationError(
             target,
