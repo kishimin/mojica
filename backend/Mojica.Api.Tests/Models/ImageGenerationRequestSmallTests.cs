@@ -70,15 +70,32 @@ public sealed class ImageGenerationRequestSmallTests
         Assert.Equal(target, error.Target);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void ImageGenerationRequest_Create_WhenBothPatternValuesAreOnlyWhitespace_ReturnsVisibleCharacterRequiredError()
     {
-        // ID: REQUEST-03
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: independently valid foregroundCharacter and backgroundCharacter values that both contain only whitespace
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation fails with code VISIBLE_CHARACTER_REQUIRED and targets the combination of both character attributes
-        // Priority: High
+        Assert.True(ImageType.TryCreate("standard", out var type, out _));
+        Assert.True(RenderText.TryCreate("Mojica", out var text, out _));
+        Assert.True(PatternCharacter.TryCreate(" ", out var foregroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#FF69B4", out var foregroundColor, out _));
+        Assert.True(PatternCharacter.TryCreate("\u3000", out var backgroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#000000", out var backgroundColor, out _));
+
+        var succeeded = ImageGenerationRequest.TryCreate(
+            type,
+            text,
+            foregroundCharacter,
+            foregroundColor,
+            backgroundCharacter,
+            backgroundColor,
+            out var request,
+            out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(request);
+        Assert.NotNull(error);
+        Assert.Equal(ModelValidationReason.VisibleCharacterRequired, error.Reason);
+        Assert.Equal("VISIBLE_CHARACTER_REQUIRED", error.Code);
+        Assert.Equal("foregroundCharacter,backgroundCharacter", error.Target);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
