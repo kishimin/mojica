@@ -95,15 +95,23 @@ public sealed class PatternCharacterTests
         Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void PatternCharacter_Create_WhenEmojiOrCombiningCharacterIsUsed_CountsGraphemeClusters()
+    [Theory]
+    [InlineData("😀")]
+    [InlineData("e\u0301")]
+    public void PatternCharacter_Create_WhenEmojiOrCombiningCharacterIsUsed_CountsGraphemeClusters(string grapheme)
     {
-        // ID: PATTERN-06
-        // Source: docs/v1/api/models.md §6 PatternCharacter.
-        // Given: surrogate-pair emoji and combining-character inputs near the length boundary (Theory candidate)
-        // When: PatternCharacter validates its character count
-        // Then: each perceived character contributes one to the length
-        // Priority: High
+        var value = string.Concat(Enumerable.Repeat(grapheme, 128));
+
+        var succeeded = PatternCharacter.TryCreate(
+            value,
+            "backgroundCharacter",
+            out var patternCharacter,
+            out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(patternCharacter);
+        Assert.Equal(value, patternCharacter.Value);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
