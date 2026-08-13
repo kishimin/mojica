@@ -82,14 +82,15 @@ jobs:
         run: >-
           ./scripts/append-file-coverage.ps1
           -CoverageFiles (Get-ChildItem TestResults -Recurse -Filter coverage.cobertura.xml).FullName
-          -SummaryFile ../code-coverage-results.md
+          -PackageSummaryFile ../code-coverage-results.md
+          -SummaryFile ../code-coverage-comment.md
 
       - name: Publish coverage summary
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && hashFiles('backend/TestResults/**/coverage.cobertura.xml') != '' }}
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: api-coverage
-          path: code-coverage-results.md
+          path: code-coverage-comment.md
 
       - name: Upload test reports
         if: ${{ !cancelled() }}

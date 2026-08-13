@@ -3,6 +3,9 @@ param(
     [string[]] $CoverageFiles,
 
     [Parameter(Mandatory)]
+    [string] $PackageSummaryFile,
+
+    [Parameter(Mandatory)]
     [string] $SummaryFile
 )
 
@@ -67,4 +70,6 @@ $markdown += @(
     "Files: $($rows.Count)"
 )
 
+$packageSummary = Get-Content -Raw -LiteralPath $PackageSummaryFile
+Set-Content -LiteralPath $SummaryFile -Value $packageSummary.TrimEnd() -Encoding utf8
 Add-Content -LiteralPath $SummaryFile -Value $markdown -Encoding utf8
