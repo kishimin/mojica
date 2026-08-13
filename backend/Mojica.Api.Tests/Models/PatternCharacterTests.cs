@@ -59,15 +59,23 @@ public sealed class PatternCharacterTests
         Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void PatternCharacter_Create_WhenInputContainsOneHundredTwentyNineGraphemes_ReturnsLengthOutOfRangeError()
     {
-        // ID: PATTERN-04
-        // Source: docs/v1/api/models.md §6 PatternCharacter.
-        // Given: exactly 129 Unicode grapheme clusters
-        // When: PatternCharacter creation is requested
-        // Then: creation fails with code LENGTH_OUT_OF_RANGE and the corresponding attribute target
-        // Priority: High
+        var value = new string('A', 129);
+
+        var succeeded = PatternCharacter.TryCreate(
+            value,
+            "backgroundCharacter",
+            out var patternCharacter,
+            out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(patternCharacter);
+        Assert.NotNull(error);
+        Assert.Equal("LENGTH_OUT_OF_RANGE", error.Code);
+        Assert.Equal("backgroundCharacter", error.Target);
+        Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
