@@ -4,6 +4,19 @@ namespace Mojica.Api.Tests.Models;
 
 public sealed class ImageTypeTests
 {
+    [Fact]
+    public void ImageType_Create_WhenInputIsMissing_ReturnsRequiredError()
+    {
+        var succeeded = ImageType.TryCreate(null, out var imageType, out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(imageType);
+        Assert.NotNull(error);
+        Assert.Equal("REQUIRED", error.Code);
+        Assert.Equal("type", error.Target);
+        Assert.Equal(ModelValidationReason.Required, error.Reason);
+    }
+
     [Theory]
     [InlineData("standard")]
     [InlineData("x-background")]
