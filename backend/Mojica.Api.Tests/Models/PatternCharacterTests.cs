@@ -23,15 +23,21 @@ public sealed class PatternCharacterTests
         Assert.Equal(ModelValidationReason.Required, error.Reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void PatternCharacter_Create_WhenInputIsEmpty_ReturnsLengthOutOfRangeError()
     {
-        // ID: PATTERN-02
-        // Source: docs/v1/api/models.md §6 PatternCharacter.
-        // Given: an empty string
-        // When: PatternCharacter creation is requested
-        // Then: creation fails with code LENGTH_OUT_OF_RANGE and the corresponding attribute target
-        // Priority: High
+        var succeeded = PatternCharacter.TryCreate(
+            string.Empty,
+            "foregroundCharacter",
+            out var patternCharacter,
+            out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(patternCharacter);
+        Assert.NotNull(error);
+        Assert.Equal("LENGTH_OUT_OF_RANGE", error.Code);
+        Assert.Equal("foregroundCharacter", error.Target);
+        Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
