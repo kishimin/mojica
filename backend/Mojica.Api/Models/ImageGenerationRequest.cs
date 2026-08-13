@@ -72,6 +72,16 @@ public sealed record ImageGenerationRequest
             return FailRequired("backgroundColor", out request, out error);
         }
 
+        if (string.IsNullOrWhiteSpace(foregroundCharacter.Value)
+            && string.IsNullOrWhiteSpace(backgroundCharacter.Value))
+        {
+            request = null;
+            error = new ModelValidationError(
+                "foregroundCharacter,backgroundCharacter",
+                ModelValidationReason.VisibleCharacterRequired);
+            return false;
+        }
+
         request = new ImageGenerationRequest(
             type,
             text,
