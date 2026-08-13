@@ -13,16 +13,13 @@ public sealed record PatternCharacter
 
     public static bool TryCreate(
         string? value,
-        string target,
         out PatternCharacter? patternCharacter,
-        out ModelValidationError? error)
+        out ModelValidationReason? reason)
     {
         if (value is null)
         {
             patternCharacter = null;
-            error = new ModelValidationError(
-                target,
-                ModelValidationReason.Required);
+            reason = ModelValidationReason.Required;
             return false;
         }
 
@@ -31,23 +28,19 @@ public sealed record PatternCharacter
         if (characterCount is 0 or > 128)
         {
             patternCharacter = null;
-            error = new ModelValidationError(
-                target,
-                ModelValidationReason.LengthOutOfRange);
+            reason = ModelValidationReason.LengthOutOfRange;
             return false;
         }
 
         if (value.Any(char.IsControl))
         {
             patternCharacter = null;
-            error = new ModelValidationError(
-                target,
-                ModelValidationReason.ControlCharacter);
+            reason = ModelValidationReason.ControlCharacter;
             return false;
         }
 
         patternCharacter = new PatternCharacter(value);
-        error = null;
+        reason = null;
         return true;
     }
 }
