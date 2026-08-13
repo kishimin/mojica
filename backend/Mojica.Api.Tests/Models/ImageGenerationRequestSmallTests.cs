@@ -35,15 +35,39 @@ public sealed class ImageGenerationRequestSmallTests
         Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void ImageGenerationRequest_Create_WhenRequiredValueIsMissing_ReturnsRequiredError()
+    [Theory]
+    [InlineData("type")]
+    [InlineData("text")]
+    [InlineData("foregroundCharacter")]
+    [InlineData("foregroundColor")]
+    [InlineData("backgroundCharacter")]
+    [InlineData("backgroundColor")]
+    public void ImageGenerationRequest_Create_WhenRequiredValueIsMissing_ReturnsRequiredError(
+        string target)
     {
-        // ID: REQUEST-02
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: each required attribute is missing in turn (Theory candidate)
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation fails with code REQUIRED and identifies the missing attribute
-        // Priority: High
+        Assert.True(ImageType.TryCreate("standard", out var type, out _));
+        Assert.True(RenderText.TryCreate("Mojica", out var text, out _));
+        Assert.True(PatternCharacter.TryCreate("@", out var foregroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#FF69B4", out var foregroundColor, out _));
+        Assert.True(PatternCharacter.TryCreate(".", out var backgroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#000000", out var backgroundColor, out _));
+
+        var succeeded = ImageGenerationRequest.TryCreate(
+            target == "type" ? null : type,
+            target == "text" ? null : text,
+            target == "foregroundCharacter" ? null : foregroundCharacter,
+            target == "foregroundColor" ? null : foregroundColor,
+            target == "backgroundCharacter" ? null : backgroundCharacter,
+            target == "backgroundColor" ? null : backgroundColor,
+            out var request,
+            out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(request);
+        Assert.NotNull(error);
+        Assert.Equal(ModelValidationReason.Required, error.Reason);
+        Assert.Equal("REQUIRED", error.Code);
+        Assert.Equal(target, error.Target);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
