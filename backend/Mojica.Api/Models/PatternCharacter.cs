@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Mojica.Api.Models;
 
 public sealed record PatternCharacter
@@ -15,7 +17,11 @@ public sealed record PatternCharacter
         out PatternCharacter? patternCharacter,
         out ModelValidationError? error)
     {
-        if (value is not null && value.Length is 0 or > 128)
+        var characterCount = value is null
+            ? 0
+            : StringInfo.ParseCombiningCharacters(value).Length;
+
+        if (value is not null && characterCount is 0 or > 128)
         {
             patternCharacter = null;
             error = new ModelValidationError(
