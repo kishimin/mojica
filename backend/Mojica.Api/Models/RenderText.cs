@@ -36,21 +36,21 @@ public sealed record RenderText
             return false;
         }
 
-        if (value.Any(char.IsControl))
-        {
-            renderText = null;
-            error = new ModelValidationError(
-                "text",
-                ModelValidationReason.ControlCharacter);
-            return false;
-        }
-
         if (string.IsNullOrWhiteSpace(value))
         {
             renderText = null;
             error = new ModelValidationError(
                 "text",
                 ModelValidationReason.NotBlank);
+            return false;
+        }
+
+        if (value.Any(char.IsControl))
+        {
+            renderText = null;
+            error = new ModelValidationError(
+                "text",
+                ModelValidationReason.ControlCharacter);
             return false;
         }
 
