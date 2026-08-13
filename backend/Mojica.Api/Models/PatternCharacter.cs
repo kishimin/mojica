@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 
 namespace Mojica.Api.Models;
 
@@ -24,19 +23,14 @@ public sealed record PatternCharacter
             return false;
         }
 
-        var characterCount = StringInfo.ParseCombiningCharacters(value).Length;
+        reason = TextValueValidation.GetFailureReason(
+            value,
+            maximumGraphemes: 128,
+            rejectWhitespaceOnly: false);
 
-        if (characterCount is 0 or > 128)
+        if (reason is not null)
         {
             patternCharacter = null;
-            reason = ModelValidationReason.LengthOutOfRange;
-            return false;
-        }
-
-        if (value.Any(char.IsControl))
-        {
-            patternCharacter = null;
-            reason = ModelValidationReason.ControlCharacter;
             return false;
         }
 
