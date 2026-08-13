@@ -107,9 +107,9 @@ available.
 | 7D | `feature/add-api-rate-limiting` | Configure local API rate limiting and generation of a valid `Retry-After` response. | Phase 0 |
 
 The input Mapper belongs to branch 7B because it owns the DTO-to-Domain attribute
-context required by ADR-0022. It can be implemented after branch 4 without waiting
-for the Port or Service. HTTP response behavior and downstream-call suppression
-remain outside this Mapper branch.
+context defined in `controllers.md` sections 3 and 4. It can be implemented after
+branch 4 without waiting for the Port or Service. HTTP response behavior and
+downstream-call suppression remain outside this Mapper branch.
 
 ### Phase 4: Glyph Forge Adapter
 

@@ -6,7 +6,7 @@ public sealed class ImageGenerationRequestMapperSmallTests
     public void ImageGenerationRequestMapper_Map_WhenValueObjectCreationFails_ReturnsClassifiableFieldErrors()
     {
         // ID: REQUEST-MAPPING-01
-        // Source: docs/v1/api/controllers.md §3-4; ADR-0022.
+        // Source: docs/v1/api/controllers.md §3-4.
         // Given: each invalid request attribute in turn, including context-free PatternCharacter and HexColor failures (Theory candidate)
         // When: the input Mapper converts the HTTP DTO values into an ImageGenerationRequest
         // Then: no aggregate is returned, each reason remains machine-classifiable, and each error identifies its request attribute
