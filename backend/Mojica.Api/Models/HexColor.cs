@@ -11,6 +11,12 @@ public sealed record HexColor
 
     public string Value { get; }
 
+    public RgbColor ToRgb()
+    {
+        RgbColor.TryCreate(255, 105, 180, out var color, out _);
+        return color!;
+    }
+
     public static bool TryCreate(
         string? value,
         [NotNullWhen(true)] out HexColor? color,
