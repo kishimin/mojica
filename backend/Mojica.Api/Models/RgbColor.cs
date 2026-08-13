@@ -25,9 +25,9 @@ public sealed record RgbColor
         [NotNullWhen(true)] out RgbColor? color,
         [NotNullWhen(false)] out ModelValidationError? error)
     {
-        if (TryGetBelowMinimumError("red", red, out error)
-            || TryGetBelowMinimumError("green", green, out error)
-            || TryGetBelowMinimumError("blue", blue, out error))
+        if (TryGetRangeError("red", red, out error)
+            || TryGetRangeError("green", green, out error)
+            || TryGetRangeError("blue", blue, out error))
         {
             color = null;
             return false;
@@ -38,12 +38,12 @@ public sealed record RgbColor
         return true;
     }
 
-    private static bool TryGetBelowMinimumError(
+    private static bool TryGetRangeError(
         string target,
         int value,
         [NotNullWhen(true)] out ModelValidationError? error)
     {
-        if (value >= 0)
+        if (value is >= 0 and <= 255)
         {
             error = null;
             return false;
