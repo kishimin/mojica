@@ -56,15 +56,17 @@ public sealed class HexColorSmallTests
         Assert.Equal(ModelValidationReason.InvalidHexColor, reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void HexColor_ToRgb_WhenValueIsFf69b4_ReturnsExpectedComponents()
     {
-        // ID: HEX-04
-        // Source: docs/v1/api/models.md §7 HexColor.
-        // Given: normalized color #FF69B4
-        // When: it is converted to RgbColor
-        // Then: red is 255, green is 105, and blue is 180
-        // Priority: High
+        Assert.True(HexColor.TryCreate("#FF69B4", out var color, out var reason));
+
+        var rgbColor = color.ToRgb();
+
+        Assert.Equal(255, rgbColor.Red);
+        Assert.Equal(105, rgbColor.Green);
+        Assert.Equal(180, rgbColor.Blue);
+        Assert.Null(reason);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
