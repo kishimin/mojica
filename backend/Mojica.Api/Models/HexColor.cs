@@ -16,7 +16,14 @@ public sealed record HexColor
         [NotNullWhen(true)] out HexColor? color,
         [NotNullWhen(false)] out ModelValidationReason? reason)
     {
-        color = new HexColor(value!.ToUpperInvariant());
+        if (value is null)
+        {
+            color = null;
+            reason = ModelValidationReason.Required;
+            return false;
+        }
+
+        color = new HexColor(value.ToUpperInvariant());
         reason = null;
         return true;
     }
