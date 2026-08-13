@@ -30,6 +30,15 @@ public sealed record PatternCharacter
             return false;
         }
 
+        if (value is not null && value.Any(char.IsControl))
+        {
+            patternCharacter = null;
+            error = new ModelValidationError(
+                target,
+                ModelValidationReason.ControlCharacter);
+            return false;
+        }
+
         if (value is not null)
         {
             patternCharacter = new PatternCharacter(value);
