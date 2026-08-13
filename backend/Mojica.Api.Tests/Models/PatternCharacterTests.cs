@@ -1,16 +1,26 @@
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Tests.Models;
 
 public sealed class PatternCharacterTests
 {
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void PatternCharacter_Create_WhenInputIsMissing_ReturnsRequiredError()
+    [Theory]
+    [InlineData("foregroundCharacter")]
+    [InlineData("backgroundCharacter")]
+    public void PatternCharacter_Create_WhenInputIsMissing_ReturnsRequiredError(string target)
     {
-        // ID: PATTERN-01
-        // Source: docs/v1/api/models.md §6 PatternCharacter.
-        // Given: a missing foregroundCharacter or backgroundCharacter value (Theory candidate)
-        // When: PatternCharacter creation is requested
-        // Then: creation fails with code REQUIRED and the corresponding attribute target
-        // Priority: High
+        var succeeded = PatternCharacter.TryCreate(
+            null,
+            target,
+            out var patternCharacter,
+            out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(patternCharacter);
+        Assert.NotNull(error);
+        Assert.Equal("REQUIRED", error.Code);
+        Assert.Equal(target, error.Target);
+        Assert.Equal(ModelValidationReason.Required, error.Reason);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
