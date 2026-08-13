@@ -36,15 +36,24 @@ public sealed class HexColorSmallTests
         Assert.Equal(ModelValidationReason.Required, reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void HexColor_Create_WhenFormatIsInvalid_ReturnsInvalidHexColorError()
+    [Theory]
+    [InlineData("FF69B4")]
+    [InlineData("#FFF")]
+    [InlineData("#FF69B40")]
+    [InlineData("#GG69B4")]
+    [InlineData(" #FF69B4")]
+    [InlineData("#FF69B4 ")]
+    public void HexColor_Create_WhenFormatIsInvalid_ReturnsInvalidHexColorError(
+        string value)
     {
-        // ID: HEX-03
-        // Source: docs/v1/api/models.md §7 HexColor.
-        // Given: values with a missing hash, wrong digit count, non-hex digits, or surrounding whitespace (Theory candidate)
-        // When: HexColor creation is requested
-        // Then: creation fails with code INVALID_HEX_COLOR and the corresponding color target
-        // Priority: High
+        var succeeded = HexColor.TryCreate(
+            value,
+            out var color,
+            out var reason);
+
+        Assert.False(succeeded);
+        Assert.Null(color);
+        Assert.Equal(ModelValidationReason.InvalidHexColor, reason);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
