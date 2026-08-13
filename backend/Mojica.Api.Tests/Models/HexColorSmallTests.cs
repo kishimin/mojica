@@ -69,14 +69,20 @@ public sealed class HexColorSmallTests
         Assert.Null(reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void HexColor_ToRgb_WhenComponentsAreAtBoundaries_ReturnsZeroAndTwoHundredFiftyFive()
+    [Theory]
+    [InlineData("#000000", 0)]
+    [InlineData("#FFFFFF", 255)]
+    public void HexColor_ToRgb_WhenComponentsAreAtBoundaries_ReturnsExpectedComponents(
+        string value,
+        int expectedComponent)
     {
-        // ID: HEX-05
-        // Source: docs/v1/api/models.md §7 HexColor.
-        // Given: #000000 and #FFFFFF (Theory candidate)
-        // When: each color is converted to RgbColor
-        // Then: every component is respectively 0 or 255
-        // Priority: Medium
+        Assert.True(HexColor.TryCreate(value, out var color, out var reason));
+
+        var rgbColor = color.ToRgb();
+
+        Assert.Equal(expectedComponent, rgbColor.Red);
+        Assert.Equal(expectedComponent, rgbColor.Green);
+        Assert.Equal(expectedComponent, rgbColor.Blue);
+        Assert.Null(reason);
     }
 }
