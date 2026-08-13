@@ -1,16 +1,31 @@
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Tests.Models;
 
 public sealed class RgbColorSmallTests
 {
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void RgbColor_Create_WhenEveryComponentIsWithinRange_Succeeds()
+    [Theory]
+    [InlineData(0, 0, 0)]
+    [InlineData(255, 255, 255)]
+    [InlineData(0, 128, 255)]
+    public void RgbColor_Create_WhenEveryComponentIsWithinRange_Succeeds(
+        int red,
+        int green,
+        int blue)
     {
-        // ID: RGB-01
-        // Source: docs/v1/api/models.md §8 RgbColor.
-        // Given: component combinations containing the boundaries 0 and 255 (Theory candidate)
-        // When: RgbColor creation is requested
-        // Then: creation succeeds and preserves red, green, and blue
-        // Priority: High
+        var succeeded = RgbColor.TryCreate(
+            red,
+            green,
+            blue,
+            out var color,
+            out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(color);
+        Assert.Equal(red, color.Red);
+        Assert.Equal(green, color.Green);
+        Assert.Equal(blue, color.Blue);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Blocked until the RGB range error code is defined.")]
