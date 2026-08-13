@@ -60,6 +60,8 @@ Undefined values cannot be created as an `ImageType`.
 
 Values that do not satisfy the constraints are rejected at creation time. A created value always satisfies the constraints.
 
+When a value violates multiple constraints, errors are selected in this order: required, length, whitespace-only, then control character. Therefore, a value such as a tab character that consists only of whitespace produces `NOT_BLANK`.
+
 Character counts use Unicode grapheme clusters. Emoji and combining characters are treated as one character as perceived by the user. A character represented by a surrogate pair must not be counted as two characters.
 
 ## 6. PatternCharacter
