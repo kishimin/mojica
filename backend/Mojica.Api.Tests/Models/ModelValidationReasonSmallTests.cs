@@ -13,6 +13,7 @@ public sealed class ModelValidationReasonSmallTests
         Assert.Equal("NOT_BLANK", ModelValidationReason.NotBlank.Value);
         Assert.Equal("REQUIRED", ModelValidationReason.Required.Value);
         Assert.Equal("UNSUPPORTED_IMAGE_TYPE", ModelValidationReason.UnsupportedImageType.Value);
+        Assert.Equal("VALUE_OUT_OF_RANGE", ModelValidationReason.ValueOutOfRange.Value);
         Assert.Equal("VISIBLE_CHARACTER_REQUIRED", ModelValidationReason.VisibleCharacterRequired.Value);
     }
 }
