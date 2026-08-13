@@ -71,10 +71,15 @@ This branch already exists and is the required base for all branches below.
 | 2C | `feature/add-pattern-character-model` | Implement required, grapheme-count, and control-character rules for pattern characters. | Branch 1 |
 | 2D | `feature/add-rgb-color-model` | Implement valid RGB component values. | Branch 1 |
 | 3 | `feature/add-hex-color-model` | Implement `#RRGGBB` validation and conversion to `RgbColor`. | Branch 2D |
-| 4 | `feature/add-image-generation-request` | Combine the value objects and enforce the invariant that foreground and background characters cannot both contain only whitespace. | Branches 2A, 2B, 2C, and 3 |
+| 4 | `feature/add-image-generation-request` | Combine validated value objects and enforce the invariant that foreground and background characters cannot both contain only whitespace. Do not implement HTTP DTO mapping or the endpoint in this branch. | Branches 2A, 2B, 2C, and 3 |
 
 Branches 2A through 2D can be developed in parallel. Branch 3 can begin as soon as
 2D is merged. Branch 4 is the synchronization point for the complete Domain input.
+
+Branch 4 may add skipped test-plan scaffolds for responsibilities discovered while
+implementing the Domain aggregate, but it does not implement those outer boundaries.
+`ImageGenerationRequestMapperSmallTests` is implemented by branch 7B, and
+`ImageGenerationEndpointMediumTests` is implemented by branch 11.
 
 `GeneratedImage` is not assigned a new branch because it is already implemented in
 the foundation branch.
@@ -97,9 +102,14 @@ available.
 | Order | Branch | Responsibility | Prerequisites |
 | ---: | --- | --- | --- |
 | 7A | `feature/add-api-error-localization` | Provide Japanese and English public messages, language selection, and Japanese fallback behavior. | Branch 1 |
-| 7B | `feature/add-image-api-contracts` | Define request DTOs and stable public success and error response contracts without treating DTOs as Domain Models. | Branch 4 |
+| 7B | `feature/add-image-api-contracts` | Define request DTOs, implement the input Mapper from DTO values to `ImageGenerationRequest`, and define stable public success and error response contracts without treating DTOs as Domain Models. Implement `ImageGenerationRequestMapperSmallTests`, including preservation of validation reasons and assignment of request-attribute targets. | Branch 4 |
 | 7C | `feature/configure-glyph-forge-client` | Define validated Glyph Forge client options, the HTTP client registration, and timeout configuration. | Phase 0 |
 | 7D | `feature/add-api-rate-limiting` | Configure local API rate limiting and generation of a valid `Retry-After` response. | Phase 0 |
+
+The input Mapper belongs to branch 7B because it owns the DTO-to-Domain attribute
+context required by ADR-0022. It can be implemented after branch 4 without waiting
+for the Port or Service. HTTP response behavior and downstream-call suppression
+remain outside this Mapper branch.
 
 ### Phase 4: Glyph Forge Adapter
 
@@ -117,7 +127,7 @@ the communication orchestration that connects those mappings to the Port.
 | Order | Branch | Responsibility | Prerequisites |
 | ---: | --- | --- | --- |
 | 10 | `feature/add-api-error-mapping` | Map malformed requests, validation failures, rate limits, unexpected failures, upstream failures, and timeouts to 400, 422, 429, 500, 502, and 504 responses. | Branches 5, 7A, 7B, and 7D |
-| 11 | `feature/add-image-generation-endpoint` | Drive `POST /images` from cross-layer API contract tests, collect validation errors, avoid downstream calls for rejected requests, invoke the Service, return raw PNG data, and wire all production dependencies. | Branches 6, 7B, 7D, 9, and 10 |
+| 11 | `feature/add-image-generation-endpoint` | Drive `POST /images` from `ImageGenerationEndpointMediumTests` and the remaining cross-layer API contract tests, collect validation errors, return 422 without invoking the Service for rejected requests, invoke the Service for valid requests, return raw PNG data, and wire all production dependencies. | Branches 6, 7B, 7D, 9, and 10 |
 
 The endpoint is intentionally last among production branches. This prevents the
 Controller from temporarily owning Domain, Service, or Adapter responsibilities.
@@ -125,6 +135,11 @@ Its TDD test list covers localization, all documented status codes, PNG response
 rate-limit headers, and the rule that rejected requests never reach Glyph Forge.
 Keeping these tests with the endpoint ensures that each contract test fails before
 the corresponding endpoint behavior is implemented.
+
+`ImageGenerationEndpointMediumTests` owns the observable HTTP form of the deferred
+request-failure plan: an invalid but parseable request returns 422 with the affected
+field and does not invoke the image generation Service. It is not implemented in
+branch 4 or branch 7B.
 
 ## 5. Recommended Merge Sequence
 
