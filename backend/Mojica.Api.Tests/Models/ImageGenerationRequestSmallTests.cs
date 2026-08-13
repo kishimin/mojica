@@ -107,17 +107,6 @@ public sealed class ImageGenerationRequestSmallTests
         Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void ImageGenerationRequest_Create_WhenValueObjectCreationFailed_DoesNotCreateAggregate()
-    {
-        // ID: REQUEST-06
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: each Value Object creation failure in turn
-        // When: the caller attempts to proceed to ImageGenerationRequest creation
-        // Then: no ImageGenerationRequest is produced and the original ModelValidationError remains classifiable
-        // Priority: High
-    }
-
     private static (
         ImageType Type,
         RenderText Text,
