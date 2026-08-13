@@ -98,26 +98,33 @@ public sealed class ImageGenerationRequestSmallTests
         Assert.Equal("foregroundCharacter,backgroundCharacter", error.Target);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void ImageGenerationRequest_Create_WhenOnlyForegroundPatternIsVisible_Succeeds()
+    [Theory]
+    [InlineData("@", " ")]
+    [InlineData(" ", "@")]
+    public void ImageGenerationRequest_Create_WhenEitherPatternIsVisible_Succeeds(
+        string foregroundValue,
+        string backgroundValue)
     {
-        // ID: REQUEST-04
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: a visible foregroundCharacter and a whitespace-only backgroundCharacter
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation succeeds
-        // Priority: High
-    }
+        Assert.True(ImageType.TryCreate("standard", out var type, out _));
+        Assert.True(RenderText.TryCreate("Mojica", out var text, out _));
+        Assert.True(PatternCharacter.TryCreate(foregroundValue, out var foregroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#FF69B4", out var foregroundColor, out _));
+        Assert.True(PatternCharacter.TryCreate(backgroundValue, out var backgroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#000000", out var backgroundColor, out _));
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void ImageGenerationRequest_Create_WhenOnlyBackgroundPatternIsVisible_Succeeds()
-    {
-        // ID: REQUEST-05
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: a whitespace-only foregroundCharacter and a visible backgroundCharacter
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation succeeds
-        // Priority: High
+        var succeeded = ImageGenerationRequest.TryCreate(
+            type,
+            text,
+            foregroundCharacter,
+            foregroundColor,
+            backgroundCharacter,
+            backgroundColor,
+            out var request,
+            out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(request);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
