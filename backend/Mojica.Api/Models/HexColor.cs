@@ -13,8 +13,16 @@ public sealed record HexColor
 
     public RgbColor ToRgb()
     {
-        RgbColor.TryCreate(255, 105, 180, out var color, out _);
-        return color!;
+        var red = Convert.ToInt32(Value.Substring(1, 2), 16);
+        var green = Convert.ToInt32(Value.Substring(3, 2), 16);
+        var blue = Convert.ToInt32(Value.Substring(5, 2), 16);
+
+        if (!RgbColor.TryCreate(red, green, blue, out var color, out _))
+        {
+            throw new InvalidOperationException("Validated HEX components must be valid RGB values.");
+        }
+
+        return color;
     }
 
     public static bool TryCreate(
