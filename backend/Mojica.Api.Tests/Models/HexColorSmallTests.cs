@@ -1,16 +1,26 @@
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Tests.Models;
 
 public sealed class HexColorSmallTests
 {
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void HexColor_Create_WhenInputUsesValidRrgGBbFormat_NormalizesToUppercase()
+    [Theory]
+    [InlineData("#FF69B4")]
+    [InlineData("#ff69b4")]
+    [InlineData("#Ff69b4")]
+    public void HexColor_Create_WhenInputUsesValidRrgGBbFormat_NormalizesToUppercase(
+        string value)
     {
-        // ID: HEX-01
-        // Source: docs/v1/api/models.md §7 HexColor.
-        // Given: valid uppercase, lowercase, and mixed-case #RRGGBB values (Theory candidate)
-        // When: HexColor creation is requested
-        // Then: creation succeeds and string representation uses uppercase #RRGGBB
-        // Priority: High
+        var succeeded = HexColor.TryCreate(
+            value,
+            out var color,
+            out var reason);
+
+        Assert.True(succeeded);
+        Assert.NotNull(color);
+        Assert.Equal("#FF69B4", color.Value);
+        Assert.Equal("#FF69B4", color.ToString());
+        Assert.Null(reason);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
