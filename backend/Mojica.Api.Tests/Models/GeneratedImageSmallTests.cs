@@ -17,4 +17,20 @@ public sealed class GeneratedImageSmallTests
         Assert.Equal(mediaType, image.MediaType);
         Assert.Equal(fileName, image.FileName);
     }
+
+    [Fact]
+    public void GeneratedImage_Equality_WhenContentValuesMatch_UsesByteContents()
+    {
+        var first = new GeneratedImage(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/png",
+            "generated.png");
+        var second = new GeneratedImage(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/png",
+            "generated.png");
+
+        Assert.Equal(first, second);
+        Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
 }
