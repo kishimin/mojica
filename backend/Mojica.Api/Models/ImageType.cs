@@ -18,10 +18,17 @@ public sealed record ImageType
     public string Value { get; }
 
     public static bool TryCreate(
-        string value,
+        string? value,
         [NotNullWhen(true)] out ImageType? imageType,
         [NotNullWhen(false)] out ModelValidationError? error)
     {
+        if (value is null)
+        {
+            imageType = null;
+            error = new ModelValidationError("type", ModelValidationReason.Required);
+            return false;
+        }
+
         imageType = value switch
         {
             "standard" => Standard,
