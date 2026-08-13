@@ -23,15 +23,17 @@ public sealed class HexColorSmallTests
         Assert.Null(reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void HexColor_Create_WhenInputIsMissing_ReturnsRequiredError()
     {
-        // ID: HEX-02
-        // Source: docs/v1/api/models.md §7 HexColor.
-        // Given: a missing color value
-        // When: HexColor creation is requested
-        // Then: creation fails with code REQUIRED and the corresponding color target
-        // Priority: High
+        var succeeded = HexColor.TryCreate(
+            null,
+            out var color,
+            out var reason);
+
+        Assert.False(succeeded);
+        Assert.Null(color);
+        Assert.Equal(ModelValidationReason.Required, reason);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
