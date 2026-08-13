@@ -1,6 +1,9 @@
 name: API CI
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 18 * * *'
   push:
     branches:
       - main
@@ -31,13 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - size: Small
-            filter: FullyQualifiedName~SmallTests
-          - size: Medium
-            filter: FullyQualifiedName~MediumTests
-          - size: Large
-            filter: FullyQualifiedName~LargeTests
+        include: ${{ fromJSON(github.event_name == 'pull_request' && '[{"size":"Small","filter":"FullyQualifiedName~SmallTests"}]' || github.event_name == 'push' && '[{"size":"Small","filter":"FullyQualifiedName~SmallTests"},{"size":"Medium","filter":"FullyQualifiedName~MediumTests"}]' || '[{"size":"Large","filter":"FullyQualifiedName~LargeTests"}]') }}
     defaults:
       run:
         working-directory: backend
@@ -86,6 +83,7 @@ jobs:
 
   coverage:
     name: API coverage
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
