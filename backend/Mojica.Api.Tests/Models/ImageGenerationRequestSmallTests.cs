@@ -31,24 +31,25 @@ public sealed class ImageGenerationRequestSmallTests
     }
 
     [Theory]
-    [InlineData("type")]
-    [InlineData("text")]
-    [InlineData("foregroundCharacter")]
-    [InlineData("foregroundColor")]
-    [InlineData("backgroundCharacter")]
-    [InlineData("backgroundColor")]
+    [InlineData(MissingValue.Type, "type")]
+    [InlineData(MissingValue.Text, "text")]
+    [InlineData(MissingValue.ForegroundCharacter, "foregroundCharacter")]
+    [InlineData(MissingValue.ForegroundColor, "foregroundColor")]
+    [InlineData(MissingValue.BackgroundCharacter, "backgroundCharacter")]
+    [InlineData(MissingValue.BackgroundColor, "backgroundColor")]
     public void ImageGenerationRequest_Create_WhenRequiredValueIsMissing_ReturnsRequiredError(
+        MissingValue missingValue,
         string target)
     {
-        var values = CreateValidValues();
+        var values = CreateValidValues().Without(missingValue);
 
         var succeeded = ImageGenerationRequest.TryCreate(
-            target == "type" ? null : values.Type,
-            target == "text" ? null : values.Text,
-            target == "foregroundCharacter" ? null : values.ForegroundCharacter,
-            target == "foregroundColor" ? null : values.ForegroundColor,
-            target == "backgroundCharacter" ? null : values.BackgroundCharacter,
-            target == "backgroundColor" ? null : values.BackgroundColor,
+            values.Type,
+            values.Text,
+            values.ForegroundCharacter,
+            values.ForegroundColor,
+            values.BackgroundCharacter,
+            values.BackgroundColor,
             out var request,
             out var error);
 
@@ -107,15 +108,9 @@ public sealed class ImageGenerationRequestSmallTests
         Assert.Null(error);
     }
 
-    private static (
-        ImageType Type,
-        RenderText Text,
-        PatternCharacter ForegroundCharacter,
-        HexColor ForegroundColor,
-        PatternCharacter BackgroundCharacter,
-        HexColor BackgroundColor) CreateValidValues(
-            string foregroundCharacter = "@",
-            string backgroundCharacter = ".")
+    private static RequestValuesBuilder CreateValidValues(
+        string foregroundCharacter = "@",
+        string backgroundCharacter = ".")
     {
         Assert.True(ImageType.TryCreate("standard", out var type, out _));
         Assert.True(RenderText.TryCreate("Mojica", out var text, out _));
@@ -130,12 +125,48 @@ public sealed class ImageGenerationRequestSmallTests
             out _));
         Assert.True(HexColor.TryCreate("#000000", out var backgroundColor, out _));
 
-        return (
+        return new RequestValuesBuilder(
             type,
             text,
             validatedForegroundCharacter,
             foregroundColor,
             validatedBackgroundCharacter,
             backgroundColor);
+    }
+
+    public enum MissingValue
+    {
+        Type,
+        Text,
+        ForegroundCharacter,
+        ForegroundColor,
+        BackgroundCharacter,
+        BackgroundColor,
+    }
+
+    private sealed record RequestValuesBuilder(
+        ImageType? Type,
+        RenderText? Text,
+        PatternCharacter? ForegroundCharacter,
+        HexColor? ForegroundColor,
+        PatternCharacter? BackgroundCharacter,
+        HexColor? BackgroundColor)
+    {
+        public RequestValuesBuilder Without(MissingValue missingValue)
+        {
+            return missingValue switch
+            {
+                MissingValue.Type => this with { Type = null },
+                MissingValue.Text => this with { Text = null },
+                MissingValue.ForegroundCharacter => this with { ForegroundCharacter = null },
+                MissingValue.ForegroundColor => this with { ForegroundColor = null },
+                MissingValue.BackgroundCharacter => this with { BackgroundCharacter = null },
+                MissingValue.BackgroundColor => this with { BackgroundColor = null },
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(missingValue),
+                    missingValue,
+                    null),
+            };
+        }
     }
 }
