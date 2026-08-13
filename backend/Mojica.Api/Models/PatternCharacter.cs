@@ -17,11 +17,18 @@ public sealed record PatternCharacter
         out PatternCharacter? patternCharacter,
         out ModelValidationError? error)
     {
-        var characterCount = value is null
-            ? 0
-            : StringInfo.ParseCombiningCharacters(value).Length;
+        if (value is null)
+        {
+            patternCharacter = null;
+            error = new ModelValidationError(
+                target,
+                ModelValidationReason.Required);
+            return false;
+        }
 
-        if (value is not null && characterCount is 0 or > 128)
+        var characterCount = StringInfo.ParseCombiningCharacters(value).Length;
+
+        if (characterCount is 0 or > 128)
         {
             patternCharacter = null;
             error = new ModelValidationError(
@@ -30,7 +37,7 @@ public sealed record PatternCharacter
             return false;
         }
 
-        if (value is not null && value.Any(char.IsControl))
+        if (value.Any(char.IsControl))
         {
             patternCharacter = null;
             error = new ModelValidationError(
@@ -39,17 +46,8 @@ public sealed record PatternCharacter
             return false;
         }
 
-        if (value is not null)
-        {
-            patternCharacter = new PatternCharacter(value);
-            error = null;
-            return true;
-        }
-
-        patternCharacter = null;
-        error = new ModelValidationError(
-            target,
-            ModelValidationReason.Required);
-        return false;
+        patternCharacter = new PatternCharacter(value);
+        error = null;
+        return true;
     }
 }
