@@ -4,23 +4,19 @@ namespace Mojica.Api.Tests.Models;
 
 public sealed class PatternCharacterTests
 {
-    [Theory]
-    [InlineData("foregroundCharacter")]
-    [InlineData("backgroundCharacter")]
-    public void PatternCharacter_Create_WhenInputIsMissing_ReturnsRequiredError(string target)
+    [Fact]
+    public void PatternCharacter_Create_WhenInputIsMissing_ReturnsRequiredError()
     {
         var succeeded = PatternCharacter.TryCreate(
             null,
-            target,
             out var patternCharacter,
-            out var error);
+            out var reason);
 
         Assert.False(succeeded);
         Assert.Null(patternCharacter);
-        Assert.NotNull(error);
-        Assert.Equal("REQUIRED", error.Code);
-        Assert.Equal(target, error.Target);
-        Assert.Equal(ModelValidationReason.Required, error.Reason);
+        Assert.NotNull(reason);
+        Assert.Equal("REQUIRED", reason.Value);
+        Assert.Equal(ModelValidationReason.Required, reason);
     }
 
     [Fact]
@@ -28,16 +24,14 @@ public sealed class PatternCharacterTests
     {
         var succeeded = PatternCharacter.TryCreate(
             string.Empty,
-            "foregroundCharacter",
             out var patternCharacter,
-            out var error);
+            out var reason);
 
         Assert.False(succeeded);
         Assert.Null(patternCharacter);
-        Assert.NotNull(error);
-        Assert.Equal("LENGTH_OUT_OF_RANGE", error.Code);
-        Assert.Equal("foregroundCharacter", error.Target);
-        Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
+        Assert.NotNull(reason);
+        Assert.Equal("LENGTH_OUT_OF_RANGE", reason.Value);
+        Assert.Equal(ModelValidationReason.LengthOutOfRange, reason);
     }
 
     [Theory]
@@ -49,14 +43,13 @@ public sealed class PatternCharacterTests
 
         var succeeded = PatternCharacter.TryCreate(
             value,
-            "foregroundCharacter",
             out var patternCharacter,
-            out var error);
+            out var reason);
 
         Assert.True(succeeded);
         Assert.NotNull(patternCharacter);
         Assert.Equal(value, patternCharacter.Value);
-        Assert.Null(error);
+        Assert.Null(reason);
     }
 
     [Fact]
@@ -66,16 +59,14 @@ public sealed class PatternCharacterTests
 
         var succeeded = PatternCharacter.TryCreate(
             value,
-            "backgroundCharacter",
             out var patternCharacter,
-            out var error);
+            out var reason);
 
         Assert.False(succeeded);
         Assert.Null(patternCharacter);
-        Assert.NotNull(error);
-        Assert.Equal("LENGTH_OUT_OF_RANGE", error.Code);
-        Assert.Equal("backgroundCharacter", error.Target);
-        Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
+        Assert.NotNull(reason);
+        Assert.Equal("LENGTH_OUT_OF_RANGE", reason.Value);
+        Assert.Equal(ModelValidationReason.LengthOutOfRange, reason);
     }
 
     [Fact]
@@ -85,14 +76,13 @@ public sealed class PatternCharacterTests
 
         var succeeded = PatternCharacter.TryCreate(
             value,
-            "foregroundCharacter",
             out var patternCharacter,
-            out var error);
+            out var reason);
 
         Assert.True(succeeded);
         Assert.NotNull(patternCharacter);
         Assert.Equal(value, patternCharacter.Value);
-        Assert.Null(error);
+        Assert.Null(reason);
     }
 
     [Theory]
@@ -104,14 +94,13 @@ public sealed class PatternCharacterTests
 
         var succeeded = PatternCharacter.TryCreate(
             value,
-            "backgroundCharacter",
             out var patternCharacter,
-            out var error);
+            out var reason);
 
         Assert.True(succeeded);
         Assert.NotNull(patternCharacter);
         Assert.Equal(value, patternCharacter.Value);
-        Assert.Null(error);
+        Assert.Null(reason);
     }
 
     [Fact]
@@ -121,15 +110,13 @@ public sealed class PatternCharacterTests
 
         var succeeded = PatternCharacter.TryCreate(
             value,
-            "foregroundCharacter",
             out var patternCharacter,
-            out var error);
+            out var reason);
 
         Assert.False(succeeded);
         Assert.Null(patternCharacter);
-        Assert.NotNull(error);
-        Assert.Equal("CONTROL_CHARACTER", error.Code);
-        Assert.Equal("foregroundCharacter", error.Target);
-        Assert.Equal(ModelValidationReason.ControlCharacter, error.Reason);
+        Assert.NotNull(reason);
+        Assert.Equal("CONTROL_CHARACTER", reason.Value);
+        Assert.Equal(ModelValidationReason.ControlCharacter, reason);
     }
 }
