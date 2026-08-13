@@ -15,15 +15,7 @@ public sealed record GeneratedImage(
 
     public override int GetHashCode()
     {
-        var hash = new HashCode();
-
-        foreach (var value in Content)
-        {
-            hash.Add(value);
-        }
-
-        hash.Add(MediaType);
-        hash.Add(FileName);
-        return hash.ToHashCode();
+        // Mutable image content cannot safely participate in a stable hash code.
+        return HashCode.Combine(MediaType, FileName);
     }
 }
