@@ -14,6 +14,8 @@ public sealed record ModelValidationReason
 
     public static ModelValidationReason UnsupportedImageType { get; } = new("UNSUPPORTED_IMAGE_TYPE");
 
+    public static ModelValidationReason ValueOutOfRange { get; } = new("VALUE_OUT_OF_RANGE");
+
     public static ModelValidationReason VisibleCharacterRequired { get; } = new("VISIBLE_CHARACTER_REQUIRED");
 
     private ModelValidationReason(string value)

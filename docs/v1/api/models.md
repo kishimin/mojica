@@ -200,6 +200,7 @@ Reusable value objects may return a `ModelValidationReason` when the error targe
 | `CONTROL_CHARACTER` | Attribute name | Contains a control character |
 | `INVALID_HEX_COLOR` | Color attribute name | Is not in `#RRGGBB` format |
 | `UNSUPPORTED_IMAGE_TYPE` | `type` | Image type is not defined |
+| `VALUE_OUT_OF_RANGE` | Numeric attribute name | A numeric value is outside its allowed inclusive range |
 | `VISIBLE_CHARACTER_REQUIRED` | Combination of character attributes | Both values consist only of whitespace |
 
 ## 13. Test Contract
