@@ -87,6 +87,10 @@ Both `foregroundCharacter` and `backgroundCharacter` must not consist only of wh
 
 At least one of them must contain at least one visible character. This cross-field constraint is validated by `ImageGenerationRequest`.
 
+### Validation Boundary
+
+`PatternCharacter` validates only the reusable pattern value and returns a `ModelValidationReason` when creation fails. It does not receive or retain the `foregroundCharacter` or `backgroundCharacter` attribute name. The caller that owns that attribute context converts the reason into a `ModelValidationError` with the corresponding target.
+
 ## 7. HexColor
 
 `HexColor` is a Value Object that represents a normalized HEX color.
@@ -181,6 +185,8 @@ When Model creation or invariant validation fails, a Domain error is returned so
 `ModelValidationError` does not contain display messages. `reason` is represented by the closed type `ModelValidationReason`.
 
 Expected validation failures are handled as a `Result<T, ModelValidationError>`-equivalent return value, not as exceptions. Unexpected runtime failures are outside the Model's responsibility.
+
+Reusable value objects may return a `ModelValidationReason` when the error target belongs to the caller's context. The context owner creates the `ModelValidationError` and assigns its target before exposing the failure across the Model boundary.
 
 ## 12. Domain Error Examples
 
