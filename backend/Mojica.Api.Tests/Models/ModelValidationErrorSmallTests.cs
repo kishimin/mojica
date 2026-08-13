@@ -2,7 +2,7 @@ using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Models;
 
-public sealed class ModelValidationErrorTests
+public sealed class ModelValidationErrorSmallTests
 {
     [Fact]
     public void ModelValidationError_Create_WhenValidationFails_ExposesMachineDetectableFields()

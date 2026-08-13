@@ -1,6 +1,6 @@
 namespace Mojica.Api.Tests.Models;
 
-public sealed class ImageGenerationRequestTests
+public sealed class ImageGenerationRequestSmallTests
 {
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void ImageGenerationRequest_Create_WhenAllValuesAreValid_Succeeds()

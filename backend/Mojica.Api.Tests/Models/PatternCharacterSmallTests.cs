@@ -2,7 +2,7 @@ using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Models;
 
-public sealed class PatternCharacterTests
+public sealed class PatternCharacterSmallTests
 {
     [Fact]
     public void PatternCharacter_Create_WhenInputIsMissing_ReturnsRequiredError()

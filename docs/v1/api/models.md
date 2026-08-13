@@ -138,6 +138,8 @@ B: 180
 
 Each component is validated at creation time. Negative values, values greater than 255, fractional values, and unset values cannot be created.
 
+An out-of-range component returns `VALUE_OUT_OF_RANGE`. The error target is `red`, `green`, or `blue`, and its details contain `minimum` (`0`), `maximum` (`255`), and the rejected `actual` value.
+
 ## 9. ImageGenerationRequest
 
 `ImageGenerationRequest` is a validated Domain Model for the image generation use case.
@@ -200,6 +202,7 @@ Reusable value objects may return a `ModelValidationReason` when the error targe
 | `CONTROL_CHARACTER` | Attribute name | Contains a control character |
 | `INVALID_HEX_COLOR` | Color attribute name | Is not in `#RRGGBB` format |
 | `UNSUPPORTED_IMAGE_TYPE` | `type` | Image type is not defined |
+| `VALUE_OUT_OF_RANGE` | Numeric attribute name | A numeric value is outside its allowed inclusive range |
 | `VISIBLE_CHARACTER_REQUIRED` | Combination of character attributes | Both values consist only of whitespace |
 
 ## 13. Test Contract

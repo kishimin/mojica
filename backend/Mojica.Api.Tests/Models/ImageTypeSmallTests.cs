@@ -2,7 +2,7 @@ using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Models;
 
-public sealed class ImageTypeTests
+public sealed class ImageTypeSmallTests
 {
     [Fact]
     public void ImageType_Create_WhenInputIsMissing_ReturnsRequiredError()
