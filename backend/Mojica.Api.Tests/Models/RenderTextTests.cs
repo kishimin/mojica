@@ -113,6 +113,21 @@ public sealed class RenderTextTests
     }
 
     [Fact]
+    public void RenderText_Create_WhenInputIsOnlyControlWhitespace_ReturnsNotBlankError()
+    {
+        const string value = "\t";
+
+        var succeeded = RenderText.TryCreate(value, out var renderText, out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(renderText);
+        Assert.NotNull(error);
+        Assert.Equal("NOT_BLANK", error.Code);
+        Assert.Equal("text", error.Target);
+        Assert.Equal(ModelValidationReason.NotBlank, error.Reason);
+    }
+
+    [Fact]
     public void RenderText_Create_WhenInputContainsControlCharacter_ReturnsControlCharacterError()
     {
         const string value = "A\u0000";
