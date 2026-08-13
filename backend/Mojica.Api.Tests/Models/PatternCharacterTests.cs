@@ -78,15 +78,21 @@ public sealed class PatternCharacterTests
         Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void PatternCharacter_Create_WhenInputIsOnlyWhitespace_Succeeds()
     {
-        // ID: PATTERN-05
-        // Source: docs/v1/api/models.md §6 PatternCharacter.
-        // Given: a non-empty string consisting only of whitespace
-        // When: PatternCharacter creation is requested independently
-        // Then: creation succeeds because visibility is an ImageGenerationRequest cross-field invariant
-        // Priority: High
+        const string value = "   ";
+
+        var succeeded = PatternCharacter.TryCreate(
+            value,
+            "foregroundCharacter",
+            out var patternCharacter,
+            out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(patternCharacter);
+        Assert.Equal(value, patternCharacter.Value);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
