@@ -114,14 +114,22 @@ public sealed class PatternCharacterTests
         Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void PatternCharacter_Create_WhenInputContainsControlCharacter_ReturnsControlCharacterError()
     {
-        // ID: PATTERN-07
-        // Source: docs/v1/api/models.md §6 PatternCharacter.
-        // Given: an otherwise valid pattern containing a control character
-        // When: PatternCharacter creation is requested
-        // Then: creation fails with code CONTROL_CHARACTER and the corresponding attribute target
-        // Priority: High
+        const string value = "A\u0000";
+
+        var succeeded = PatternCharacter.TryCreate(
+            value,
+            "foregroundCharacter",
+            out var patternCharacter,
+            out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(patternCharacter);
+        Assert.NotNull(error);
+        Assert.Equal("CONTROL_CHARACTER", error.Code);
+        Assert.Equal("foregroundCharacter", error.Target);
+        Assert.Equal(ModelValidationReason.ControlCharacter, error.Reason);
     }
 }
