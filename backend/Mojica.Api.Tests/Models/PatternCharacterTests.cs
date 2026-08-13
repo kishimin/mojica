@@ -40,15 +40,23 @@ public sealed class PatternCharacterTests
         Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void PatternCharacter_Create_WhenInputContainsOneOrOneHundredTwentyEightGraphemes_Succeeds()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(128)]
+    public void PatternCharacter_Create_WhenInputContainsOneOrOneHundredTwentyEightGraphemes_Succeeds(int length)
     {
-        // ID: PATTERN-03
-        // Source: docs/v1/api/models.md §6 PatternCharacter.
-        // Given: exactly 1 or exactly 128 Unicode grapheme clusters (Theory candidate)
-        // When: PatternCharacter creation is requested
-        // Then: creation succeeds and preserves the value
-        // Priority: High
+        var value = new string('A', length);
+
+        var succeeded = PatternCharacter.TryCreate(
+            value,
+            "foregroundCharacter",
+            out var patternCharacter,
+            out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(patternCharacter);
+        Assert.Equal(value, patternCharacter.Value);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
