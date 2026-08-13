@@ -60,6 +60,8 @@ Undefined values cannot be created as an `ImageType`.
 
 Values that do not satisfy the constraints are rejected at creation time. A created value always satisfies the constraints.
 
+When a value violates multiple constraints, errors are selected in this order: required, length, whitespace-only, then control character. Therefore, a value such as a tab character that consists only of whitespace produces `NOT_BLANK`.
+
 Character counts use Unicode grapheme clusters. Emoji and combining characters are treated as one character as perceived by the user. A character represented by a surrogate pair must not be counted as two characters.
 
 ## 6. PatternCharacter
@@ -86,6 +88,10 @@ Character counting follows the same Unicode grapheme-cluster rule as `RenderText
 Both `foregroundCharacter` and `backgroundCharacter` must not consist only of whitespace.
 
 At least one of them must contain at least one visible character. This cross-field constraint is validated by `ImageGenerationRequest`.
+
+### Validation Boundary
+
+`PatternCharacter` validates only the reusable pattern value and returns a `ModelValidationReason` when creation fails. It does not receive or retain the `foregroundCharacter` or `backgroundCharacter` attribute name. The caller that owns that attribute context converts the reason into a `ModelValidationError` with the corresponding target.
 
 ## 7. HexColor
 
@@ -181,6 +187,8 @@ When Model creation or invariant validation fails, a Domain error is returned so
 `ModelValidationError` does not contain display messages. `reason` is represented by the closed type `ModelValidationReason`.
 
 Expected validation failures are handled as a `Result<T, ModelValidationError>`-equivalent return value, not as exceptions. Unexpected runtime failures are outside the Model's responsibility.
+
+Reusable value objects may return a `ModelValidationReason` when the error target belongs to the caller's context. The context owner creates the `ModelValidationError` and assigns its target before exposing the failure across the Model boundary.
 
 ## 12. Domain Error Examples
 
