@@ -1,16 +1,38 @@
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Tests.Models;
 
 public sealed class ImageGenerationRequestSmallTests
 {
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void ImageGenerationRequest_Create_WhenAllValuesAreValid_Succeeds()
     {
-        // ID: REQUEST-01
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: valid ImageType, RenderText, PatternCharacter, and HexColor values for every required attribute
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation succeeds and exposes the complete validated request
-        // Priority: High
+        Assert.True(ImageType.TryCreate("standard", out var type, out _));
+        Assert.True(RenderText.TryCreate("Mojica", out var text, out _));
+        Assert.True(PatternCharacter.TryCreate("@", out var foregroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#FF69B4", out var foregroundColor, out _));
+        Assert.True(PatternCharacter.TryCreate(".", out var backgroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#000000", out var backgroundColor, out _));
+
+        var succeeded = ImageGenerationRequest.TryCreate(
+            type,
+            text,
+            foregroundCharacter,
+            foregroundColor,
+            backgroundCharacter,
+            backgroundColor,
+            out var request,
+            out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(request);
+        Assert.Same(type, request.Type);
+        Assert.Same(text, request.Text);
+        Assert.Same(foregroundCharacter, request.ForegroundCharacter);
+        Assert.Same(foregroundColor, request.ForegroundColor);
+        Assert.Same(backgroundCharacter, request.BackgroundCharacter);
+        Assert.Same(backgroundColor, request.BackgroundColor);
+        Assert.Null(error);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
