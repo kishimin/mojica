@@ -2,7 +2,7 @@ using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Models;
 
-public sealed class GeneratedImageTests
+public sealed class GeneratedImageSmallTests
 {
     [Fact]
     public void GeneratedImage_Create_WhenGenerationSucceeds_PreservesResultData()

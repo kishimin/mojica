@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Mojica.Api.Tests;
 
-public sealed class HealthEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+public sealed class HealthEndpointMediumTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient client;
 
-    public HealthEndpointTests(WebApplicationFactory<Program> factory)
+    public HealthEndpointMediumTests(WebApplicationFactory<Program> factory)
     {
         client = factory.CreateClient();
     }

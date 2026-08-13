@@ -1,6 +1,6 @@
 namespace Mojica.Api.Tests.Models;
 
-public sealed class RgbColorTests
+public sealed class RgbColorSmallTests
 {
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void RgbColor_Create_WhenEveryComponentIsWithinRange_Succeeds()

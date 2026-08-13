@@ -2,7 +2,7 @@ using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Models;
 
-public sealed class RenderTextTests
+public sealed class RenderTextSmallTests
 {
     [Fact]
     public void RenderText_Create_WhenInputIsMissing_ReturnsRequiredError()

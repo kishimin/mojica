@@ -2,7 +2,7 @@ using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Models;
 
-public sealed class ModelValidationReasonTests
+public sealed class ModelValidationReasonSmallTests
 {
     [Fact]
     public void ModelValidationReason_DocumentedReasons_ExposeExpectedValues()

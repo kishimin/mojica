@@ -1,6 +1,6 @@
 namespace Mojica.Api.Tests.Models;
 
-public sealed class HexColorTests
+public sealed class HexColorSmallTests
 {
     [Fact(Skip = "TODO: Implement from documented test plan.")]
     public void HexColor_Create_WhenInputUsesValidRrgGBbFormat_NormalizesToUppercase()
