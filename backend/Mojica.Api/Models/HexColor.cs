@@ -23,6 +23,15 @@ public sealed record HexColor
             return false;
         }
 
+        if (value.Length != 7
+            || value[0] != '#'
+            || !value[1..].All(char.IsAsciiHexDigit))
+        {
+            color = null;
+            reason = ModelValidationReason.InvalidHexColor;
+            return false;
+        }
+
         color = new HexColor(value.ToUpperInvariant());
         reason = null;
         return true;
