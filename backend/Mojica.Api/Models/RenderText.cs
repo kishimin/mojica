@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Mojica.Api.Models;
@@ -13,8 +14,8 @@ public sealed record RenderText
 
     public static bool TryCreate(
         string? value,
-        out RenderText? renderText,
-        out ModelValidationError? error)
+        [NotNullWhen(true)] out RenderText? renderText,
+        [NotNullWhen(false)] out ModelValidationError? error)
     {
         if (value is null)
         {

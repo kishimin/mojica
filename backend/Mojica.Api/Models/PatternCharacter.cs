@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Mojica.Api.Models;
@@ -13,8 +14,8 @@ public sealed record PatternCharacter
 
     public static bool TryCreate(
         string? value,
-        out PatternCharacter? patternCharacter,
-        out ModelValidationReason? reason)
+        [NotNullWhen(true)] out PatternCharacter? patternCharacter,
+        [NotNullWhen(false)] out ModelValidationReason? reason)
     {
         if (value is null)
         {
