@@ -25,6 +25,8 @@ public sealed record ImageGenerationPortResult
 
     public static ImageGenerationPortResult Failure(ImageGenerationPortError error)
     {
+        ArgumentNullException.ThrowIfNull(error);
+
         return new ImageGenerationPortResult(null, error);
     }
 }
