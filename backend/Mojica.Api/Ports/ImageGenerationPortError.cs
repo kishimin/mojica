@@ -7,6 +7,8 @@ public sealed record ImageGenerationPortError
         int? retryAfter = null,
         string? details = null)
     {
+        ArgumentNullException.ThrowIfNull(errorCode);
+
         ErrorCode = errorCode;
         RetryAfter = retryAfter;
         Details = details;
