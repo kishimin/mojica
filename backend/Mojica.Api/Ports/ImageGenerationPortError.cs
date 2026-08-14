@@ -4,10 +4,12 @@ public sealed record ImageGenerationPortError
 {
     public ImageGenerationPortError(
         ImageGenerationPortErrorCode errorCode,
-        int? retryAfter = null)
+        int? retryAfter = null,
+        string? details = null)
     {
         ErrorCode = errorCode;
         RetryAfter = retryAfter;
+        Details = details;
     }
 
     public string Code => ErrorCode.Value;
@@ -16,5 +18,5 @@ public sealed record ImageGenerationPortError
 
     public int? RetryAfter { get; }
 
-    public string? Details => null;
+    public string? Details { get; }
 }
