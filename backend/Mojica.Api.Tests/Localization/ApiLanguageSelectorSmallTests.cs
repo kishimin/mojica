@@ -35,16 +35,15 @@ public sealed class ApiLanguageSelectorSmallTests
         Assert.Equal(NullabilityState.Nullable, nullability.ReadState);
     }
 
-    [Fact(Skip = "TODO: Implement when the API language selector exists.")]
-    public void ApiLanguageSelector_Select_WhenLanguageIsUnsupported_ReturnsJapanese()
+    [Theory]
+    [InlineData("fr")]
+    [InlineData("de")]
+    [InlineData("")]
+    public void ApiLanguageSelector_Select_WhenLanguageIsUnsupported_ReturnsJapanese(
+        string languageCode)
     {
-        // ID: LOCALIZATION-LANGUAGE-04
-        // Source: docs/v1/api/api.md §9 Language Selection; docs/v1/api/controllers.md §8 Language Selection.
-        // Given: an unsupported language code (Theory candidate: "fr", "de", and an empty value)
-        // When: the display language is selected
-        // Then: Japanese is returned as the fallback language
-        // Error: unsupported input must not escape into the public message lookup
-        // Blocked by: feature/add-api-error-localization must define the language value and selector
-        // Priority: High
+        var language = ApiLanguageSelector.Select(languageCode);
+
+        Assert.Equal(ApiLanguage.Japanese, language);
     }
 }
