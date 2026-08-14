@@ -74,13 +74,15 @@ public sealed record ImageGenerationRequest
             return FailRequired("backgroundColor", out request, out error);
         }
 
-        if (!ContainsVisibleCharacter(foregroundCharacter.Value)
-            && !ContainsVisibleCharacter(backgroundCharacter.Value))
+        var patternReason = GetPatternCombinationFailureReason(
+            foregroundCharacter,
+            backgroundCharacter);
+        if (patternReason is not null)
         {
             request = null;
             error = new ModelValidationError(
                 ["foregroundCharacter", "backgroundCharacter"],
-                ModelValidationReason.VisibleCharacterRequired);
+                patternReason);
             return false;
         }
 
@@ -93,6 +95,16 @@ public sealed record ImageGenerationRequest
             backgroundColor);
         error = null;
         return true;
+    }
+
+    internal static ModelValidationReason? GetPatternCombinationFailureReason(
+        PatternCharacter foregroundCharacter,
+        PatternCharacter backgroundCharacter)
+    {
+        return ContainsVisibleCharacter(foregroundCharacter.Value)
+            || ContainsVisibleCharacter(backgroundCharacter.Value)
+            ? null
+            : ModelValidationReason.VisibleCharacterRequired;
     }
 
     private static bool ContainsVisibleCharacter(string value)
