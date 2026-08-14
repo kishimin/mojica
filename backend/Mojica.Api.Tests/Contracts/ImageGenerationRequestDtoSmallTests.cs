@@ -68,16 +68,23 @@ public sealed class ImageGenerationRequestDtoSmallTests
         Assert.Null(omittedValue);
     }
 
-    [Fact(Skip = "TODO: Keep unsupported image type values available for validation.")]
+    [Fact]
     public void Deserialize_WhenTypeIsUnsupported_RetainsTheRawTypeValue()
     {
-        // ID: REQUEST-DTO-03
-        // Source: docs/v1/api/api.md §5 type and §11 Invalid type.
-        // Given: parseable JSON whose type string is not standard, x-background, or x-icon
-        // When: System.Text.Json deserializes the body into the request DTO
-        // Then: the unsupported string reaches the Mapper so it can return UNSUPPORTED_IMAGE_TYPE for field type
-        // Error: do not collapse an unsupported value into a JSON-format error before Domain validation
-        // Blocked by: define ImageGenerationRequestDto
-        // Priority: High
+        const string json = """
+            {
+              "type": "animated",
+              "text": "Mojica",
+              "foregroundCharacter": "@",
+              "foregroundColor": "#FFFFFF",
+              "backgroundCharacter": ".",
+              "backgroundColor": "#000000"
+            }
+            """;
+
+        var request = JsonSerializer.Deserialize<ImageGenerationRequestDto>(json);
+
+        Assert.NotNull(request);
+        Assert.Equal("animated", request.Type);
     }
 }
