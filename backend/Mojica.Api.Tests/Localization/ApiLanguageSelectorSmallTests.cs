@@ -12,16 +12,12 @@ public sealed class ApiLanguageSelectorSmallTests
         Assert.Equal(ApiLanguage.Japanese, language);
     }
 
-    [Fact(Skip = "TODO: Implement when the API language selector exists.")]
+    [Fact]
     public void ApiLanguageSelector_Select_WhenEnglishIsRequested_ReturnsEnglish()
     {
-        // ID: LOCALIZATION-LANGUAGE-02
-        // Source: docs/v1/api/api.md §9 Language Selection; docs/v1/api/controllers.md §8 Language Selection.
-        // Given: the supported language code "en"
-        // When: the display language is selected
-        // Then: English is returned
-        // Blocked by: feature/add-api-error-localization must define the language value and selector
-        // Priority: High
+        var language = ApiLanguageSelector.Select("en");
+
+        Assert.Equal(ApiLanguage.English, language);
     }
 
     [Fact(Skip = "TODO: Implement when the API language selector exists.")]
