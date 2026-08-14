@@ -6,6 +6,15 @@ namespace Mojica.Api.Tests.Services;
 
 public sealed class ImageGenerationServiceSmallTests
 {
+    public static TheoryData<ImageGenerationPortErrorCode, int?> PortFailures => new()
+    {
+        { ImageGenerationPortErrorCode.RateLimited, 60 },
+        { ImageGenerationPortErrorCode.Timeout, null },
+        { ImageGenerationPortErrorCode.Unavailable, null },
+        { ImageGenerationPortErrorCode.InvalidResponse, null },
+        { ImageGenerationPortErrorCode.Failed, null },
+    };
+
     [Fact]
     public async Task ImageGenerationService_GenerateAsync_WhenRequestIsValid_PassesSameRequestToPortOnce()
     {
@@ -84,44 +93,26 @@ public sealed class ImageGenerationServiceSmallTests
         Assert.NotEqual(first.Image.FileName, second.Image.FileName);
     }
 
-    [Fact(Skip = "TODO: Implement as a Theory when ImageGenerationService is introduced.")]
-    public void ImageGenerationService_Generate_WhenPortFails_ReturnsSamePortError()
+    [Theory]
+    [MemberData(nameof(PortFailures))]
+    public async Task ImageGenerationService_GenerateAsync_WhenPortFails_PropagatesFailureWithoutUuidOrRetry(
+        ImageGenerationPortErrorCode errorCode,
+        int? retryAfter)
     {
-        // ID: SERVICE-07
-        // Source: docs/v1/api/services.md sections 8 and 10
-        // Given: a Port failure classified as RATE_LIMITED, TIMEOUT, UNAVAILABLE, INVALID_RESPONSE, or FAILED
-        // When: the Service generates an image
-        // Then: the Service returns the same ImageGenerationPortError instance with code and retryAfter unchanged
-        // Error: preserve each documented Port failure without translation
-        // Blocked by: ImageGenerationService is not implemented
-        // Priority: High
-        // Theory candidate: error code and optional retryAfter vary; propagation behavior is identical
-    }
+        var request = CreateValidRequest();
+        var error = new ImageGenerationPortError(errorCode, retryAfter);
+        var port = new RecordingImageGenerationPort(
+            ImageGenerationPortResult.Failure(error));
+        var uuidProvider = new RecordingUuidProvider(Guid.NewGuid());
+        var service = new ImageGenerationService(port, uuidProvider);
 
-    [Fact(Skip = "TODO: Implement when ImageGenerationService is introduced.")]
-    public void ImageGenerationService_Generate_WhenPortFails_DoesNotGenerateFileName()
-    {
-        // ID: SERVICE-08
-        // Source: docs/v1/api/services.md section 10
-        // Given: a failing fake ImageGenerationPort and an observable UUID source
-        // When: the Service receives the Port failure
-        // Then: the UUID source is not called and no GeneratedImage or filename is produced
-        // Error: Port failure ends processing before successful result completion
-        // Blocked by: ImageGenerationService and its controllable UUID boundary are not implemented
-        // Priority: High
-    }
+        var result = await service.GenerateAsync(request, CancellationToken.None);
 
-    [Fact(Skip = "TODO: Implement when ImageGenerationService is introduced.")]
-    public void ImageGenerationService_Generate_WhenPortFails_DoesNotRetry()
-    {
-        // ID: SERVICE-09
-        // Source: docs/v1/api/services.md sections 9 and 10
-        // Given: a fake ImageGenerationPort that returns a failure on its first call
-        // When: the Service generates an image once
-        // Then: the Port is called exactly once and no automatic retry is attempted
-        // Error: retrying a side-effecting generation request could create duplicate images
-        // Blocked by: ImageGenerationService is not implemented
-        // Priority: High
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Image);
+        Assert.Same(error, result.Error);
+        Assert.Equal(0, uuidProvider.CallCount);
+        Assert.Equal(1, port.CallCount);
     }
 
     private static ImageGenerationRequest CreateValidRequest(ImageType? type = null)
