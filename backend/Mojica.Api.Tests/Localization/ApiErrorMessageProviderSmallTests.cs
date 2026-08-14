@@ -37,6 +37,16 @@ public sealed class ApiErrorMessageProviderSmallTests
         { ModelValidationReason.VisibleCharacterRequired, "backgroundCharacter", "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。" },
     };
 
+    public static TheoryData<ModelValidationReason, string, string> EnglishValidationMessages => new()
+    {
+        { ModelValidationReason.Required, "text", "The text field is required." },
+        { ModelValidationReason.LengthOutOfRange, "text", "The text must be 64 characters or fewer." },
+        { ModelValidationReason.InvalidHexColor, "foregroundColor", "The value must be specified in HEX color format (#RRGGBB)." },
+        { ModelValidationReason.UnsupportedImageType, "type", "The value must be one of: standard, x-background, or x-icon." },
+        { ModelValidationReason.VisibleCharacterRequired, "foregroundCharacter", "Either the foreground or background characters must contain at least one visible character." },
+        { ModelValidationReason.VisibleCharacterRequired, "backgroundCharacter", "Either the foreground or background characters must contain at least one visible character." },
+    };
+
     [Theory]
     [MemberData(nameof(JapanesePublicMessages))]
     public void ApiErrorMessageProvider_GetPublicMessage_WhenLanguageIsJapanese_ReturnsDocumentedMessage(
@@ -78,16 +88,18 @@ public sealed class ApiErrorMessageProviderSmallTests
         Assert.Equal(expectedMessage, message);
     }
 
-    [Fact(Skip = "TODO: Implement when the API error message provider exists.")]
-    public void ApiErrorMessageProvider_GetValidationMessage_WhenLanguageIsEnglish_ReturnsMessageForReasonAndTarget()
+    [Theory]
+    [MemberData(nameof(EnglishValidationMessages))]
+    public void ApiErrorMessageProvider_GetValidationMessage_WhenLanguageIsEnglish_ReturnsMessageForReasonAndTarget(
+        ModelValidationReason reason,
+        string target,
+        string expectedMessage)
     {
-        // ID: LOCALIZATION-VALIDATION-02
-        // Source: docs/v1/api/api.md §9 and §11 422 Unprocessable Entity; ADR-0022.
-        // Given: English, a documented ModelValidationReason, and the request target that owns the field context (Theory candidate for every supported reason-target pair)
-        // When: the validation detail message is resolved
-        // Then: the exact documented English message for that validation condition and request attribute is returned
-        // Error: the reason remains language-independent while the target supplies context such as text, foregroundCharacter, or backgroundColor
-        // Blocked by: feature/add-api-error-localization must define the validation message lookup boundary
-        // Priority: High
+        var message = ApiErrorMessageProvider.GetValidationMessage(
+            ApiLanguage.English,
+            reason,
+            target);
+
+        Assert.Equal(expectedMessage, message);
     }
 }
