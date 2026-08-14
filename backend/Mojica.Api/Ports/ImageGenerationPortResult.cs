@@ -18,6 +18,8 @@ public sealed record ImageGenerationPortResult
 
     public static ImageGenerationPortResult Success(GeneratedImageData data)
     {
+        ArgumentNullException.ThrowIfNull(data);
+
         return new ImageGenerationPortResult(data, null);
     }
 
