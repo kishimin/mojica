@@ -67,7 +67,7 @@ public static class ImageGenerationRequestMapper
             return ImageGenerationRequestMappingResult.Failure(errors);
         }
 
-        return ImageGenerationRequest.TryCreate(
+        if (ImageGenerationRequest.TryCreate(
             type,
             text,
             foregroundCharacter,
@@ -75,8 +75,18 @@ public static class ImageGenerationRequestMapper
             backgroundCharacter,
             backgroundColor,
             out var request,
-            out var requestError)
-            ? ImageGenerationRequestMappingResult.Success(request)
-            : ImageGenerationRequestMappingResult.Failure([requestError]);
+            out var requestError))
+        {
+            return ImageGenerationRequestMappingResult.Success(request);
+        }
+
+        var fieldErrors = requestError.Target
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(target => new ModelValidationError(
+                target,
+                requestError.Reason,
+                requestError.Details));
+
+        return ImageGenerationRequestMappingResult.Failure(fieldErrors);
     }
 }
