@@ -22,45 +22,22 @@ public static class ImageGenerationRequestMapper
             errors.Add(textError);
         }
 
-        if (!PatternCharacter.TryCreate(
-                dto.ForegroundCharacter,
-                out var foregroundCharacter,
-                out var foregroundCharacterReason))
-        {
-            errors.Add(new ModelValidationError(
-                "foregroundCharacter",
-                foregroundCharacterReason));
-        }
-
-        if (!HexColor.TryCreate(
-                dto.ForegroundColor,
-                out var foregroundColor,
-                out var foregroundColorReason))
-        {
-            errors.Add(new ModelValidationError(
-                "foregroundColor",
-                foregroundColorReason));
-        }
-
-        if (!PatternCharacter.TryCreate(
-                dto.BackgroundCharacter,
-                out var backgroundCharacter,
-                out var backgroundCharacterReason))
-        {
-            errors.Add(new ModelValidationError(
-                "backgroundCharacter",
-                backgroundCharacterReason));
-        }
-
-        if (!HexColor.TryCreate(
-                dto.BackgroundColor,
-                out var backgroundColor,
-                out var backgroundColorReason))
-        {
-            errors.Add(new ModelValidationError(
-                "backgroundColor",
-                backgroundColorReason));
-        }
+        var foregroundCharacter = CreatePatternCharacter(
+            dto.ForegroundCharacter,
+            "foregroundCharacter",
+            errors);
+        var foregroundColor = CreateHexColor(
+            dto.ForegroundColor,
+            "foregroundColor",
+            errors);
+        var backgroundCharacter = CreatePatternCharacter(
+            dto.BackgroundCharacter,
+            "backgroundCharacter",
+            errors);
+        var backgroundColor = CreateHexColor(
+            dto.BackgroundColor,
+            "backgroundColor",
+            errors);
 
         if (errors.Count > 0)
         {
@@ -87,5 +64,33 @@ public static class ImageGenerationRequestMapper
                 requestError.Details));
 
         return ImageGenerationRequestMappingResult.Failure(fieldErrors);
+    }
+
+    private static PatternCharacter? CreatePatternCharacter(
+        string? value,
+        string target,
+        ICollection<ModelValidationError> errors)
+    {
+        if (PatternCharacter.TryCreate(value, out var patternCharacter, out var reason))
+        {
+            return patternCharacter;
+        }
+
+        errors.Add(new ModelValidationError(target, reason));
+        return null;
+    }
+
+    private static HexColor? CreateHexColor(
+        string? value,
+        string target,
+        ICollection<ModelValidationError> errors)
+    {
+        if (HexColor.TryCreate(value, out var color, out var reason))
+        {
+            return color;
+        }
+
+        errors.Add(new ModelValidationError(target, reason));
+        return null;
     }
 }
