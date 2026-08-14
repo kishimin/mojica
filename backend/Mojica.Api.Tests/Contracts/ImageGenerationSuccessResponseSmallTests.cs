@@ -1,8 +1,10 @@
+using Mojica.Api.Contracts;
+
 namespace Mojica.Api.Tests.Contracts;
 
 public sealed class ImageGenerationSuccessResponseSmallTests
 {
-    [Fact(Skip = "TODO: Implement the stable successful image response contract.")]
+    [Fact]
     public void Create_WhenGeneratedImageIsValid_RetainsContentMediaTypeAndFileName()
     {
         // ID: SUCCESS-RESPONSE-01
@@ -10,7 +12,17 @@ public sealed class ImageGenerationSuccessResponseSmallTests
         // Given: generated PNG bytes, image/png media type, and the Service-generated safe filename
         // When: the successful public response contract is created
         // Then: it retains the exact content, media type, and filename for the Endpoint to return
-        // Blocked by: define ImageGenerationSuccessResponse
+        byte[] content = [0x89, 0x50, 0x4E, 0x47];
+
+        var response = new ImageGenerationSuccessResponse(
+            content,
+            "image/png",
+            "mojica-standard-123.png");
+
+        Assert.Same(content, response.Content);
+        Assert.Equal("image/png", response.MediaType);
+        Assert.Equal("mojica-standard-123.png", response.FileName);
+
         // Priority: High
     }
 
