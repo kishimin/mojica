@@ -19,13 +19,13 @@ public sealed record ImageGenerationServiceResult
 
     public ImageGenerationPortError? Error { get; }
 
-    public static ImageGenerationServiceResult Success(GeneratedImage image)
+    internal static ImageGenerationServiceResult Success(GeneratedImage image)
     {
         ArgumentNullException.ThrowIfNull(image);
         return new ImageGenerationServiceResult(image, null);
     }
 
-    public static ImageGenerationServiceResult Failure(ImageGenerationPortError error)
+    internal static ImageGenerationServiceResult Failure(ImageGenerationPortError error)
     {
         ArgumentNullException.ThrowIfNull(error);
         return new ImageGenerationServiceResult(null, error);
