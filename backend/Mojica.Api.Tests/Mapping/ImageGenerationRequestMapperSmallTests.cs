@@ -109,19 +109,6 @@ public sealed class ImageGenerationRequestMapperSmallTests
             result.Errors.Select(error => error.Target).Order());
     }
 
-    [Fact(Skip = "TODO: Preserve validation detail values through the Mapper boundary.")]
-    public void Map_WhenValidationReasonContainsDetails_PreservesThoseDetails()
-    {
-        // ID: REQUEST-MAPPING-05
-        // Source: docs/v1/api/models.md validation contracts; docs/v1/api/implementation-plan.md §4 branch 7B.
-        // Given: a request value whose validation failure includes machine-readable details such as a maximum length
-        // When: the input Mapper returns the field error
-        // Then: the error keeps the original reason, request-field target, and every detail value
-        // Error: do not replace a detailed ModelValidationError with an unclassified string message
-        // Blocked by: define ImageGenerationRequestMapper and its failure result
-        // Priority: Medium
-    }
-
     private static ImageGenerationRequestDto ValidDto() => new(
         "standard",
         "Mojica",
