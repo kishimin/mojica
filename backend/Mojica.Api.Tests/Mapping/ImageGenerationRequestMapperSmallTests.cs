@@ -82,6 +82,29 @@ public sealed class ImageGenerationRequestMapperSmallTests
     }
 
     [Fact]
+    public void Map_WhenTypeAndBothPatternValuesAreInvalid_ReturnsAllDetectedFieldErrors()
+    {
+        var dto = ValidDto() with
+        {
+            Type = "animated",
+            ForegroundCharacter = " ",
+            BackgroundCharacter = "\u200B",
+        };
+
+        var result = ImageGenerationRequestMapper.Map(dto);
+
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Request);
+        Assert.Equal(3, result.Errors.Count);
+        Assert.Equal("type", result.Errors[0].Target);
+        Assert.Equal(ModelValidationReason.UnsupportedImageType, result.Errors[0].Reason);
+        Assert.Equal("foregroundCharacter", result.Errors[1].Target);
+        Assert.Equal(ModelValidationReason.VisibleCharacterRequired, result.Errors[1].Reason);
+        Assert.Equal("backgroundCharacter", result.Errors[2].Target);
+        Assert.Equal(ModelValidationReason.VisibleCharacterRequired, result.Errors[2].Reason);
+    }
+
+    [Fact]
     public void Map_WhenBothPatternValuesContainNoVisibleCharacter_ReturnsErrorsForBothFields()
     {
         var dto = ValidDto() with
