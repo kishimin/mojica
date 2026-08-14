@@ -39,17 +39,25 @@ public sealed class ImageGenerationServiceSmallTests
         Assert.Null(result.Error);
     }
 
-    [Fact(Skip = "TODO: Implement as a Theory when ImageGenerationService is introduced.")]
-    public void ImageGenerationService_Generate_ForEachImageType_UsesNormalizedTypeAndUuidInFileName()
+    [Theory]
+    [InlineData("standard", "mojica-standard-550e8400-e29b-41d4-a716-446655440000.png")]
+    [InlineData("x-background", "mojica-x-background-550e8400-e29b-41d4-a716-446655440000.png")]
+    [InlineData("x-icon", "mojica-x-icon-550e8400-e29b-41d4-a716-446655440000.png")]
+    public async Task ImageGenerationService_GenerateAsync_ForEachImageType_UsesTypeAndUuidOnlyInFileName(
+        string imageTypeValue,
+        string expectedFileName)
     {
-        // ID: SERVICE-04
-        // Source: docs/v1/api/services.md section 6 and section 10
-        // Given: standard, x-background, or x-icon and a fixed UUID from a controllable source
-        // When: the Service completes a successful Port result
-        // Then: the filename is mojica-{normalizedImageType}-{UUID}.png for every documented image type
-        // Blocked by: ImageGenerationService and its controllable UUID boundary are not implemented
-        // Priority: High
-        // Theory candidate: image type and exact expected filename vary; behavior is otherwise identical
+        Assert.True(ImageType.TryCreate(imageTypeValue, out var imageType, out _));
+        var request = CreateValidRequest(imageType);
+        var port = new RecordingImageGenerationPort(CreateSuccessfulPortResult());
+        var uuidProvider = new StubUuidProvider(
+            Guid.Parse("550e8400-e29b-41d4-a716-446655440000"));
+        var service = new ImageGenerationService(port, uuidProvider);
+
+        var result = await service.GenerateAsync(request, CancellationToken.None);
+
+        Assert.NotNull(result.Image);
+        Assert.Equal(expectedFileName, result.Image.FileName);
     }
 
     [Fact(Skip = "TODO: Implement when ImageGenerationService is introduced.")]
@@ -62,18 +70,6 @@ public sealed class ImageGenerationServiceSmallTests
         // Then: each filename contains the UUID generated for that execution and the filenames differ
         // Blocked by: ImageGenerationService and its controllable UUID boundary are not implemented
         // Priority: Medium
-    }
-
-    [Fact(Skip = "TODO: Implement when ImageGenerationService is introduced.")]
-    public void ImageGenerationService_Generate_WhenRequestContainsUserText_ExcludesUserValuesFromFileName()
-    {
-        // ID: SERVICE-06
-        // Source: docs/v1/api/services.md section 6
-        // Given: a valid request with recognizable user-provided text, pattern characters, and colors
-        // When: the Service completes a successful Port result with a fixed UUID
-        // Then: the filename contains only the mojica prefix, normalized image type, UUID, and .png extension
-        // Blocked by: ImageGenerationService and its controllable UUID boundary are not implemented
-        // Priority: High
     }
 
     [Fact(Skip = "TODO: Implement as a Theory when ImageGenerationService is introduced.")]
@@ -156,6 +152,14 @@ public sealed class ImageGenerationServiceSmallTests
             CallCount++;
             ReceivedRequest = request;
             return Task.FromResult(result);
+        }
+    }
+
+    private sealed class StubUuidProvider(Guid value) : UuidProvider
+    {
+        public Guid Create()
+        {
+            return value;
         }
     }
 }
