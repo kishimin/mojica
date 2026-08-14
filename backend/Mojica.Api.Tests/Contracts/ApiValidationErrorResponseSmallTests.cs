@@ -85,4 +85,14 @@ public sealed class ApiValidationErrorResponseSmallTests
         Assert.Equal("text", root.GetProperty("errors")[0].GetProperty("field").GetString());
         Assert.Equal("The text field is required.", root.GetProperty("errors")[0].GetProperty("message").GetString());
     }
+
+    [Fact]
+    public void Create_WhenErrorsAreEmpty_ThrowsArgumentException()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new ApiValidationErrorResponse(
+                "VALIDATION_ERROR",
+                "The input contains validation errors.",
+                Array.Empty<ApiValidationFieldError>()));
+    }
 }

@@ -73,16 +73,12 @@ public sealed class ImageGenerationRequestMapperSmallTests
         Assert.False(result.IsSuccess);
         Assert.Null(result.Request);
         Assert.Equal(6, result.Errors.Count);
-        Assert.Equal(
-            [
-                "backgroundCharacter",
-                "backgroundColor",
-                "foregroundCharacter",
-                "foregroundColor",
-                "text",
-                "type",
-            ],
-            result.Errors.Select(error => error.Target).Order());
+        Assert.Equal("type", result.Errors[0].Target);
+        Assert.Equal("text", result.Errors[1].Target);
+        Assert.Equal("foregroundCharacter", result.Errors[2].Target);
+        Assert.Equal("foregroundColor", result.Errors[3].Target);
+        Assert.Equal("backgroundCharacter", result.Errors[4].Target);
+        Assert.Equal("backgroundColor", result.Errors[5].Target);
     }
 
     [Fact]
@@ -104,9 +100,8 @@ public sealed class ImageGenerationRequestMapperSmallTests
             error => Assert.Equal(
                 ModelValidationReason.VisibleCharacterRequired,
                 error.Reason));
-        Assert.Equal(
-            ["backgroundCharacter", "foregroundCharacter"],
-            result.Errors.Select(error => error.Target).Order());
+        Assert.Equal("foregroundCharacter", result.Errors[0].Target);
+        Assert.Equal("backgroundCharacter", result.Errors[1].Target);
     }
 
     private static ImageGenerationRequestDto ValidDto() => new(
