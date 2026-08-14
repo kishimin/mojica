@@ -1,17 +1,22 @@
+using System.Text.Json;
+using Mojica.Api.Contracts;
+
 namespace Mojica.Api.Tests.Contracts;
 
 public sealed class ApiErrorResponseSmallTests
 {
-    [Fact(Skip = "TODO: Implement the stable top-level API error contract.")]
+    [Fact]
     public void Serialize_WhenErrorResponseIsCreated_WritesCodeAndMessage()
     {
-        // ID: ERROR-RESPONSE-01
-        // Source: docs/v1/api/controllers.md §5-6 and §9; docs/v1/api/api.md §11.
-        // Given: a public API error code and a localized safe message
-        // When: System.Text.Json serializes the error response contract
-        // Then: the JSON object contains the documented code and message properties with their supplied values
-        // Blocked by: define ApiErrorResponse
-        // Priority: High
+        var response = new ApiErrorResponse(
+            "BAD_REQUEST",
+            "The request format is invalid.");
+
+        using var document = JsonDocument.Parse(JsonSerializer.Serialize(response));
+        var root = document.RootElement;
+
+        Assert.Equal("BAD_REQUEST", root.GetProperty("code").GetString());
+        Assert.Equal("The request format is invalid.", root.GetProperty("message").GetString());
     }
 
     [Fact(Skip = "TODO: Keep internal diagnostic details outside the public contract.")]
