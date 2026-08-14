@@ -1,1 +1,47 @@
+# Local workflow artifacts
 pull-request/
+
+# .NET build output
+**/bin/
+**/obj/
+artifacts/
+
+# Test and coverage output
+**/TestResults/
+coverage/
+coverage.*
+*.coverage
+*.coveragexml
+*.trx
+code-coverage-results.md
+code-coverage-comment.md
+
+# NuGet packages and generated files
+*.nupkg
+*.snupkg
+packages/
+
+# User-specific IDE files
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*~
