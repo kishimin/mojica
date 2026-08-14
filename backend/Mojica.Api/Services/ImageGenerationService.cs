@@ -9,9 +9,10 @@ public sealed class ImageGenerationService(ImageGenerationPort port)
         ImageGenerationRequest request,
         CancellationToken cancellationToken)
     {
-        await port.GenerateAsync(request, cancellationToken);
+        var portResult = await port.GenerateAsync(request, cancellationToken);
+        var imageData = portResult.Data!;
 
         return ImageGenerationServiceResult.Success(
-            new GeneratedImage([], string.Empty, string.Empty));
+            new GeneratedImage(imageData.Content, imageData.MediaType, string.Empty));
     }
 }
