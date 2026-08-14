@@ -15,4 +15,6 @@ public sealed record ImageGenerationPortError
     public ImageGenerationPortErrorCode ErrorCode { get; }
 
     public int? RetryAfter { get; }
+
+    public string? Details => null;
 }
