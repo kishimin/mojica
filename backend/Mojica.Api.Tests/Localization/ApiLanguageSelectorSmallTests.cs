@@ -1,17 +1,15 @@
+using Mojica.Api.Localization;
+
 namespace Mojica.Api.Tests.Localization;
 
 public sealed class ApiLanguageSelectorSmallTests
 {
-    [Fact(Skip = "TODO: Implement when the API language selector exists.")]
+    [Fact]
     public void ApiLanguageSelector_Select_WhenJapaneseIsRequested_ReturnsJapanese()
     {
-        // ID: LOCALIZATION-LANGUAGE-01
-        // Source: docs/v1/api/api.md §9 Language Selection; docs/v1/api/controllers.md §8 Language Selection.
-        // Given: the supported language code "ja"
-        // When: the display language is selected
-        // Then: Japanese is returned
-        // Blocked by: feature/add-api-error-localization must define the language value and selector
-        // Priority: High
+        var language = ApiLanguageSelector.Select("ja");
+
+        Assert.Equal(ApiLanguage.Japanese, language);
     }
 
     [Fact(Skip = "TODO: Implement when the API language selector exists.")]
