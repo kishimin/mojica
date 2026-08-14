@@ -47,6 +47,7 @@ public sealed class ApiErrorMessageProviderSmallTests
         { ModelValidationReason.UnsupportedImageType, "type", "standard、x-background、x-iconのいずれかを指定してください。" },
         { ModelValidationReason.VisibleCharacterRequired, "foregroundCharacter", "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。" },
         { ModelValidationReason.VisibleCharacterRequired, "backgroundCharacter", "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。" },
+        { ModelValidationReason.VisibleCharacterRequired, "foregroundCharacter,backgroundCharacter", "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。" },
     };
 
     public static TheoryData<ModelValidationReason, string, string> EnglishValidationMessages => new()
@@ -69,6 +70,7 @@ public sealed class ApiErrorMessageProviderSmallTests
         { ModelValidationReason.UnsupportedImageType, "type", "The value must be one of: standard, x-background, or x-icon." },
         { ModelValidationReason.VisibleCharacterRequired, "foregroundCharacter", "Either the foreground or background characters must contain at least one visible character." },
         { ModelValidationReason.VisibleCharacterRequired, "backgroundCharacter", "Either the foreground or background characters must contain at least one visible character." },
+        { ModelValidationReason.VisibleCharacterRequired, "foregroundCharacter,backgroundCharacter", "Either the foreground or background characters must contain at least one visible character." },
     };
 
     [Theory]
