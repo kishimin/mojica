@@ -4,6 +4,8 @@ public static class ApiLanguageSelector
 {
     public static ApiLanguage Select(string languageCode)
     {
-        return ApiLanguage.Japanese;
+        return languageCode == "en"
+            ? ApiLanguage.English
+            : ApiLanguage.Japanese;
     }
 }
