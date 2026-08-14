@@ -85,17 +85,28 @@ public sealed class ImageGenerationRequestMapperSmallTests
             result.Errors.Select(error => error.Target).Order());
     }
 
-    [Fact(Skip = "TODO: Implement request-level visible-character validation mapping.")]
+    [Fact]
     public void Map_WhenBothPatternValuesContainNoVisibleCharacter_ReturnsErrorsForBothFields()
     {
-        // ID: REQUEST-MAPPING-04
-        // Source: docs/v1/api/api.md §6 Character Combination and §11 Character Combination Error; ADR-0022.
-        // Given: individually valid foreground and background pattern values that contain no visible character
-        // When: the input Mapper maps the DTO and creates the ImageGenerationRequest aggregate
-        // Then: mapping fails and returns VISIBLE_CHARACTER_REQUIRED once for foregroundCharacter and once for backgroundCharacter
-        // Error: expand the aggregate's combined target into the two public request fields without losing the reason
-        // Blocked by: define the Mapper result contract for aggregate validation failures
-        // Priority: High
+        var dto = ValidDto() with
+        {
+            ForegroundCharacter = " ",
+            BackgroundCharacter = "\u200B",
+        };
+
+        var result = ImageGenerationRequestMapper.Map(dto);
+
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Request);
+        Assert.Equal(2, result.Errors.Count);
+        Assert.All(
+            result.Errors,
+            error => Assert.Equal(
+                ModelValidationReason.VisibleCharacterRequired,
+                error.Reason));
+        Assert.Equal(
+            ["backgroundCharacter", "foregroundCharacter"],
+            result.Errors.Select(error => error.Target).Order());
     }
 
     [Fact(Skip = "TODO: Preserve validation detail values through the Mapper boundary.")]
