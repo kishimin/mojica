@@ -1,70 +1,172 @@
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Tests.Models;
 
 public sealed class ImageGenerationRequestSmallTests
 {
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void ImageGenerationRequest_Create_WhenAllValuesAreValid_Succeeds()
     {
-        // ID: REQUEST-01
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: valid ImageType, RenderText, PatternCharacter, and HexColor values for every required attribute
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation succeeds and exposes the complete validated request
-        // Priority: High
+        var values = CreateValidValues();
+
+        var succeeded = ImageGenerationRequest.TryCreate(
+            values.Type,
+            values.Text,
+            values.ForegroundCharacter,
+            values.ForegroundColor,
+            values.BackgroundCharacter,
+            values.BackgroundColor,
+            out var request,
+            out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(request);
+        Assert.Same(values.Type, request.Type);
+        Assert.Same(values.Text, request.Text);
+        Assert.Same(values.ForegroundCharacter, request.ForegroundCharacter);
+        Assert.Same(values.ForegroundColor, request.ForegroundColor);
+        Assert.Same(values.BackgroundCharacter, request.BackgroundCharacter);
+        Assert.Same(values.BackgroundColor, request.BackgroundColor);
+        Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void ImageGenerationRequest_Create_WhenRequiredValueIsMissing_ReturnsRequiredError()
+    [Theory]
+    [InlineData(MissingValue.Type, "type")]
+    [InlineData(MissingValue.Text, "text")]
+    [InlineData(MissingValue.ForegroundCharacter, "foregroundCharacter")]
+    [InlineData(MissingValue.ForegroundColor, "foregroundColor")]
+    [InlineData(MissingValue.BackgroundCharacter, "backgroundCharacter")]
+    [InlineData(MissingValue.BackgroundColor, "backgroundColor")]
+    public void ImageGenerationRequest_Create_WhenRequiredValueIsMissing_ReturnsRequiredError(
+        MissingValue missingValue,
+        string target)
     {
-        // ID: REQUEST-02
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: each required attribute is missing in turn (Theory candidate)
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation fails with code REQUIRED and identifies the missing attribute
-        // Priority: High
+        var values = CreateValidValues().Without(missingValue);
+
+        var succeeded = ImageGenerationRequest.TryCreate(
+            values.Type,
+            values.Text,
+            values.ForegroundCharacter,
+            values.ForegroundColor,
+            values.BackgroundCharacter,
+            values.BackgroundColor,
+            out var request,
+            out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(request);
+        Assert.NotNull(error);
+        Assert.Equal(ModelValidationReason.Required, error.Reason);
+        Assert.Equal("REQUIRED", error.Code);
+        Assert.Equal(target, error.Target);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void ImageGenerationRequest_Create_WhenBothPatternValuesAreOnlyWhitespace_ReturnsVisibleCharacterRequiredError()
     {
-        // ID: REQUEST-03
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: independently valid foregroundCharacter and backgroundCharacter values that both contain only whitespace
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation fails with code VISIBLE_CHARACTER_REQUIRED and targets the combination of both character attributes
-        // Priority: High
+        var values = CreateValidValues(" ", "\u3000");
+
+        var succeeded = ImageGenerationRequest.TryCreate(
+            values.Type,
+            values.Text,
+            values.ForegroundCharacter,
+            values.ForegroundColor,
+            values.BackgroundCharacter,
+            values.BackgroundColor,
+            out var request,
+            out var error);
+
+        Assert.False(succeeded);
+        Assert.Null(request);
+        Assert.NotNull(error);
+        Assert.Equal(ModelValidationReason.VisibleCharacterRequired, error.Reason);
+        Assert.Equal("VISIBLE_CHARACTER_REQUIRED", error.Code);
+        Assert.Equal("foregroundCharacter,backgroundCharacter", error.Target);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void ImageGenerationRequest_Create_WhenOnlyForegroundPatternIsVisible_Succeeds()
+    [Theory]
+    [InlineData("@", " ")]
+    [InlineData(" ", "@")]
+    public void ImageGenerationRequest_Create_WhenEitherPatternIsVisible_Succeeds(
+        string foregroundValue,
+        string backgroundValue)
     {
-        // ID: REQUEST-04
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: a visible foregroundCharacter and a whitespace-only backgroundCharacter
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation succeeds
-        // Priority: High
+        var values = CreateValidValues(foregroundValue, backgroundValue);
+
+        var succeeded = ImageGenerationRequest.TryCreate(
+            values.Type,
+            values.Text,
+            values.ForegroundCharacter,
+            values.ForegroundColor,
+            values.BackgroundCharacter,
+            values.BackgroundColor,
+            out var request,
+            out var error);
+
+        Assert.True(succeeded);
+        Assert.NotNull(request);
+        Assert.Null(error);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void ImageGenerationRequest_Create_WhenOnlyBackgroundPatternIsVisible_Succeeds()
+    private static RequestValuesBuilder CreateValidValues(
+        string foregroundCharacter = "@",
+        string backgroundCharacter = ".")
     {
-        // ID: REQUEST-05
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: a whitespace-only foregroundCharacter and a visible backgroundCharacter
-        // When: ImageGenerationRequest creation is requested
-        // Then: creation succeeds
-        // Priority: High
+        Assert.True(ImageType.TryCreate("standard", out var type, out _));
+        Assert.True(RenderText.TryCreate("Mojica", out var text, out _));
+        Assert.True(PatternCharacter.TryCreate(
+            foregroundCharacter,
+            out var validatedForegroundCharacter,
+            out _));
+        Assert.True(HexColor.TryCreate("#FF69B4", out var foregroundColor, out _));
+        Assert.True(PatternCharacter.TryCreate(
+            backgroundCharacter,
+            out var validatedBackgroundCharacter,
+            out _));
+        Assert.True(HexColor.TryCreate("#000000", out var backgroundColor, out _));
+
+        return new RequestValuesBuilder(
+            type,
+            text,
+            validatedForegroundCharacter,
+            foregroundColor,
+            validatedBackgroundCharacter,
+            backgroundColor);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
-    public void ImageGenerationRequest_Create_WhenValueObjectCreationFailed_DoesNotCreateAggregate()
+    public enum MissingValue
     {
-        // ID: REQUEST-06
-        // Source: docs/v1/api/models.md §9 ImageGenerationRequest.
-        // Given: each Value Object creation failure in turn
-        // When: the caller attempts to proceed to ImageGenerationRequest creation
-        // Then: no ImageGenerationRequest is produced and the original ModelValidationError remains classifiable
-        // Priority: High
+        Type,
+        Text,
+        ForegroundCharacter,
+        ForegroundColor,
+        BackgroundCharacter,
+        BackgroundColor,
+    }
+
+    private sealed record RequestValuesBuilder(
+        ImageType? Type,
+        RenderText? Text,
+        PatternCharacter? ForegroundCharacter,
+        HexColor? ForegroundColor,
+        PatternCharacter? BackgroundCharacter,
+        HexColor? BackgroundColor)
+    {
+        public RequestValuesBuilder Without(MissingValue missingValue)
+        {
+            return missingValue switch
+            {
+                MissingValue.Type => this with { Type = null },
+                MissingValue.Text => this with { Text = null },
+                MissingValue.ForegroundCharacter => this with { ForegroundCharacter = null },
+                MissingValue.ForegroundColor => this with { ForegroundColor = null },
+                MissingValue.BackgroundCharacter => this with { BackgroundCharacter = null },
+                MissingValue.BackgroundColor => this with { BackgroundColor = null },
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(missingValue),
+                    missingValue,
+                    null),
+            };
+        }
     }
 }

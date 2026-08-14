@@ -70,6 +70,22 @@ public sealed class PatternCharacterSmallTests
     }
 
     [Fact]
+    public void PatternCharacter_Create_WhenInputGreatlyExceedsMaximum_DoesNotAllocateForEveryGrapheme()
+    {
+        var value = new string('A', 1_000_000);
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        var succeeded = PatternCharacter.TryCreate(value, out var patternCharacter, out var reason);
+        var allocatedBytes = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        Assert.False(succeeded);
+        Assert.Null(patternCharacter);
+        Assert.NotNull(reason);
+        Assert.Equal(ModelValidationReason.LengthOutOfRange, reason);
+        Assert.True(allocatedBytes < 100_000, $"Allocated {allocatedBytes:N0} bytes.");
+    }
+
+    [Fact]
     public void PatternCharacter_Create_WhenInputIsOnlyWhitespace_Succeeds()
     {
         const string value = "   ";

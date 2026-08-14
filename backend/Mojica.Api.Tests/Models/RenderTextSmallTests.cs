@@ -72,6 +72,22 @@ public sealed class RenderTextSmallTests
     }
 
     [Fact]
+    public void RenderText_Create_WhenInputGreatlyExceedsMaximum_DoesNotAllocateForEveryGrapheme()
+    {
+        var value = new string('A', 1_000_000);
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        var succeeded = RenderText.TryCreate(value, out var renderText, out var error);
+        var allocatedBytes = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        Assert.False(succeeded);
+        Assert.Null(renderText);
+        Assert.NotNull(error);
+        Assert.Equal(ModelValidationReason.LengthOutOfRange, error.Reason);
+        Assert.True(allocatedBytes < 100_000, $"Allocated {allocatedBytes:N0} bytes.");
+    }
+
+    [Fact]
     public void RenderText_Create_WhenEmojiUsesSurrogatePair_CountsItAsOneGrapheme()
     {
         var value = string.Concat(Enumerable.Repeat("😀", 64));

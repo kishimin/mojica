@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 
 namespace Mojica.Api.Models;
 
@@ -26,32 +25,17 @@ public sealed record RenderText
             return false;
         }
 
-        var characterCount = StringInfo.ParseCombiningCharacters(value).Length;
+        var reason = TextValueValidation.GetFailureReason(
+            value,
+            maximumGraphemes: 64,
+            rejectWhitespaceOnly: true);
 
-        if (characterCount is 0 or > 64)
+        if (reason is not null)
         {
             renderText = null;
             error = new ModelValidationError(
                 "text",
-                ModelValidationReason.LengthOutOfRange);
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            renderText = null;
-            error = new ModelValidationError(
-                "text",
-                ModelValidationReason.NotBlank);
-            return false;
-        }
-
-        if (value.Any(char.IsControl))
-        {
-            renderText = null;
-            error = new ModelValidationError(
-                "text",
-                ModelValidationReason.ControlCharacter);
+                reason);
             return false;
         }
 
