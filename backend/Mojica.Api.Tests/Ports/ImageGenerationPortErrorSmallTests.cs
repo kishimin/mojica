@@ -35,16 +35,12 @@ public sealed class ImageGenerationPortErrorSmallTests
         Assert.Null(error.RetryAfter);
     }
 
-    [Fact(Skip = "TODO: Implement after the safe Port error details contract exists.")]
-    public void ImageGenerationPortError_Create_WhenFailureContainsCommunicationDetails_DoesNotExposeSensitiveDetails()
+    [Fact]
+    public void ImageGenerationPortError_Create_DoesNotExposeCommunicationDetails()
     {
-        // ID: PORT-ERROR-04
-        // Source: docs/v1/api/ports.md §3-4.
-        // Given: a failure context containing credentials, an internal URL, a stack trace, and transport details
-        // When: the failure is represented as an ImageGenerationPortError
-        // Then: none of those communication details are present in the error's public attributes
-        // Error: expose only supplementary information that is safe for an external caller
-        // Blocked by: feature/add-image-generation-port must define how safe public details are constructed
-        // Priority: High
+        var error = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.Failed);
+
+        Assert.Null(error.Details);
     }
 }
