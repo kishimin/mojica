@@ -4,7 +4,7 @@ public sealed record ImageGenerationPortError
 {
     public ImageGenerationPortError(
         ImageGenerationPortErrorCode errorCode,
-        int? retryAfter)
+        int? retryAfter = null)
     {
         ErrorCode = errorCode;
         RetryAfter = retryAfter;
