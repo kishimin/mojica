@@ -86,6 +86,9 @@ public sealed class ImageGenerationRequestSmallTests
         Assert.Equal(ModelValidationReason.VisibleCharacterRequired, error.Reason);
         Assert.Equal("VISIBLE_CHARACTER_REQUIRED", error.Code);
         Assert.Equal("foregroundCharacter,backgroundCharacter", error.Target);
+        Assert.Equal(
+            ["foregroundCharacter", "backgroundCharacter"],
+            error.Targets);
     }
 
     [Theory]
