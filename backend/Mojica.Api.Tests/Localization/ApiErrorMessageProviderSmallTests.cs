@@ -126,4 +126,27 @@ public sealed class ApiErrorMessageProviderSmallTests
 
         Assert.Equal(expectedMessage, message);
     }
+
+    [Theory]
+    [InlineData(ApiLanguage.Japanese)]
+    [InlineData(ApiLanguage.English)]
+    public void ApiErrorMessageProvider_GetPublicMessage_WhenCodeIsUnsupported_ThrowsArgumentOutOfRangeException(
+        ApiLanguage language)
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            ApiErrorMessageProvider.GetPublicMessage(language, "UNSUPPORTED"));
+    }
+
+    [Theory]
+    [InlineData(ApiLanguage.Japanese)]
+    [InlineData(ApiLanguage.English)]
+    public void ApiErrorMessageProvider_GetValidationMessage_WhenReasonAndTargetCombinationIsUnsupported_ThrowsArgumentException(
+        ApiLanguage language)
+    {
+        Assert.Throws<ArgumentException>(() =>
+            ApiErrorMessageProvider.GetValidationMessage(
+                language,
+                ModelValidationReason.ValueOutOfRange,
+                "red"));
+    }
 }
