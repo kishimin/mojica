@@ -1,29 +1,22 @@
+using Mojica.Api.Models;
+using Mojica.Api.Ports;
+using Mojica.Api.Services;
+
 namespace Mojica.Api.Tests.Services;
 
 public sealed class ImageGenerationServiceSmallTests
 {
-    [Fact(Skip = "TODO: Implement when ImageGenerationService is introduced.")]
-    public void ImageGenerationService_Generate_WhenRequestIsValid_PassesSameRequestToPort()
+    [Fact]
+    public async Task ImageGenerationService_GenerateAsync_WhenRequestIsValid_PassesSameRequestToPortOnce()
     {
-        // ID: SERVICE-01
-        // Source: docs/v1/api/services.md sections 2 and 5
-        // Given: a validated ImageGenerationRequest and a successful fake ImageGenerationPort
-        // When: the Service generates an image
-        // Then: the Port receives the same ImageGenerationRequest instance without modification
-        // Blocked by: ImageGenerationService is not implemented
-        // Priority: High
-    }
+        var request = CreateValidRequest();
+        var port = new RecordingImageGenerationPort(CreateSuccessfulPortResult());
+        var service = new ImageGenerationService(port);
 
-    [Fact(Skip = "TODO: Implement when ImageGenerationService is introduced.")]
-    public void ImageGenerationService_Generate_WhenPortSucceeds_CallsPortExactlyOnce()
-    {
-        // ID: SERVICE-02
-        // Source: docs/v1/api/services.md sections 4 and 10
-        // Given: a validated ImageGenerationRequest and a successful fake ImageGenerationPort
-        // When: the Service generates an image once
-        // Then: the Port is called exactly once for that execution
-        // Blocked by: ImageGenerationService is not implemented
-        // Priority: High
+        await service.GenerateAsync(request, CancellationToken.None);
+
+        Assert.Same(request, port.ReceivedRequest);
+        Assert.Equal(1, port.CallCount);
     }
 
     [Fact(Skip = "TODO: Implement when ImageGenerationService is introduced.")]
@@ -113,5 +106,48 @@ public sealed class ImageGenerationServiceSmallTests
         // Error: retrying a side-effecting generation request could create duplicate images
         // Blocked by: ImageGenerationService is not implemented
         // Priority: High
+    }
+
+    private static ImageGenerationRequest CreateValidRequest(ImageType? type = null)
+    {
+        Assert.True(RenderText.TryCreate("Mojica", out var text, out _));
+        Assert.True(PatternCharacter.TryCreate("@", out var foregroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#FF69B4", out var foregroundColor, out _));
+        Assert.True(PatternCharacter.TryCreate(".", out var backgroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#000000", out var backgroundColor, out _));
+        Assert.True(ImageGenerationRequest.TryCreate(
+            type ?? ImageType.Standard,
+            text,
+            foregroundCharacter,
+            foregroundColor,
+            backgroundCharacter,
+            backgroundColor,
+            out var request,
+            out _));
+
+        return request;
+    }
+
+    private static ImageGenerationPortResult CreateSuccessfulPortResult()
+    {
+        return ImageGenerationPortResult.Success(
+            new GeneratedImageData([0x89, 0x50, 0x4E, 0x47], "image/png"));
+    }
+
+    private sealed class RecordingImageGenerationPort(
+        ImageGenerationPortResult result) : ImageGenerationPort
+    {
+        public int CallCount { get; private set; }
+
+        public ImageGenerationRequest? ReceivedRequest { get; private set; }
+
+        public Task<ImageGenerationPortResult> GenerateAsync(
+            ImageGenerationRequest request,
+            CancellationToken cancellationToken)
+        {
+            CallCount++;
+            ReceivedRequest = request;
+            return Task.FromResult(result);
+        }
     }
 }
