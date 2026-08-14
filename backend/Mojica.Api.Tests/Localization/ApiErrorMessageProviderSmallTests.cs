@@ -149,4 +149,21 @@ public sealed class ApiErrorMessageProviderSmallTests
                 ModelValidationReason.ValueOutOfRange,
                 "red"));
     }
+
+    [Fact]
+    public void ApiErrorMessageProvider_GetPublicMessage_WhenLanguageIsUnsupported_ThrowsArgumentOutOfRangeException()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            ApiErrorMessageProvider.GetPublicMessage((ApiLanguage)(-1), "BAD_REQUEST"));
+    }
+
+    [Fact]
+    public void ApiErrorMessageProvider_GetValidationMessage_WhenLanguageIsUnsupported_ThrowsArgumentOutOfRangeException()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            ApiErrorMessageProvider.GetValidationMessage(
+                (ApiLanguage)(-1),
+                ModelValidationReason.Required,
+                "text"));
+    }
 }
