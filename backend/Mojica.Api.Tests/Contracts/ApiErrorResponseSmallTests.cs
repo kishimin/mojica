@@ -19,16 +19,17 @@ public sealed class ApiErrorResponseSmallTests
         Assert.Equal("The request format is invalid.", root.GetProperty("message").GetString());
     }
 
-    [Fact(Skip = "TODO: Keep internal diagnostic details outside the public contract.")]
+    [Fact]
     public void Serialize_WhenErrorResponseIsCreated_DoesNotExposeInternalDetails()
     {
-        // ID: ERROR-RESPONSE-02
-        // Source: docs/v1/api/controllers.md §5 and §8-9; docs/v1/api/implementation-plan.md §6.
-        // Given: a public API error response created from a safe code and localized message
-        // When: System.Text.Json serializes the response
-        // Then: the public JSON has no exception, stack trace, upstream body, internal URL, credential, or infrastructure-detail property
-        // Error: internal diagnostics must not become fields of the public response DTO
-        // Blocked by: define ApiErrorResponse
-        // Priority: High
+        var response = new ApiErrorResponse(
+            "INTERNAL_SERVER_ERROR",
+            "An unexpected error occurred during image generation.");
+
+        using var document = JsonDocument.Parse(JsonSerializer.Serialize(response));
+
+        Assert.Equal(
+            ["code", "message"],
+            document.RootElement.EnumerateObject().Select(property => property.Name));
     }
 }
