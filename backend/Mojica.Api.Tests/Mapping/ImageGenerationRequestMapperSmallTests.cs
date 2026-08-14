@@ -1,10 +1,22 @@
 using Mojica.Api.Contracts;
 using Mojica.Api.Mapping;
+using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Mapping;
 
 public sealed class ImageGenerationRequestMapperSmallTests
 {
+    public static TheoryData<ImageGenerationRequestDto, string, ModelValidationReason>
+        InvalidFieldCases => new()
+        {
+            { ValidDto() with { Type = "animated" }, "type", ModelValidationReason.UnsupportedImageType },
+            { ValidDto() with { Text = " " }, "text", ModelValidationReason.NotBlank },
+            { ValidDto() with { ForegroundCharacter = "\n" }, "foregroundCharacter", ModelValidationReason.ControlCharacter },
+            { ValidDto() with { ForegroundColor = "FFFFFF" }, "foregroundColor", ModelValidationReason.InvalidHexColor },
+            { ValidDto() with { BackgroundCharacter = new string('x', 129) }, "backgroundCharacter", ModelValidationReason.LengthOutOfRange },
+            { ValidDto() with { BackgroundColor = "#GGGGGG" }, "backgroundColor", ModelValidationReason.InvalidHexColor },
+        };
+
     [Fact]
     public void Map_WhenAllValuesAreValid_ReturnsImageGenerationRequest()
     {
@@ -29,17 +41,20 @@ public sealed class ImageGenerationRequestMapperSmallTests
         Assert.Equal("#FF69B4", result.Request.BackgroundColor.Value);
     }
 
-    [Fact(Skip = "TODO: Implement field-aware Value Object validation mapping.")]
-    public void Map_WhenOneValueObjectCannotBeCreated_ReturnsReasonForItsRequestField()
+    [Theory]
+    [MemberData(nameof(InvalidFieldCases))]
+    public void Map_WhenOneValueObjectCannotBeCreated_ReturnsReasonForItsRequestField(
+        ImageGenerationRequestDto dto,
+        string target,
+        ModelValidationReason reason)
     {
-        // ID: REQUEST-MAPPING-02
-        // Source: docs/v1/api/controllers.md §3-5; ADR-0022.
-        // Given: each invalid request attribute in turn, including context-free PatternCharacter and HexColor failures (Theory candidate: all six attributes and their documented reasons)
-        // When: the input Mapper converts the HTTP DTO values into an ImageGenerationRequest
-        // Then: mapping fails, returns no aggregate, preserves the ModelValidationReason, and assigns the failing request attribute as Target
-        // Error: Target is type, text, foregroundCharacter, foregroundColor, backgroundCharacter, or backgroundColor
-        // Blocked by: define ImageGenerationRequestDto and ImageGenerationRequestMapper
-        // Priority: High
+        var result = ImageGenerationRequestMapper.Map(dto);
+
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Request);
+        var error = Assert.Single(result.Errors);
+        Assert.Equal(target, error.Target);
+        Assert.Equal(reason, error.Reason);
     }
 
     [Fact(Skip = "TODO: Implement accumulation of independent field errors.")]
@@ -80,4 +95,12 @@ public sealed class ImageGenerationRequestMapperSmallTests
         // Blocked by: define ImageGenerationRequestMapper and its failure result
         // Priority: Medium
     }
+
+    private static ImageGenerationRequestDto ValidDto() => new(
+        "standard",
+        "Mojica",
+        "@",
+        "#FFFFFF",
+        ".",
+        "#000000");
 }
