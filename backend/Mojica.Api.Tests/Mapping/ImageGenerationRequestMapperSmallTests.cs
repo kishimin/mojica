@@ -57,17 +57,32 @@ public sealed class ImageGenerationRequestMapperSmallTests
         Assert.Equal(reason, error.Reason);
     }
 
-    [Fact(Skip = "TODO: Implement accumulation of independent field errors.")]
+    [Fact]
     public void Map_WhenMultipleValuesAreInvalid_ReturnsAllIndependentFieldErrors()
     {
-        // ID: REQUEST-MAPPING-03
-        // Source: docs/v1/api/controllers.md §4; docs/v1/api/api.md §11 422 Unprocessable Entity.
-        // Given: a request DTO with independently invalid values in multiple attributes
-        // When: the input Mapper maps the DTO
-        // Then: mapping fails, returns no aggregate, and returns one classifiable error for every invalid attribute that can be evaluated
-        // Error: do not stop after the first independent Value Object failure
-        // Blocked by: define the Mapper result contract for multiple ModelValidationError values
-        // Priority: High
+        var dto = new ImageGenerationRequestDto(
+            "animated",
+            " ",
+            "\n",
+            "FFFFFF",
+            new string('x', 129),
+            "#GGGGGG");
+
+        var result = ImageGenerationRequestMapper.Map(dto);
+
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Request);
+        Assert.Equal(6, result.Errors.Count);
+        Assert.Equal(
+            [
+                "backgroundCharacter",
+                "backgroundColor",
+                "foregroundCharacter",
+                "foregroundColor",
+                "text",
+                "type",
+            ],
+            result.Errors.Select(error => error.Target).Order());
     }
 
     [Fact(Skip = "TODO: Implement request-level visible-character validation mapping.")]
