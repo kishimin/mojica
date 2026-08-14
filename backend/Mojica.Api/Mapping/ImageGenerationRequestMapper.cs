@@ -80,8 +80,7 @@ public static class ImageGenerationRequestMapper
             return ImageGenerationRequestMappingResult.Success(request);
         }
 
-        var fieldErrors = requestError.Target
-            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        var fieldErrors = requestError.Targets
             .Select(target => new ModelValidationError(
                 target,
                 requestError.Reason,

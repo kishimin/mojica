@@ -79,7 +79,7 @@ public sealed record ImageGenerationRequest
         {
             request = null;
             error = new ModelValidationError(
-                "foregroundCharacter,backgroundCharacter",
+                ["foregroundCharacter", "backgroundCharacter"],
                 ModelValidationReason.VisibleCharacterRequired);
             return false;
         }
