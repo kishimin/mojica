@@ -26,6 +26,12 @@ public sealed class ImageGenerationService
         CancellationToken cancellationToken)
     {
         var portResult = await port.GenerateAsync(request, cancellationToken);
+
+        if (!portResult.IsSuccess)
+        {
+            return ImageGenerationServiceResult.Failure(portResult.Error!);
+        }
+
         var imageData = portResult.Data!;
         var uuid = uuidProvider.Create();
         var fileName = $"mojica-{request.Type.Value}-{uuid}.png";
