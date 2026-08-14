@@ -26,16 +26,13 @@ public sealed class ImageGenerationPortErrorSmallTests
         Assert.Equal(60, error.RetryAfter);
     }
 
-    [Fact(Skip = "TODO: Implement after the ImageGenerationPortError contract exists.")]
+    [Fact]
     public void ImageGenerationPortError_Create_WhenRetryPeriodIsUnavailable_LeavesRetryAfterUnset()
     {
-        // ID: PORT-ERROR-03
-        // Source: docs/v1/api/ports.md §3.
-        // Given: a Port failure whose retryable period cannot be determined safely
-        // When: an ImageGenerationPortError is created without retryAfter
-        // Then: the error exposes no retry period
-        // Blocked by: feature/add-image-generation-port must define optional retryAfter semantics
-        // Priority: High
+        var error = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.Timeout);
+
+        Assert.Null(error.RetryAfter);
     }
 
     [Fact(Skip = "TODO: Implement after the safe Port error details contract exists.")]
