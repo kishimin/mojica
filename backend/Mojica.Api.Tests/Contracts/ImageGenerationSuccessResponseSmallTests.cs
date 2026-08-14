@@ -36,4 +36,20 @@ public sealed class ImageGenerationSuccessResponseSmallTests
         Assert.Throws<ArgumentNullException>(() =>
             new ImageGenerationSuccessResponse(content!, mediaType!, fileName!));
     }
+
+    [Fact]
+    public void Equality_WhenContentValuesMatch_UsesByteContents()
+    {
+        var first = new ImageGenerationSuccessResponse(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/png",
+            "generated.png");
+        var second = new ImageGenerationSuccessResponse(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/png",
+            "generated.png");
+
+        Assert.Equal(first, second);
+        Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
 }
