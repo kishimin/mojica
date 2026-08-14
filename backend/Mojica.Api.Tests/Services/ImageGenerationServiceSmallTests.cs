@@ -50,7 +50,7 @@ public sealed class ImageGenerationServiceSmallTests
         Assert.True(ImageType.TryCreate(imageTypeValue, out var imageType, out _));
         var request = CreateValidRequest(imageType);
         var port = new RecordingImageGenerationPort(CreateSuccessfulPortResult());
-        var uuidProvider = new StubUuidProvider(
+        var uuidProvider = new RecordingUuidProvider(
             Guid.Parse("550e8400-e29b-41d4-a716-446655440000"));
         var service = new ImageGenerationService(port, uuidProvider);
 
@@ -60,16 +60,28 @@ public sealed class ImageGenerationServiceSmallTests
         Assert.Equal(expectedFileName, result.Image.FileName);
     }
 
-    [Fact(Skip = "TODO: Implement when ImageGenerationService is introduced.")]
-    public void ImageGenerationService_Generate_WhenCalledTwiceSuccessfully_UsesNewUuidForEachFileName()
+    [Fact]
+    public async Task ImageGenerationService_GenerateAsync_WhenCalledTwiceSuccessfully_UsesNewUuidForEachFileName()
     {
-        // ID: SERVICE-05
-        // Source: docs/v1/api/services.md section 6
-        // Given: two successful executions and a controllable UUID source returning two known UUIDs
-        // When: the Service completes both results
-        // Then: each filename contains the UUID generated for that execution and the filenames differ
-        // Blocked by: ImageGenerationService and its controllable UUID boundary are not implemented
-        // Priority: Medium
+        var request = CreateValidRequest();
+        var port = new RecordingImageGenerationPort(CreateSuccessfulPortResult());
+        var uuidProvider = new RecordingUuidProvider(
+            Guid.Parse("550e8400-e29b-41d4-a716-446655440000"),
+            Guid.Parse("6ba7b810-9dad-11d1-80b4-00c04fd430c8"));
+        var service = new ImageGenerationService(port, uuidProvider);
+
+        var first = await service.GenerateAsync(request, CancellationToken.None);
+        var second = await service.GenerateAsync(request, CancellationToken.None);
+
+        Assert.NotNull(first.Image);
+        Assert.NotNull(second.Image);
+        Assert.Equal(
+            "mojica-standard-550e8400-e29b-41d4-a716-446655440000.png",
+            first.Image.FileName);
+        Assert.Equal(
+            "mojica-standard-6ba7b810-9dad-11d1-80b4-00c04fd430c8.png",
+            second.Image.FileName);
+        Assert.NotEqual(first.Image.FileName, second.Image.FileName);
     }
 
     [Fact(Skip = "TODO: Implement as a Theory when ImageGenerationService is introduced.")]
@@ -155,11 +167,16 @@ public sealed class ImageGenerationServiceSmallTests
         }
     }
 
-    private sealed class StubUuidProvider(Guid value) : UuidProvider
+    private sealed class RecordingUuidProvider(params Guid[] values) : UuidProvider
     {
+        private readonly Queue<Guid> remainingValues = new(values);
+
+        public int CallCount { get; private set; }
+
         public Guid Create()
         {
-            return value;
+            CallCount++;
+            return remainingValues.Dequeue();
         }
     }
 }
