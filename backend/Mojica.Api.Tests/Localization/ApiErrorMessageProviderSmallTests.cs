@@ -1,4 +1,5 @@
 using Mojica.Api.Localization;
+using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Localization;
 
@@ -24,6 +25,16 @@ public sealed class ApiErrorMessageProviderSmallTests
         { "INTERNAL_SERVER_ERROR", "An unexpected error occurred while generating the image." },
         { "IMAGE_GENERATION_FAILED", "Image generation failed. Please try again later." },
         { "IMAGE_GENERATION_TIMEOUT", "Image generation is taking too long. Please try again later." },
+    };
+
+    public static TheoryData<ModelValidationReason, string, string> JapaneseValidationMessages => new()
+    {
+        { ModelValidationReason.Required, "text", "描画する文字列は必須です。" },
+        { ModelValidationReason.LengthOutOfRange, "text", "描画する文字列は64文字以内で入力してください。" },
+        { ModelValidationReason.InvalidHexColor, "foregroundColor", "HEXカラー形式（#RRGGBB）で指定してください。" },
+        { ModelValidationReason.UnsupportedImageType, "type", "standard、x-background、x-iconのいずれかを指定してください。" },
+        { ModelValidationReason.VisibleCharacterRequired, "foregroundCharacter", "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。" },
+        { ModelValidationReason.VisibleCharacterRequired, "backgroundCharacter", "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。" },
     };
 
     [Theory]
@@ -52,17 +63,19 @@ public sealed class ApiErrorMessageProviderSmallTests
         Assert.Equal(expectedMessage, message);
     }
 
-    [Fact(Skip = "TODO: Implement when the API error message provider exists.")]
-    public void ApiErrorMessageProvider_GetValidationMessage_WhenLanguageIsJapanese_ReturnsMessageForReasonAndTarget()
+    [Theory]
+    [MemberData(nameof(JapaneseValidationMessages))]
+    public void ApiErrorMessageProvider_GetValidationMessage_WhenLanguageIsJapanese_ReturnsMessageForReasonAndTarget(
+        ModelValidationReason reason,
+        string target,
+        string expectedMessage)
     {
-        // ID: LOCALIZATION-VALIDATION-01
-        // Source: docs/v1/api/api.md §9 and §11 422 Unprocessable Entity; ADR-0022.
-        // Given: Japanese, a documented ModelValidationReason, and the request target that owns the field context (Theory candidate for every supported reason-target pair)
-        // When: the validation detail message is resolved
-        // Then: the exact documented Japanese message for that validation condition and request attribute is returned
-        // Error: the reason remains language-independent while the target supplies context such as text, foregroundCharacter, or backgroundColor
-        // Blocked by: feature/add-api-error-localization must define the validation message lookup boundary
-        // Priority: High
+        var message = ApiErrorMessageProvider.GetValidationMessage(
+            ApiLanguage.Japanese,
+            reason,
+            target);
+
+        Assert.Equal(expectedMessage, message);
     }
 
     [Fact(Skip = "TODO: Implement when the API error message provider exists.")]
