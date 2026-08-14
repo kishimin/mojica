@@ -110,7 +110,7 @@ At minimum, verify the following behaviors:
 - Exclude user-provided input values from filenames
 - Return `RATE_LIMITED` from the Port unchanged
 - Return `TIMEOUT` from the Port unchanged
-- Return `UNAVAILABLE`, `INVALID_RESPONSE`, and `FAILED` from the Port unchanged
+- Return `UNAVAILABLE`, `INVALID_RESPONSE`, `OUTPUT_SIZE_EXCEEDED`, and `FAILED` from the Port unchanged
 - Do not generate a filename when the Port fails
 - Do not automatically retry after a Port failure
 

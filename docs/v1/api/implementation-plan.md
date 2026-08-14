@@ -116,7 +116,7 @@ downstream-call suppression remain outside this Mapper branch.
 | Order | Branch | Responsibility | Prerequisites |
 | ---: | --- | --- | --- |
 | 8A | `feature/add-glyph-forge-request-mapping` | Select the endpoint from `ImageType` and convert validated Domain values, including HEX-to-RGB output, into Glyph Forge request DTOs. | Branches 4 and 7C |
-| 8B | `feature/add-glyph-forge-response-mapping` | Validate successful PNG responses and map rate limits, timeouts, unavailable responses, invalid responses, and other failures to Port errors. | Branches 5 and 7C |
+| 8B | `feature/add-glyph-forge-response-mapping` | Validate successful PNG responses and map output-size rejection, rate limits, timeouts, unavailable responses, invalid responses, and other failures to Port errors. | Branches 5 and 7C |
 | 9 | `feature/add-glyph-forge-adapter` | Implement `ImageGenerationPort` with the configured HTTP client and the tested request and response mappings. | Branches 8A and 8B |
 
 Branches 8A and 8B can be developed in parallel. The Adapter branch is limited to
@@ -126,7 +126,7 @@ the communication orchestration that connects those mappings to the Port.
 
 | Order | Branch | Responsibility | Prerequisites |
 | ---: | --- | --- | --- |
-| 10 | `feature/add-api-error-mapping` | Map malformed requests, validation failures, rate limits, unexpected failures, upstream failures, and timeouts to 400, 422, 429, 500, 502, and 504 responses. | Branches 5, 7A, 7B, and 7D |
+| 10 | `feature/add-api-error-mapping` | Map malformed requests, validation failures, output-size rejection, rate limits, unexpected failures, upstream failures, and timeouts to 400, 422, 429, 500, 502, and 504 responses. | Branches 5, 7A, 7B, and 7D |
 | 11 | `feature/add-image-generation-endpoint` | Drive `POST /images` from `ImageGenerationEndpointMediumTests` and the remaining cross-layer API contract tests, collect validation errors, return 422 without invoking the Service for rejected requests, invoke the Service for valid requests, return raw PNG data, and wire all production dependencies. | Branches 6, 7B, 7D, 9, and 10 |
 
 The endpoint is intentionally last among production branches. This prevents the

@@ -96,7 +96,7 @@ Use the following response format:
 
 ### 422 Unprocessable Entity
 
-Return this response when the request can be parsed as JSON but a Domain Model cannot be created.
+Return this response when the request can be parsed as JSON but a Domain Model cannot be created, or when the validated values would produce an image above the provider's safe output-size limit.
 
 Use `VALIDATION_ERROR` as the overall response code and store details in the `errors` array.
 
@@ -115,6 +115,17 @@ Use `VALIDATION_ERROR` as the overall response code and store details in the `er
 
 `code`, `field`, and validation reasons are language-independent. Only `message` changes according to `Accept-Language`.
 
+When the Service returns `OUTPUT_SIZE_EXCEEDED`, return a top-level error without assigning the failure to one request field because the output dimensions depend on the combination of text and pattern values.
+
+```json
+{
+  "code": "IMAGE_SIZE_LIMIT_EXCEEDED",
+  "message": "The generated image would exceed the size limit. Reduce the input text."
+}
+```
+
+Do not expose the Glyph Forge response body or its internal pixel limit.
+
 ## 6. Service Result Conversion
 
 The Controller converts the Service result into the following HTTP response:
@@ -126,6 +137,7 @@ The Controller converts the Service result into the following HTTP response:
 | `TIMEOUT` | `504 Gateway Timeout` | `IMAGE_GENERATION_TIMEOUT` |
 | `UNAVAILABLE` | `502 Bad Gateway` | `IMAGE_GENERATION_FAILED` |
 | `INVALID_RESPONSE` | `502 Bad Gateway` | `IMAGE_GENERATION_FAILED` |
+| `OUTPUT_SIZE_EXCEEDED` | `422 Unprocessable Entity` | `IMAGE_SIZE_LIMIT_EXCEEDED` |
 | `FAILED` | `502 Bad Gateway` | `IMAGE_GENERATION_FAILED` |
 
 When the result contains `retryAfter`, the Controller converts it into the `Retry-After` header.
@@ -192,7 +204,7 @@ At minimum, verify the following behaviors:
 - Return English messages for `Accept-Language: en`
 - Fall back to Japanese when the language is omitted or unsupported
 - Return `200 image/png` and a filename when the Service succeeds
-- Convert `RATE_LIMITED`, `TIMEOUT`, `UNAVAILABLE`, `INVALID_RESPONSE`, and `FAILED` to the correct HTTP contract
+- Convert `RATE_LIMITED`, `TIMEOUT`, `UNAVAILABLE`, `INVALID_RESPONSE`, `OUTPUT_SIZE_EXCEEDED`, and `FAILED` to the correct HTTP contract
 - Convert `retryAfter` to the `Retry-After` header
 - Exclude internal error details from the response
 

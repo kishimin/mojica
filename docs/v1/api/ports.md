@@ -51,6 +51,7 @@ On success, the Port returns `GeneratedImageData`, an intermediate result that c
 | `TIMEOUT` | A generation result was not obtained within the time limit |
 | `UNAVAILABLE` | The image generation function is unavailable |
 | `INVALID_RESPONSE` | A response could not be interpreted as a successful result |
+| `OUTPUT_SIZE_EXCEEDED` | The validated request would produce an image larger than the provider permits |
 | `FAILED` | Image generation failed |
 
 The public attributes of `ImageGenerationPortError` must not contain credentials, internal URLs, stack traces, or communication details that do not need to be exposed.
@@ -69,6 +70,7 @@ At minimum, verify the following behaviors:
 - Return a time-limit failure as `TIMEOUT`
 - Return an unavailable-function failure as `UNAVAILABLE`
 - Return an uninterpretable response as `INVALID_RESPONSE`
+- Return a deterministic output-size rejection as `OUTPUT_SIZE_EXCEEDED`
 - Return a generation failure as `FAILED`
 - Exclude communication details that do not need to be exposed from error results
 
@@ -77,4 +79,4 @@ At minimum, verify the following behaviors:
 - Use `ImageGenerationPort` as the outbound image generation contract
 - Use `GeneratedImageData` for success results and `ImageGenerationPortError` for failure results
 - Keep the Service-generated download filename out of the Port contract
-- Use `RATE_LIMITED`, `TIMEOUT`, `UNAVAILABLE`, `INVALID_RESPONSE`, and `FAILED` as Port error codes
+- Use `RATE_LIMITED`, `TIMEOUT`, `UNAVAILABLE`, `INVALID_RESPONSE`, `OUTPUT_SIZE_EXCEEDED`, and `FAILED` as Port error codes

@@ -12,6 +12,7 @@ public sealed class ImageGenerationServiceSmallTests
         { ImageGenerationPortErrorCode.Timeout, null },
         { ImageGenerationPortErrorCode.Unavailable, null },
         { ImageGenerationPortErrorCode.InvalidResponse, null },
+        { ImageGenerationPortErrorCode.OutputSizeExceeded, null },
         { ImageGenerationPortErrorCode.Failed, null },
     };
 

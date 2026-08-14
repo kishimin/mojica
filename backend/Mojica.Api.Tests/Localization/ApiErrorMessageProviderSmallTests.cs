@@ -7,7 +7,7 @@ public sealed class ApiErrorMessageProviderSmallTests
     {
         // ID: LOCALIZATION-PUBLIC-01
         // Source: docs/v1/api/api.md §11 Error Responses.
-        // Given: Japanese and each documented public API error code (Theory candidate: BAD_REQUEST, VALIDATION_ERROR, RATE_LIMIT_EXCEEDED, INTERNAL_SERVER_ERROR, IMAGE_GENERATION_FAILED, IMAGE_GENERATION_TIMEOUT)
+        // Given: Japanese and each documented public API error code (Theory candidate: BAD_REQUEST, VALIDATION_ERROR, IMAGE_SIZE_LIMIT_EXCEEDED, RATE_LIMIT_EXCEEDED, INTERNAL_SERVER_ERROR, IMAGE_GENERATION_FAILED, IMAGE_GENERATION_TIMEOUT)
         // When: the public error message is resolved
         // Then: the exact documented Japanese message for that code is returned
         // Error: messages must not contain exception text, stack traces, upstream bodies, internal URLs, credentials, SQL, or infrastructure details
@@ -20,7 +20,7 @@ public sealed class ApiErrorMessageProviderSmallTests
     {
         // ID: LOCALIZATION-PUBLIC-02
         // Source: docs/v1/api/api.md §11 Error Responses.
-        // Given: English and each documented public API error code (Theory candidate: BAD_REQUEST, VALIDATION_ERROR, RATE_LIMIT_EXCEEDED, INTERNAL_SERVER_ERROR, IMAGE_GENERATION_FAILED, IMAGE_GENERATION_TIMEOUT)
+        // Given: English and each documented public API error code (Theory candidate: BAD_REQUEST, VALIDATION_ERROR, IMAGE_SIZE_LIMIT_EXCEEDED, RATE_LIMIT_EXCEEDED, INTERNAL_SERVER_ERROR, IMAGE_GENERATION_FAILED, IMAGE_GENERATION_TIMEOUT)
         // When: the public error message is resolved
         // Then: the exact documented English message for that code is returned
         // Error: messages must not contain exception text, stack traces, upstream bodies, internal URLs, credentials, SQL, or infrastructure details

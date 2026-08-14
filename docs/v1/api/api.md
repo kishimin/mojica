@@ -620,6 +620,30 @@ English:
 }
 ```
 
+### Generated Image Size Error
+
+Returned when the input satisfies the Domain validation rules but the combination of text and pattern characters would produce an image above the image provider's safe output-size limit. The error is not assigned to one field because the generated dimensions depend on multiple values.
+
+Japanese:
+
+```json
+{
+  "code": "IMAGE_SIZE_LIMIT_EXCEEDED",
+  "message": "生成される画像がサイズ上限を超えます。入力する文字を減らしてください。"
+}
+```
+
+English:
+
+```json
+{
+  "code": "IMAGE_SIZE_LIMIT_EXCEEDED",
+  "message": "The generated image would exceed the size limit. Reduce the input text."
+}
+```
+
+The Glyph Forge response body and its internal pixel limit are not exposed.
+
 ---
 
 ## 429 Too Many Requests
@@ -755,7 +779,7 @@ Returned when a response cannot be obtained from the Glyph Forge API within the 
 | --------------------------- | -------------------------------------------------- |
 | `200 OK`                    | Image generation succeeded                         |
 | `400 Bad Request`           | Invalid request format                             |
-| `422 Unprocessable Entity`  | Input validation failed                            |
+| `422 Unprocessable Entity`  | Input validation or generated image size failed    |
 | `429 Too Many Requests`     | mojica API or Glyph Forge API rate limit exceeded  |
 | `500 Internal Server Error` | Unexpected error within the mojica API             |
 | `502 Bad Gateway`           | Glyph Forge API request or image generation failed |

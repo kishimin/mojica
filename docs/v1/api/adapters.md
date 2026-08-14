@@ -130,13 +130,14 @@ The Adapter processes an external API response in the following order:
 
 1. Check the HTTP status
 2. Convert `429 Too Many Requests` to `RATE_LIMITED`
-3. Set `retryAfter` when `Retry-After` can be interpreted safely
-4. Convert a timeout to `TIMEOUT`
-5. Convert other communication failures or unavailable states to `UNAVAILABLE`
-6. Check the Content-Type of a successful response
-7. Verify that image binary data exists and can be read
-8. Convert the image data and media type into `GeneratedImageData`
-9. Convert an uninterpretable image response to `INVALID_RESPONSE`
+3. Convert Glyph Forge `422 Unprocessable Entity` to `OUTPUT_SIZE_EXCEEDED`
+4. Set `retryAfter` when `Retry-After` can be interpreted safely
+5. Convert a timeout to `TIMEOUT`
+6. Convert other communication failures or unavailable states to `UNAVAILABLE`
+7. Check the Content-Type of a successful response
+8. Verify that image binary data exists and can be read
+9. Convert the image data and media type into `GeneratedImageData`
+10. Convert an uninterpretable image response to `INVALID_RESPONSE`
 
 When the Glyph Forge API indicates an image generation failure, convert it to `FAILED`. Do not pass the external API error body, stack trace, internal URL, or credentials to an upper layer.
 
@@ -150,6 +151,7 @@ The Adapter converts external API failures into `ImageGenerationPortError`.
 | Timeout | `TIMEOUT` |
 | DNS, connection, TLS, or HTTP client communication failure | `UNAVAILABLE` |
 | Response that cannot be interpreted as an image | `INVALID_RESPONSE` |
+| Glyph Forge rejects output dimensions with `422 Unprocessable Entity` | `OUTPUT_SIZE_EXCEEDED` |
 | Glyph Forge API generation failure | `FAILED` |
 
 ## 12. Timeout and Cancellation
@@ -185,6 +187,7 @@ Replace the HTTP client and verify conversion results observable from the Adapte
 - Convert a timeout to `TIMEOUT`
 - Convert a communication failure to `UNAVAILABLE`
 - Convert an invalid image response to `INVALID_RESPONSE`
+- Convert Glyph Forge 422 to `OUTPUT_SIZE_EXCEEDED` without exposing its response body
 - Exclude external API internal details from error results
 
 ### Medium Tests
@@ -247,7 +250,7 @@ Use `application/json; charset=utf-8` as the request Content-Type. Under the cur
 
 | Glyph Forge API response | Adapter handling |
 | --- | --- |
-| `422 Unprocessable Entity` | `FAILED` |
+| `422 Unprocessable Entity` | `OUTPUT_SIZE_EXCEEDED` |
 | `429 Too Many Requests` | `RATE_LIMITED` |
 | `503 Service Unavailable` | `UNAVAILABLE` |
 | Other 5xx responses | `FAILED` |
