@@ -95,4 +95,20 @@ public sealed class ApiValidationErrorResponseSmallTests
                 "The input contains validation errors.",
                 Array.Empty<ApiValidationFieldError>()));
     }
+
+    [Fact]
+    public void Equality_WhenErrorsHaveMatchingContents_UsesFieldValues()
+    {
+        var first = new ApiValidationErrorResponse(
+            "VALIDATION_ERROR",
+            "The input contains validation errors.",
+            [new ApiValidationFieldError("text", "The text field is required.")]);
+        var second = new ApiValidationErrorResponse(
+            "VALIDATION_ERROR",
+            "The input contains validation errors.",
+            [new ApiValidationFieldError("text", "The text field is required.")]);
+
+        Assert.Equal(first, second);
+        Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
 }

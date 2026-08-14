@@ -51,4 +51,16 @@ public sealed class ImageGenerationRequestMappingResultSmallTests
 
         Assert.Equal(first, second);
     }
+
+    [Fact]
+    public void Failure_WhenErrorsHaveMatchingContents_UsesErrorValues()
+    {
+        var first = ImageGenerationRequestMappingResult.Failure(
+            [new ModelValidationError("text", ModelValidationReason.Required)]);
+        var second = ImageGenerationRequestMappingResult.Failure(
+            [new ModelValidationError("text", ModelValidationReason.Required)]);
+
+        Assert.Equal(first, second);
+        Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
 }
