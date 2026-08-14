@@ -52,15 +52,34 @@ public sealed class ApiValidationErrorResponseSmallTests
             error => Assert.Equal(message, error.GetProperty("message").GetString()));
     }
 
-    [Fact(Skip = "TODO: Keep machine-readable fields independent from localization.")]
+    [Fact]
     public void Serialize_WhenMessageLanguageChanges_KeepsCodeAndFieldValuesStable()
     {
-        // ID: VALIDATION-RESPONSE-03
-        // Source: docs/v1/api/api.md §9 and §11.
-        // Given: Japanese and English responses for the same validation reason and request field (Theory candidate: ja and en)
-        // When: each response contract is serialized
-        // Then: only message values differ while code and field values remain identical
-        // Blocked by: define ApiValidationErrorResponse and ApiValidationFieldError
-        // Priority: High
+        var japanese = new ApiValidationErrorResponse(
+            "VALIDATION_ERROR",
+            "入力内容に誤りがあります。",
+            [new ApiValidationFieldError("text", "描画する文字列は必須です。")]);
+        var english = new ApiValidationErrorResponse(
+            "VALIDATION_ERROR",
+            "The input contains validation errors.",
+            [new ApiValidationFieldError("text", "The text field is required.")]);
+
+        using var japaneseDocument = JsonDocument.Parse(JsonSerializer.Serialize(japanese));
+        using var englishDocument = JsonDocument.Parse(JsonSerializer.Serialize(english));
+        var japaneseRoot = japaneseDocument.RootElement;
+        var englishRoot = englishDocument.RootElement;
+
+        Assert.Equal(
+            japaneseRoot.GetProperty("code").GetString(),
+            englishRoot.GetProperty("code").GetString());
+        Assert.Equal(
+            japaneseRoot.GetProperty("errors")[0].GetProperty("field").GetString(),
+            englishRoot.GetProperty("errors")[0].GetProperty("field").GetString());
+        Assert.NotEqual(
+            japaneseRoot.GetProperty("message").GetString(),
+            englishRoot.GetProperty("message").GetString());
+        Assert.NotEqual(
+            japaneseRoot.GetProperty("errors")[0].GetProperty("message").GetString(),
+            englishRoot.GetProperty("errors")[0].GetProperty("message").GetString());
     }
 }
