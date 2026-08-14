@@ -1,3 +1,5 @@
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Localization;
 
 public static class ApiErrorMessageProvider
@@ -33,6 +35,28 @@ public static class ApiErrorMessageProvider
                     nameof(code),
                     code,
                     "Unsupported public API error code."),
+            },
+            _ => throw new ArgumentOutOfRangeException(nameof(language)),
+        };
+    }
+
+    public static string GetValidationMessage(
+        ApiLanguage language,
+        ModelValidationReason reason,
+        string target)
+    {
+        return language switch
+        {
+            ApiLanguage.Japanese => (reason.Value, target) switch
+            {
+                ("REQUIRED", "text") => "描画する文字列は必須です。",
+                ("LENGTH_OUT_OF_RANGE", "text") => "描画する文字列は64文字以内で入力してください。",
+                ("INVALID_HEX_COLOR", "foregroundColor") => "HEXカラー形式（#RRGGBB）で指定してください。",
+                ("UNSUPPORTED_IMAGE_TYPE", "type") => "standard、x-background、x-iconのいずれかを指定してください。",
+                ("VISIBLE_CHARACTER_REQUIRED", "foregroundCharacter") => "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。",
+                ("VISIBLE_CHARACTER_REQUIRED", "backgroundCharacter") => "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。",
+                _ => throw new ArgumentException(
+                    "Unsupported validation reason and target combination."),
             },
             _ => throw new ArgumentOutOfRangeException(nameof(language)),
         };
