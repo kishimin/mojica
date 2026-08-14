@@ -43,4 +43,17 @@ public sealed class GeneratedImageDataSmallTests
         Assert.Equal(first, second);
         Assert.Equal(first.GetHashCode(), second.GetHashCode());
     }
+
+    [Fact]
+    public void GeneratedImageData_Equality_WhenContentValuesDiffer_IsNotEqual()
+    {
+        var first = new GeneratedImageData(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/png");
+        var second = new GeneratedImageData(
+            [0x89, 0x50, 0x4E, 0x46],
+            "image/png");
+
+        Assert.NotEqual(first, second);
+    }
 }
