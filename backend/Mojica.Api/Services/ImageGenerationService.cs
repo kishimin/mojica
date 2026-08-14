@@ -6,7 +6,7 @@ namespace Mojica.Api.Services;
 public sealed class ImageGenerationService
 {
     private readonly ImageGenerationPort port;
-    private readonly Guid uuid;
+    private readonly UuidProvider uuidProvider;
 
     public ImageGenerationService(ImageGenerationPort port)
         : this(port, new SystemUuidProvider())
@@ -18,7 +18,7 @@ public sealed class ImageGenerationService
         UuidProvider uuidProvider)
     {
         this.port = port;
-        uuid = uuidProvider.Create();
+        this.uuidProvider = uuidProvider;
     }
 
     public async Task<ImageGenerationServiceResult> GenerateAsync(
@@ -27,6 +27,7 @@ public sealed class ImageGenerationService
     {
         var portResult = await port.GenerateAsync(request, cancellationToken);
         var imageData = portResult.Data!;
+        var uuid = uuidProvider.Create();
         var fileName = $"mojica-{request.Type.Value}-{uuid}.png";
 
         return ImageGenerationServiceResult.Success(
