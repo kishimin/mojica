@@ -14,9 +14,17 @@ public sealed record ApiValidationErrorResponse
         ArgumentNullException.ThrowIfNull(message);
         ArgumentNullException.ThrowIfNull(errors);
 
+        var errorList = errors.ToList();
+        if (errorList.Count == 0)
+        {
+            throw new ArgumentException(
+                "A validation error response requires at least one field error.",
+                nameof(errors));
+        }
+
         Code = code;
         Message = message;
-        Errors = new ReadOnlyCollection<ApiValidationFieldError>(errors.ToList());
+        Errors = new ReadOnlyCollection<ApiValidationFieldError>(errorList);
     }
 
     [JsonPropertyName("code")]

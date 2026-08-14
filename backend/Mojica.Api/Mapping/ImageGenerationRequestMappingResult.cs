@@ -3,7 +3,7 @@ using Mojica.Api.Models;
 
 namespace Mojica.Api.Mapping;
 
-public sealed class ImageGenerationRequestMappingResult
+public sealed record ImageGenerationRequestMappingResult
 {
     private ImageGenerationRequestMappingResult(
         ImageGenerationRequest? request,
