@@ -5,6 +5,13 @@ namespace Mojica.Api.Tests.Ports;
 public sealed class ImageGenerationPortErrorSmallTests
 {
     [Fact]
+    public void ImageGenerationPortError_Create_WhenErrorCodeIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new ImageGenerationPortError(null!));
+    }
+
+    [Fact]
     public void ImageGenerationPortErrorCode_DocumentedCodes_ExposeExpectedValues()
     {
         Assert.Equal("RATE_LIMITED", ImageGenerationPortErrorCode.RateLimited.Value);
