@@ -53,33 +53,36 @@ public sealed class ApiValidationErrorResponseSmallTests
     }
 
     [Fact]
-    public void Serialize_WhenMessageLanguageChanges_KeepsCodeAndFieldValuesStable()
+    public void Serialize_WhenJapaneseMessageIsUsed_KeepsCodeAndFieldValuesStable()
     {
-        var japanese = new ApiValidationErrorResponse(
+        var response = new ApiValidationErrorResponse(
             "VALIDATION_ERROR",
             "入力内容に誤りがあります。",
             [new ApiValidationFieldError("text", "描画する文字列は必須です。")]);
-        var english = new ApiValidationErrorResponse(
+
+        using var document = JsonDocument.Parse(JsonSerializer.Serialize(response));
+        var root = document.RootElement;
+
+        Assert.Equal("VALIDATION_ERROR", root.GetProperty("code").GetString());
+        Assert.Equal("入力内容に誤りがあります。", root.GetProperty("message").GetString());
+        Assert.Equal("text", root.GetProperty("errors")[0].GetProperty("field").GetString());
+        Assert.Equal("描画する文字列は必須です。", root.GetProperty("errors")[0].GetProperty("message").GetString());
+    }
+
+    [Fact]
+    public void Serialize_WhenEnglishMessageIsUsed_KeepsCodeAndFieldValuesStable()
+    {
+        var response = new ApiValidationErrorResponse(
             "VALIDATION_ERROR",
             "The input contains validation errors.",
             [new ApiValidationFieldError("text", "The text field is required.")]);
 
-        using var japaneseDocument = JsonDocument.Parse(JsonSerializer.Serialize(japanese));
-        using var englishDocument = JsonDocument.Parse(JsonSerializer.Serialize(english));
-        var japaneseRoot = japaneseDocument.RootElement;
-        var englishRoot = englishDocument.RootElement;
+        using var document = JsonDocument.Parse(JsonSerializer.Serialize(response));
+        var root = document.RootElement;
 
-        Assert.Equal(
-            japaneseRoot.GetProperty("code").GetString(),
-            englishRoot.GetProperty("code").GetString());
-        Assert.Equal(
-            japaneseRoot.GetProperty("errors")[0].GetProperty("field").GetString(),
-            englishRoot.GetProperty("errors")[0].GetProperty("field").GetString());
-        Assert.NotEqual(
-            japaneseRoot.GetProperty("message").GetString(),
-            englishRoot.GetProperty("message").GetString());
-        Assert.NotEqual(
-            japaneseRoot.GetProperty("errors")[0].GetProperty("message").GetString(),
-            englishRoot.GetProperty("errors")[0].GetProperty("message").GetString());
+        Assert.Equal("VALIDATION_ERROR", root.GetProperty("code").GetString());
+        Assert.Equal("The input contains validation errors.", root.GetProperty("message").GetString());
+        Assert.Equal("text", root.GetProperty("errors")[0].GetProperty("field").GetString());
+        Assert.Equal("The text field is required.", root.GetProperty("errors")[0].GetProperty("message").GetString());
     }
 }
