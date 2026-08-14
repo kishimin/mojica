@@ -6,6 +6,7 @@ public sealed record ImageGenerationPortErrorCode
     public static ImageGenerationPortErrorCode Timeout { get; } = new("TIMEOUT");
     public static ImageGenerationPortErrorCode Unavailable { get; } = new("UNAVAILABLE");
     public static ImageGenerationPortErrorCode InvalidResponse { get; } = new("INVALID_RESPONSE");
+    public static ImageGenerationPortErrorCode OutputSizeExceeded { get; } = new("OUTPUT_SIZE_EXCEEDED");
     public static ImageGenerationPortErrorCode Failed { get; } = new("FAILED");
 
     private ImageGenerationPortErrorCode(string value)
