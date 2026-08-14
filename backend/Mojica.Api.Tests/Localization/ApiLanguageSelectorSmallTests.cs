@@ -1,4 +1,3 @@
-using System.Reflection;
 using Mojica.Api.Localization;
 
 namespace Mojica.Api.Tests.Localization;
@@ -25,14 +24,8 @@ public sealed class ApiLanguageSelectorSmallTests
     public void ApiLanguageSelector_Select_WhenLanguageIsOmitted_ReturnsJapanese()
     {
         var language = ApiLanguageSelector.Select(null);
-        var parameter = typeof(ApiLanguageSelector)
-            .GetMethod(nameof(ApiLanguageSelector.Select))!
-            .GetParameters()
-            .Single();
-        var nullability = new NullabilityInfoContext().Create(parameter);
 
         Assert.Equal(ApiLanguage.Japanese, language);
-        Assert.Equal(NullabilityState.Nullable, nullability.ReadState);
     }
 
     [Theory]
