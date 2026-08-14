@@ -58,6 +58,17 @@ public static class ApiErrorMessageProvider
                 _ => throw new ArgumentException(
                     "Unsupported validation reason and target combination."),
             },
+            ApiLanguage.English => (reason.Value, target) switch
+            {
+                ("REQUIRED", "text") => "The text field is required.",
+                ("LENGTH_OUT_OF_RANGE", "text") => "The text must be 64 characters or fewer.",
+                ("INVALID_HEX_COLOR", "foregroundColor") => "The value must be specified in HEX color format (#RRGGBB).",
+                ("UNSUPPORTED_IMAGE_TYPE", "type") => "The value must be one of: standard, x-background, or x-icon.",
+                ("VISIBLE_CHARACTER_REQUIRED", "foregroundCharacter") => "Either the foreground or background characters must contain at least one visible character.",
+                ("VISIBLE_CHARACTER_REQUIRED", "backgroundCharacter") => "Either the foreground or background characters must contain at least one visible character.",
+                _ => throw new ArgumentException(
+                    "Unsupported validation reason and target combination."),
+            },
             _ => throw new ArgumentOutOfRangeException(nameof(language)),
         };
     }
