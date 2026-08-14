@@ -59,8 +59,7 @@ public static class ApiErrorMessageProvider
             ("INVALID_HEX_COLOR", "foregroundColor") => Localize(language, "HEXカラー形式（#RRGGBB）で指定してください。", "The value must be specified in HEX color format (#RRGGBB)."),
             ("INVALID_HEX_COLOR", "backgroundColor") => Localize(language, "HEXカラー形式（#RRGGBB）で指定してください。", "The value must be specified in HEX color format (#RRGGBB)."),
             ("UNSUPPORTED_IMAGE_TYPE", "type") => Localize(language, "standard、x-background、x-iconのいずれかを指定してください。", "The value must be one of: standard, x-background, or x-icon."),
-            ("VISIBLE_CHARACTER_REQUIRED", "foregroundCharacter") => Localize(language, "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。", "Either the foreground or background characters must contain at least one visible character."),
-            ("VISIBLE_CHARACTER_REQUIRED", "backgroundCharacter") => Localize(language, "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。", "Either the foreground or background characters must contain at least one visible character."),
+            ("VISIBLE_CHARACTER_REQUIRED", "foregroundCharacter" or "backgroundCharacter" or "foregroundCharacter,backgroundCharacter") => Localize(language, "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。", "Either the foreground or background characters must contain at least one visible character."),
             _ => throw new ArgumentException(
                 "Unsupported validation reason and target combination."),
         };
