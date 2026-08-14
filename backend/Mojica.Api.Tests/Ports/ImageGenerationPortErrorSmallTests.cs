@@ -36,6 +36,18 @@ public sealed class ImageGenerationPortErrorSmallTests
     }
 
     [Fact]
+    public void ImageGenerationPortError_Create_WhenSafeDetailsAreKnown_PreservesDetails()
+    {
+        const string details = "The image provider returned an unsupported payload.";
+
+        var error = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.InvalidResponse,
+            details: details);
+
+        Assert.Equal(details, error.Details);
+    }
+
+    [Fact]
     public void ImageGenerationPortError_Create_DoesNotExposeCommunicationDetails()
     {
         var error = new ImageGenerationPortError(
