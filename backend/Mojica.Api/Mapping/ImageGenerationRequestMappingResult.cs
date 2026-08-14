@@ -19,6 +19,26 @@ public sealed record ImageGenerationRequestMappingResult
 
     public IReadOnlyList<ModelValidationError> Errors { get; }
 
+    public bool Equals(ImageGenerationRequestMappingResult? other)
+    {
+        return other is not null
+            && Equals(Request, other.Request)
+            && Errors.SequenceEqual(other.Errors);
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Request);
+
+        foreach (var error in Errors)
+        {
+            hash.Add(error);
+        }
+
+        return hash.ToHashCode();
+    }
+
     public static ImageGenerationRequestMappingResult Success(
         ImageGenerationRequest request)
     {

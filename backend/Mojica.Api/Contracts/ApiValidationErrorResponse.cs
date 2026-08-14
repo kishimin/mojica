@@ -35,4 +35,26 @@ public sealed record ApiValidationErrorResponse
 
     [JsonPropertyName("errors")]
     public IReadOnlyList<ApiValidationFieldError> Errors { get; }
+
+    public bool Equals(ApiValidationErrorResponse? other)
+    {
+        return other is not null
+            && Code == other.Code
+            && Message == other.Message
+            && Errors.SequenceEqual(other.Errors);
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Code);
+        hash.Add(Message);
+
+        foreach (var error in Errors)
+        {
+            hash.Add(error);
+        }
+
+        return hash.ToHashCode();
+    }
 }
