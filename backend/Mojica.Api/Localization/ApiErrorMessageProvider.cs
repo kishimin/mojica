@@ -20,6 +20,20 @@ public static class ApiErrorMessageProvider
                     code,
                     "Unsupported public API error code."),
             },
+            ApiLanguage.English => code switch
+            {
+                "BAD_REQUEST" => "The request format is invalid.",
+                "VALIDATION_ERROR" => "The input contains validation errors.",
+                "IMAGE_SIZE_LIMIT_EXCEEDED" => "The generated image would exceed the size limit. Reduce the input text.",
+                "RATE_LIMIT_EXCEEDED" => "The request limit has been exceeded. Please try again later.",
+                "INTERNAL_SERVER_ERROR" => "An unexpected error occurred while generating the image.",
+                "IMAGE_GENERATION_FAILED" => "Image generation failed. Please try again later.",
+                "IMAGE_GENERATION_TIMEOUT" => "Image generation is taking too long. Please try again later.",
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(code),
+                    code,
+                    "Unsupported public API error code."),
+            },
             _ => throw new ArgumentOutOfRangeException(nameof(language)),
         };
     }
