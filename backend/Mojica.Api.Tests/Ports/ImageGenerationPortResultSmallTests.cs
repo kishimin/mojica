@@ -10,4 +10,11 @@ public sealed class ImageGenerationPortResultSmallTests
         Assert.Throws<ArgumentNullException>(() =>
             ImageGenerationPortResult.Success(null!));
     }
+
+    [Fact]
+    public void ImageGenerationPortResult_Failure_WhenErrorIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            ImageGenerationPortResult.Failure(null!));
+    }
 }
