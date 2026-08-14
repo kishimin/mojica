@@ -11,8 +11,24 @@ public sealed record ModelValidationError
         string target,
         ModelValidationReason reason,
         IReadOnlyDictionary<string, string>? details = null)
+        : this([target], reason, details)
     {
-        Target = target;
+    }
+
+    public ModelValidationError(
+        IReadOnlyList<string> targets,
+        ModelValidationReason reason,
+        IReadOnlyDictionary<string, string>? details = null)
+    {
+        ArgumentNullException.ThrowIfNull(targets);
+
+        if (targets.Count == 0)
+        {
+            throw new ArgumentException("At least one validation target is required.", nameof(targets));
+        }
+
+        Targets = new ReadOnlyCollection<string>(targets.ToList());
+        Target = string.Join(',', Targets);
         Reason = reason;
         Details = details is null
             ? EmptyDetails
@@ -24,6 +40,8 @@ public sealed record ModelValidationError
 
     public string Target { get; }
 
+    public IReadOnlyList<string> Targets { get; }
+
     public ModelValidationReason Reason { get; }
 
     public IReadOnlyDictionary<string, string> Details { get; }
@@ -32,7 +50,7 @@ public sealed record ModelValidationError
     {
         return ReferenceEquals(this, other)
             || other is not null
-            && string.Equals(Target, other.Target, StringComparison.Ordinal)
+            && Targets.SequenceEqual(other.Targets, StringComparer.Ordinal)
             && Equals(Reason, other.Reason)
             && Details.Count == other.Details.Count
             && Details.All(detail =>
@@ -43,7 +61,11 @@ public sealed record ModelValidationError
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(Target, StringComparer.Ordinal);
+        foreach (var target in Targets)
+        {
+            hash.Add(target, StringComparer.Ordinal);
+        }
+
         hash.Add(Reason);
 
         foreach (var detail in Details.OrderBy(

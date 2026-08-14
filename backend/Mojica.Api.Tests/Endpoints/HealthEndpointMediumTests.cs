@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace Mojica.Api.Tests;
+namespace Mojica.Api.Tests.Endpoints;
 
 public sealed class HealthEndpointMediumTests : IClassFixture<WebApplicationFactory<Program>>
 {

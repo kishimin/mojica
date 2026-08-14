@@ -1,8 +1,13 @@
-namespace Mojica.Api.Models;
+using Mojica.Api.Models;
 
-public sealed record GeneratedImage
+namespace Mojica.Api.Contracts;
+
+public sealed record ImageGenerationSuccessResponse
 {
-    public GeneratedImage(byte[] content, string mediaType, string fileName)
+    public ImageGenerationSuccessResponse(
+        byte[] content,
+        string mediaType,
+        string fileName)
     {
         ArgumentNullException.ThrowIfNull(content);
         ArgumentNullException.ThrowIfNull(mediaType);
@@ -19,7 +24,7 @@ public sealed record GeneratedImage
 
     public string FileName { get; }
 
-    public bool Equals(GeneratedImage? other)
+    public bool Equals(ImageGenerationSuccessResponse? other)
     {
         return other is not null
             && BinaryValueEquality.ContentEquals(Content, other.Content)

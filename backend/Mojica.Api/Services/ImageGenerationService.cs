@@ -3,7 +3,7 @@ using Mojica.Api.Ports;
 
 namespace Mojica.Api.Services;
 
-public sealed class ImageGenerationService
+public sealed class ImageGenerationService : IImageGenerationService
 {
     private readonly ImageGenerationPort port;
     private readonly UuidProvider uuidProvider;
