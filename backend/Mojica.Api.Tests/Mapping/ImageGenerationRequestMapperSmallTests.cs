@@ -1,17 +1,32 @@
+using Mojica.Api.Contracts;
+using Mojica.Api.Mapping;
+
 namespace Mojica.Api.Tests.Mapping;
 
 public sealed class ImageGenerationRequestMapperSmallTests
 {
-    [Fact(Skip = "TODO: Implement the valid DTO-to-Domain mapping contract.")]
+    [Fact]
     public void Map_WhenAllValuesAreValid_ReturnsImageGenerationRequest()
     {
-        // ID: REQUEST-MAPPING-01
-        // Source: docs/v1/api/controllers.md §3-4; docs/v1/api/implementation-plan.md §4 branch 7B.
-        // Given: a request DTO containing valid type, text, foreground character/color, and background character/color values
-        // When: the input Mapper maps the DTO
-        // Then: mapping succeeds and returns an ImageGenerationRequest containing the corresponding validated values
-        // Blocked by: define ImageGenerationRequestDto and ImageGenerationRequestMapper
-        // Priority: High
+        var dto = new ImageGenerationRequestDto(
+            "x-icon",
+            "KA",
+            "🌻",
+            "#FFD400",
+            "☀",
+            "#FF69B4");
+
+        var result = ImageGenerationRequestMapper.Map(dto);
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Request);
+        Assert.Empty(result.Errors);
+        Assert.Equal("x-icon", result.Request.Type.Value);
+        Assert.Equal("KA", result.Request.Text.Value);
+        Assert.Equal("🌻", result.Request.ForegroundCharacter.Value);
+        Assert.Equal("#FFD400", result.Request.ForegroundColor.Value);
+        Assert.Equal("☀", result.Request.BackgroundCharacter.Value);
+        Assert.Equal("#FF69B4", result.Request.BackgroundColor.Value);
     }
 
     [Fact(Skip = "TODO: Implement field-aware Value Object validation mapping.")]
