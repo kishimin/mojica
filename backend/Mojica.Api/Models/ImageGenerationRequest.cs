@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Text;
 
 namespace Mojica.Api.Models;
 
@@ -72,8 +74,8 @@ public sealed record ImageGenerationRequest
             return FailRequired("backgroundColor", out request, out error);
         }
 
-        if (string.IsNullOrWhiteSpace(foregroundCharacter.Value)
-            && string.IsNullOrWhiteSpace(backgroundCharacter.Value))
+        if (!ContainsVisibleCharacter(foregroundCharacter.Value)
+            && !ContainsVisibleCharacter(backgroundCharacter.Value))
         {
             request = null;
             error = new ModelValidationError(
@@ -91,6 +93,13 @@ public sealed record ImageGenerationRequest
             backgroundColor);
         error = null;
         return true;
+    }
+
+    private static bool ContainsVisibleCharacter(string value)
+    {
+        return value.EnumerateRunes().Any(rune =>
+            !Rune.IsWhiteSpace(rune)
+            && Rune.GetUnicodeCategory(rune) != UnicodeCategory.Format);
     }
 
     private static bool FailRequired(

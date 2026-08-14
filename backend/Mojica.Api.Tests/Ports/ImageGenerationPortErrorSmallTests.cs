@@ -5,6 +5,13 @@ namespace Mojica.Api.Tests.Ports;
 public sealed class ImageGenerationPortErrorSmallTests
 {
     [Fact]
+    public void ImageGenerationPortError_Create_WhenErrorCodeIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new ImageGenerationPortError(null!));
+    }
+
+    [Fact]
     public void ImageGenerationPortErrorCode_DocumentedCodes_ExposeExpectedValues()
     {
         Assert.Equal("RATE_LIMITED", ImageGenerationPortErrorCode.RateLimited.Value);
@@ -33,6 +40,18 @@ public sealed class ImageGenerationPortErrorSmallTests
             ImageGenerationPortErrorCode.Timeout);
 
         Assert.Null(error.RetryAfter);
+    }
+
+    [Fact]
+    public void ImageGenerationPortError_Create_WhenSafeDetailsAreKnown_PreservesDetails()
+    {
+        const string details = "The image provider returned an unsupported payload.";
+
+        var error = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.InvalidResponse,
+            details: details);
+
+        Assert.Equal(details, error.Details);
     }
 
     [Fact]

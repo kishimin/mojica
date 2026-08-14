@@ -61,10 +61,14 @@ public sealed class ImageGenerationRequestSmallTests
         Assert.Equal(target, error.Target);
     }
 
-    [Fact]
-    public void ImageGenerationRequest_Create_WhenBothPatternValuesAreOnlyWhitespace_ReturnsVisibleCharacterRequiredError()
+    [Theory]
+    [InlineData(" ", "\u3000")]
+    [InlineData("\u200B", " ")]
+    public void ImageGenerationRequest_Create_WhenBothPatternValuesLackVisibleCharacters_ReturnsVisibleCharacterRequiredError(
+        string foregroundCharacter,
+        string backgroundCharacter)
     {
-        var values = CreateValidValues(" ", "\u3000");
+        var values = CreateValidValues(foregroundCharacter, backgroundCharacter);
 
         var succeeded = ImageGenerationRequest.TryCreate(
             values.Type,

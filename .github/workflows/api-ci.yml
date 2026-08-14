@@ -108,11 +108,18 @@ jobs:
       - name: Build API
         run: dotnet build Mojica.Backend.sln --configuration Release --no-restore
 
+      - name: Verify API CI test scheduling
+        shell: pwsh
+        run: |
+          ./scripts/test-api-ci-timing.ps1
+          ./scripts/verify-api-ci-coverage-selection.ps1
+
       - name: Collect API coverage
         run: >-
           dotnet test Mojica.Backend.sln
           --configuration Release
           --no-build
+          --filter "${{ github.event_name == 'pull_request' && 'FullyQualifiedName~SmallTests' || 'FullyQualifiedName~SmallTests|FullyQualifiedName~MediumTests' }}"
           --collect "XPlat Code Coverage"
           --results-directory TestResults
 

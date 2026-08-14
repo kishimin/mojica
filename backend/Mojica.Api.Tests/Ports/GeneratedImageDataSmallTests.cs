@@ -5,6 +5,20 @@ namespace Mojica.Api.Tests.Ports;
 public sealed class GeneratedImageDataSmallTests
 {
     [Fact]
+    public void GeneratedImageData_Create_WhenContentIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new GeneratedImageData(null!, "image/png"));
+    }
+
+    [Fact]
+    public void GeneratedImageData_Create_WhenMediaTypeIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new GeneratedImageData([], null!));
+    }
+
+    [Fact]
     public void GeneratedImageData_Create_WhenResultIsValid_PreservesContentAndMediaType()
     {
         byte[] content = [0x89, 0x50, 0x4E, 0x47];
@@ -28,5 +42,18 @@ public sealed class GeneratedImageDataSmallTests
 
         Assert.Equal(first, second);
         Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void GeneratedImageData_Equality_WhenContentValuesDiffer_IsNotEqual()
+    {
+        var first = new GeneratedImageData(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/png");
+        var second = new GeneratedImageData(
+            [0x89, 0x50, 0x4E, 0x46],
+            "image/png");
+
+        Assert.NotEqual(first, second);
     }
 }
