@@ -29,9 +29,21 @@ public sealed class ApiErrorMessageProviderSmallTests
 
     public static TheoryData<ModelValidationReason, string, string> JapaneseValidationMessages => new()
     {
+        { ModelValidationReason.Required, "type", "画像の種類は必須です。" },
         { ModelValidationReason.Required, "text", "描画する文字列は必須です。" },
+        { ModelValidationReason.Required, "foregroundCharacter", "描画に使う文字は必須です。" },
+        { ModelValidationReason.Required, "foregroundColor", "描画に使う文字の色は必須です。" },
+        { ModelValidationReason.Required, "backgroundCharacter", "敷き詰める文字は必須です。" },
+        { ModelValidationReason.Required, "backgroundColor", "敷き詰める文字の色は必須です。" },
         { ModelValidationReason.LengthOutOfRange, "text", "描画する文字列は64文字以内で入力してください。" },
+        { ModelValidationReason.LengthOutOfRange, "foregroundCharacter", "描画に使う文字は128文字以内で入力してください。" },
+        { ModelValidationReason.LengthOutOfRange, "backgroundCharacter", "敷き詰める文字は128文字以内で入力してください。" },
+        { ModelValidationReason.NotBlank, "text", "描画する文字列には空白以外の文字を入力してください。" },
+        { ModelValidationReason.ControlCharacter, "text", "描画する文字列に制御文字は使用できません。" },
+        { ModelValidationReason.ControlCharacter, "foregroundCharacter", "描画に使う文字に制御文字は使用できません。" },
+        { ModelValidationReason.ControlCharacter, "backgroundCharacter", "敷き詰める文字に制御文字は使用できません。" },
         { ModelValidationReason.InvalidHexColor, "foregroundColor", "HEXカラー形式（#RRGGBB）で指定してください。" },
+        { ModelValidationReason.InvalidHexColor, "backgroundColor", "HEXカラー形式（#RRGGBB）で指定してください。" },
         { ModelValidationReason.UnsupportedImageType, "type", "standard、x-background、x-iconのいずれかを指定してください。" },
         { ModelValidationReason.VisibleCharacterRequired, "foregroundCharacter", "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。" },
         { ModelValidationReason.VisibleCharacterRequired, "backgroundCharacter", "描画に使う文字または敷き詰める文字のどちらかに、表示可能な文字を入力してください。" },
@@ -39,9 +51,21 @@ public sealed class ApiErrorMessageProviderSmallTests
 
     public static TheoryData<ModelValidationReason, string, string> EnglishValidationMessages => new()
     {
+        { ModelValidationReason.Required, "type", "The type field is required." },
         { ModelValidationReason.Required, "text", "The text field is required." },
+        { ModelValidationReason.Required, "foregroundCharacter", "The foreground character field is required." },
+        { ModelValidationReason.Required, "foregroundColor", "The foreground color field is required." },
+        { ModelValidationReason.Required, "backgroundCharacter", "The background character field is required." },
+        { ModelValidationReason.Required, "backgroundColor", "The background color field is required." },
         { ModelValidationReason.LengthOutOfRange, "text", "The text must be 64 characters or fewer." },
+        { ModelValidationReason.LengthOutOfRange, "foregroundCharacter", "The foreground character must be 128 characters or fewer." },
+        { ModelValidationReason.LengthOutOfRange, "backgroundCharacter", "The background character must be 128 characters or fewer." },
+        { ModelValidationReason.NotBlank, "text", "The text must contain a non-whitespace character." },
+        { ModelValidationReason.ControlCharacter, "text", "The text must not contain control characters." },
+        { ModelValidationReason.ControlCharacter, "foregroundCharacter", "The foreground character must not contain control characters." },
+        { ModelValidationReason.ControlCharacter, "backgroundCharacter", "The background character must not contain control characters." },
         { ModelValidationReason.InvalidHexColor, "foregroundColor", "The value must be specified in HEX color format (#RRGGBB)." },
+        { ModelValidationReason.InvalidHexColor, "backgroundColor", "The value must be specified in HEX color format (#RRGGBB)." },
         { ModelValidationReason.UnsupportedImageType, "type", "The value must be one of: standard, x-background, or x-icon." },
         { ModelValidationReason.VisibleCharacterRequired, "foregroundCharacter", "Either the foreground or background characters must contain at least one visible character." },
         { ModelValidationReason.VisibleCharacterRequired, "backgroundCharacter", "Either the foreground or background characters must contain at least one visible character." },
