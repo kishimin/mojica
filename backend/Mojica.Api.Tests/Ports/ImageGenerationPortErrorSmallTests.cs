@@ -1,17 +1,17 @@
+using Mojica.Api.Ports;
+
 namespace Mojica.Api.Tests.Ports;
 
 public sealed class ImageGenerationPortErrorSmallTests
 {
-    [Fact(Skip = "TODO: Implement after the ImageGenerationPortError contract exists.")]
-    public void ImageGenerationPortError_Create_WhenCodeIsSupported_PreservesLanguageIndependentCode()
+    [Fact]
+    public void ImageGenerationPortErrorCode_DocumentedCodes_ExposeExpectedValues()
     {
-        // ID: PORT-ERROR-01
-        // Source: docs/v1/api/ports.md §3-4.
-        // Given: each supported code RATE_LIMITED, TIMEOUT, UNAVAILABLE, INVALID_RESPONSE, and FAILED in turn (Theory candidate)
-        // When: an ImageGenerationPortError is created
-        // Then: the error exposes the corresponding language-independent code
-        // Blocked by: feature/add-image-generation-port must define ImageGenerationPortError and its supported codes
-        // Priority: High
+        Assert.Equal("RATE_LIMITED", ImageGenerationPortErrorCode.RateLimited.Value);
+        Assert.Equal("TIMEOUT", ImageGenerationPortErrorCode.Timeout.Value);
+        Assert.Equal("UNAVAILABLE", ImageGenerationPortErrorCode.Unavailable.Value);
+        Assert.Equal("INVALID_RESPONSE", ImageGenerationPortErrorCode.InvalidResponse.Value);
+        Assert.Equal("FAILED", ImageGenerationPortErrorCode.Failed.Value);
     }
 
     [Fact(Skip = "TODO: Implement after the ImageGenerationPortError contract exists.")]
