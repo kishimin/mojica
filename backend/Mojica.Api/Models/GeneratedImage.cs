@@ -22,7 +22,7 @@ public sealed record GeneratedImage
     public bool Equals(GeneratedImage? other)
     {
         return other is not null
-            && Content.AsSpan().SequenceEqual(other.Content)
+            && BinaryValueEquality.ContentEquals(Content, other.Content)
             && MediaType == other.MediaType
             && FileName == other.FileName;
     }
@@ -30,6 +30,6 @@ public sealed record GeneratedImage
     public override int GetHashCode()
     {
         // Mutable image content cannot safely participate in a stable hash code.
-        return HashCode.Combine(MediaType, FileName);
+        return BinaryValueEquality.GetStableHashCode(MediaType, FileName);
     }
 }

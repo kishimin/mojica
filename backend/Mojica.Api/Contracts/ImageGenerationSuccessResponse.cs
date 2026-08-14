@@ -1,3 +1,5 @@
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Contracts;
 
 public sealed record ImageGenerationSuccessResponse
@@ -25,7 +27,7 @@ public sealed record ImageGenerationSuccessResponse
     public bool Equals(ImageGenerationSuccessResponse? other)
     {
         return other is not null
-            && Content.AsSpan().SequenceEqual(other.Content)
+            && BinaryValueEquality.ContentEquals(Content, other.Content)
             && MediaType == other.MediaType
             && FileName == other.FileName;
     }
@@ -33,6 +35,6 @@ public sealed record ImageGenerationSuccessResponse
     public override int GetHashCode()
     {
         // Mutable image content cannot safely participate in a stable hash code.
-        return HashCode.Combine(MediaType, FileName);
+        return BinaryValueEquality.GetStableHashCode(MediaType, FileName);
     }
 }

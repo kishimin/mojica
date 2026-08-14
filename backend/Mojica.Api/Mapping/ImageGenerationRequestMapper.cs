@@ -22,22 +22,26 @@ public static class ImageGenerationRequestMapper
             errors.Add(textError);
         }
 
-        var foregroundCharacter = CreatePatternCharacter(
+        var foregroundCharacter = CreateValue<PatternCharacter>(
             dto.ForegroundCharacter,
             "foregroundCharacter",
-            errors);
-        var foregroundColor = CreateHexColor(
+            errors,
+            PatternCharacter.TryCreate);
+        var foregroundColor = CreateValue<HexColor>(
             dto.ForegroundColor,
             "foregroundColor",
-            errors);
-        var backgroundCharacter = CreatePatternCharacter(
+            errors,
+            HexColor.TryCreate);
+        var backgroundCharacter = CreateValue<PatternCharacter>(
             dto.BackgroundCharacter,
             "backgroundCharacter",
-            errors);
-        var backgroundColor = CreateHexColor(
+            errors,
+            PatternCharacter.TryCreate);
+        var backgroundColor = CreateValue<HexColor>(
             dto.BackgroundColor,
             "backgroundColor",
-            errors);
+            errors,
+            HexColor.TryCreate);
 
         if (errors.Count > 0)
         {
@@ -66,31 +70,24 @@ public static class ImageGenerationRequestMapper
         return ImageGenerationRequestMappingResult.Failure(fieldErrors);
     }
 
-    private static PatternCharacter? CreatePatternCharacter(
+    private delegate bool TryCreateValue<T>(
+        string? value,
+        out T? result,
+        out ModelValidationReason? reason);
+
+    private static T? CreateValue<T>(
         string? value,
         string target,
-        ICollection<ModelValidationError> errors)
+        ICollection<ModelValidationError> errors,
+        TryCreateValue<T> tryCreate)
+        where T : class
     {
-        if (PatternCharacter.TryCreate(value, out var patternCharacter, out var reason))
+        if (tryCreate(value, out var result, out var reason))
         {
-            return patternCharacter;
+            return result;
         }
 
-        errors.Add(new ModelValidationError(target, reason));
-        return null;
-    }
-
-    private static HexColor? CreateHexColor(
-        string? value,
-        string target,
-        ICollection<ModelValidationError> errors)
-    {
-        if (HexColor.TryCreate(value, out var color, out var reason))
-        {
-            return color;
-        }
-
-        errors.Add(new ModelValidationError(target, reason));
+        errors.Add(new ModelValidationError(target, reason!));
         return null;
     }
 }
