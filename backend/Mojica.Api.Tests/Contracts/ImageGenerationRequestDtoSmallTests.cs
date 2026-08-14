@@ -1,17 +1,33 @@
+using System.Text.Json;
+using Mojica.Api.Contracts;
+
 namespace Mojica.Api.Tests.Contracts;
 
 public sealed class ImageGenerationRequestDtoSmallTests
 {
-    [Fact(Skip = "TODO: Implement the request DTO value contract.")]
+    [Fact]
     public void Deserialize_WhenJsonContainsEveryRequestField_RetainsRawInputValues()
     {
-        // ID: REQUEST-DTO-01
-        // Source: docs/v1/api/controllers.md §3; docs/v1/api/api.md §5.
-        // Given: JSON containing type, text, foregroundCharacter, foregroundColor, backgroundCharacter, and backgroundColor
-        // When: System.Text.Json deserializes the body into the request DTO
-        // Then: every raw string value is available to the input Mapper under the documented camelCase property name
-        // Blocked by: define ImageGenerationRequestDto
-        // Priority: High
+        const string json = """
+            {
+              "type": "x-icon",
+              "text": "KA",
+              "foregroundCharacter": "🌻",
+              "foregroundColor": "#FFD400",
+              "backgroundCharacter": "☀",
+              "backgroundColor": "#FF69B4"
+            }
+            """;
+
+        var request = JsonSerializer.Deserialize<ImageGenerationRequestDto>(json);
+
+        Assert.NotNull(request);
+        Assert.Equal("x-icon", request.Type);
+        Assert.Equal("KA", request.Text);
+        Assert.Equal("🌻", request.ForegroundCharacter);
+        Assert.Equal("#FFD400", request.ForegroundColor);
+        Assert.Equal("☀", request.BackgroundCharacter);
+        Assert.Equal("#FF69B4", request.BackgroundColor);
     }
 
     [Fact(Skip = "TODO: Represent omitted values for Domain validation.")]
