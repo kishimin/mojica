@@ -15,6 +15,17 @@ public sealed class ApiErrorMessageProviderSmallTests
         { "IMAGE_GENERATION_TIMEOUT", "画像の生成に時間がかかっています。時間をおいて再度お試しください。" },
     };
 
+    public static TheoryData<string, string> EnglishPublicMessages => new()
+    {
+        { "BAD_REQUEST", "The request format is invalid." },
+        { "VALIDATION_ERROR", "The input contains validation errors." },
+        { "IMAGE_SIZE_LIMIT_EXCEEDED", "The generated image would exceed the size limit. Reduce the input text." },
+        { "RATE_LIMIT_EXCEEDED", "The request limit has been exceeded. Please try again later." },
+        { "INTERNAL_SERVER_ERROR", "An unexpected error occurred while generating the image." },
+        { "IMAGE_GENERATION_FAILED", "Image generation failed. Please try again later." },
+        { "IMAGE_GENERATION_TIMEOUT", "Image generation is taking too long. Please try again later." },
+    };
+
     [Theory]
     [MemberData(nameof(JapanesePublicMessages))]
     public void ApiErrorMessageProvider_GetPublicMessage_WhenLanguageIsJapanese_ReturnsDocumentedMessage(
@@ -28,17 +39,17 @@ public sealed class ApiErrorMessageProviderSmallTests
         Assert.Equal(expectedMessage, message);
     }
 
-    [Fact(Skip = "TODO: Implement when the API error message provider exists.")]
-    public void ApiErrorMessageProvider_GetPublicMessage_WhenLanguageIsEnglish_ReturnsDocumentedMessage()
+    [Theory]
+    [MemberData(nameof(EnglishPublicMessages))]
+    public void ApiErrorMessageProvider_GetPublicMessage_WhenLanguageIsEnglish_ReturnsDocumentedMessage(
+        string code,
+        string expectedMessage)
     {
-        // ID: LOCALIZATION-PUBLIC-02
-        // Source: docs/v1/api/api.md §11 Error Responses.
-        // Given: English and each documented public API error code (Theory candidate: BAD_REQUEST, VALIDATION_ERROR, IMAGE_SIZE_LIMIT_EXCEEDED, RATE_LIMIT_EXCEEDED, INTERNAL_SERVER_ERROR, IMAGE_GENERATION_FAILED, IMAGE_GENERATION_TIMEOUT)
-        // When: the public error message is resolved
-        // Then: the exact documented English message for that code is returned
-        // Error: messages must not contain exception text, stack traces, upstream bodies, internal URLs, credentials, SQL, or infrastructure details
-        // Blocked by: feature/add-api-error-localization must define the public error message lookup boundary
-        // Priority: High
+        var message = ApiErrorMessageProvider.GetPublicMessage(
+            ApiLanguage.English,
+            code);
+
+        Assert.Equal(expectedMessage, message);
     }
 
     [Fact(Skip = "TODO: Implement when the API error message provider exists.")]
