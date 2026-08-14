@@ -1,0 +1,18 @@
+namespace Mojica.Api.Ports;
+
+public sealed record ImageGenerationPortError
+{
+    public ImageGenerationPortError(
+        ImageGenerationPortErrorCode errorCode,
+        int? retryAfter)
+    {
+        ErrorCode = errorCode;
+        RetryAfter = retryAfter;
+    }
+
+    public string Code => ErrorCode.Value;
+
+    public ImageGenerationPortErrorCode ErrorCode { get; }
+
+    public int? RetryAfter { get; }
+}
