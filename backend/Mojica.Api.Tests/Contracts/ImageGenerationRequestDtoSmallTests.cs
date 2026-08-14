@@ -30,17 +30,42 @@ public sealed class ImageGenerationRequestDtoSmallTests
         Assert.Equal("#FF69B4", request.BackgroundColor);
     }
 
-    [Fact(Skip = "TODO: Represent omitted values for Domain validation.")]
-    public void Deserialize_WhenRequiredFieldIsOmitted_LeavesThatDtoValueMissing()
+    [Theory]
+    [InlineData("type")]
+    [InlineData("text")]
+    [InlineData("foregroundCharacter")]
+    [InlineData("foregroundColor")]
+    [InlineData("backgroundCharacter")]
+    [InlineData("backgroundColor")]
+    public void Deserialize_WhenRequiredFieldIsOmitted_LeavesThatDtoValueMissing(
+        string omittedField)
     {
-        // ID: REQUEST-DTO-02
-        // Source: docs/v1/api/controllers.md §3-5; docs/v1/api/api.md §6 and §11.
-        // Given: parseable JSON with one required request field omitted (Theory candidate: all six fields)
-        // When: System.Text.Json deserializes the body into the request DTO
-        // Then: deserialization produces a DTO whose omitted value can be classified as REQUIRED by the input Mapper
-        // Error: omission is a Domain validation input here; malformed JSON and incompatible JSON types remain Endpoint Medium-test responsibilities
-        // Blocked by: define ImageGenerationRequestDto
-        // Priority: High
+        var values = new Dictionary<string, string>
+        {
+            ["type"] = "standard",
+            ["text"] = "Mojica",
+            ["foregroundCharacter"] = "@",
+            ["foregroundColor"] = "#FFFFFF",
+            ["backgroundCharacter"] = ".",
+            ["backgroundColor"] = "#000000",
+        };
+        values.Remove(omittedField);
+        var json = JsonSerializer.Serialize(values);
+
+        var request = JsonSerializer.Deserialize<ImageGenerationRequestDto>(json);
+
+        Assert.NotNull(request);
+        var omittedValue = omittedField switch
+        {
+            "type" => request.Type,
+            "text" => request.Text,
+            "foregroundCharacter" => request.ForegroundCharacter,
+            "foregroundColor" => request.ForegroundColor,
+            "backgroundCharacter" => request.BackgroundCharacter,
+            "backgroundColor" => request.BackgroundColor,
+            _ => throw new ArgumentOutOfRangeException(nameof(omittedField)),
+        };
+        Assert.Null(omittedValue);
     }
 
     [Fact(Skip = "TODO: Keep unsupported image type values available for validation.")]
