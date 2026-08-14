@@ -21,7 +21,7 @@ public sealed class ImageGenerationServiceSmallTests
     {
         var request = CreateValidRequest();
         var port = new RecordingImageGenerationPort(CreateSuccessfulPortResult());
-        var service = new ImageGenerationService(port);
+        IImageGenerationService service = new ImageGenerationService(port);
 
         await service.GenerateAsync(request, CancellationToken.None);
 
