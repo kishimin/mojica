@@ -18,6 +18,7 @@ public sealed class ImageGenerationPortErrorSmallTests
         Assert.Equal("TIMEOUT", ImageGenerationPortErrorCode.Timeout.Value);
         Assert.Equal("UNAVAILABLE", ImageGenerationPortErrorCode.Unavailable.Value);
         Assert.Equal("INVALID_RESPONSE", ImageGenerationPortErrorCode.InvalidResponse.Value);
+        Assert.Equal("OUTPUT_SIZE_EXCEEDED", ImageGenerationPortErrorCode.OutputSizeExceeded.Value);
         Assert.Equal("FAILED", ImageGenerationPortErrorCode.Failed.Value);
     }
 
