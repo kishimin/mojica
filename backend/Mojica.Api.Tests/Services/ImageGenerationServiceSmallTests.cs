@@ -19,16 +19,24 @@ public sealed class ImageGenerationServiceSmallTests
         Assert.Equal(1, port.CallCount);
     }
 
-    [Fact(Skip = "TODO: Implement when ImageGenerationService is introduced.")]
-    public void ImageGenerationService_Generate_WhenPortSucceeds_PreservesContentAndMediaType()
+    [Fact]
+    public async Task ImageGenerationService_GenerateAsync_WhenPortSucceeds_PreservesContentAndMediaType()
     {
-        // ID: SERVICE-03
-        // Source: docs/v1/api/services.md sections 7 and 10
-        // Given: a Port success containing known image bytes and media type
-        // When: the Service completes the successful result
-        // Then: GeneratedImage contains the same image content and media type from the Port result
-        // Blocked by: ImageGenerationService is not implemented
-        // Priority: High
+        var request = CreateValidRequest();
+        byte[] content = [0x89, 0x50, 0x4E, 0x47];
+        const string mediaType = "image/png";
+        var imageData = new GeneratedImageData(content, mediaType);
+        var port = new RecordingImageGenerationPort(
+            ImageGenerationPortResult.Success(imageData));
+        var service = new ImageGenerationService(port);
+
+        var result = await service.GenerateAsync(request, CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Image);
+        Assert.Same(content, result.Image.Content);
+        Assert.Equal(mediaType, result.Image.MediaType);
+        Assert.Null(result.Error);
     }
 
     [Fact(Skip = "TODO: Implement as a Theory when ImageGenerationService is introduced.")]
