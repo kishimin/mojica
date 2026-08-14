@@ -1,0 +1,54 @@
+namespace Mojica.Api.Tests.Localization;
+
+public sealed class ApiLanguageSelectorSmallTests
+{
+    [Fact(Skip = "TODO: Implement when the API language selector exists.")]
+    public void ApiLanguageSelector_Select_WhenJapaneseIsRequested_ReturnsJapanese()
+    {
+        // ID: LOCALIZATION-LANGUAGE-01
+        // Source: docs/v1/api/api.md §9 Language Selection; docs/v1/api/controllers.md §8 Language Selection.
+        // Given: the supported language code "ja"
+        // When: the display language is selected
+        // Then: Japanese is returned
+        // Blocked by: feature/add-api-error-localization must define the language value and selector
+        // Priority: High
+    }
+
+    [Fact(Skip = "TODO: Implement when the API language selector exists.")]
+    public void ApiLanguageSelector_Select_WhenEnglishIsRequested_ReturnsEnglish()
+    {
+        // ID: LOCALIZATION-LANGUAGE-02
+        // Source: docs/v1/api/api.md §9 Language Selection; docs/v1/api/controllers.md §8 Language Selection.
+        // Given: the supported language code "en"
+        // When: the display language is selected
+        // Then: English is returned
+        // Blocked by: feature/add-api-error-localization must define the language value and selector
+        // Priority: High
+    }
+
+    [Fact(Skip = "TODO: Implement when the API language selector exists.")]
+    public void ApiLanguageSelector_Select_WhenLanguageIsOmitted_ReturnsJapanese()
+    {
+        // ID: LOCALIZATION-LANGUAGE-03
+        // Source: docs/v1/api/api.md §9 Language Selection; docs/v1/api/controllers.md §8 Language Selection.
+        // Given: no requested language code
+        // When: the display language is selected
+        // Then: Japanese is returned as the default language
+        // Error: omission must not produce an exception or an unsupported language value
+        // Blocked by: feature/add-api-error-localization must define the language value and selector
+        // Priority: High
+    }
+
+    [Fact(Skip = "TODO: Implement when the API language selector exists.")]
+    public void ApiLanguageSelector_Select_WhenLanguageIsUnsupported_ReturnsJapanese()
+    {
+        // ID: LOCALIZATION-LANGUAGE-04
+        // Source: docs/v1/api/api.md §9 Language Selection; docs/v1/api/controllers.md §8 Language Selection.
+        // Given: an unsupported language code (Theory candidate: "fr", "de", and an empty value)
+        // When: the display language is selected
+        // Then: Japanese is returned as the fallback language
+        // Error: unsupported input must not escape into the public message lookup
+        // Blocked by: feature/add-api-error-localization must define the language value and selector
+        // Priority: High
+    }
+}
