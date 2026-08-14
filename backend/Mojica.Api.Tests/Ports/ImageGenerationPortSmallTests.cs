@@ -5,6 +5,15 @@ namespace Mojica.Api.Tests.Ports;
 
 public sealed class ImageGenerationPortSmallTests
 {
+    public static TheoryData<ImageGenerationPortErrorCode> FailureCodes => new()
+    {
+        ImageGenerationPortErrorCode.RateLimited,
+        ImageGenerationPortErrorCode.Timeout,
+        ImageGenerationPortErrorCode.Unavailable,
+        ImageGenerationPortErrorCode.InvalidResponse,
+        ImageGenerationPortErrorCode.Failed,
+    };
+
     [Fact]
     public async Task ImageGenerationPort_Generate_WhenRequestIsValid_ReturnsGeneratedImageData()
     {
@@ -22,17 +31,21 @@ public sealed class ImageGenerationPortSmallTests
         Assert.Null(result.Error);
     }
 
-    [Fact(Skip = "TODO: Implement with the first ImageGenerationPort implementation.")]
-    public void ImageGenerationPort_Generate_WhenGenerationFails_ReturnsClassifiedPortError()
+    [Theory]
+    [MemberData(nameof(FailureCodes))]
+    public async Task ImageGenerationPort_Generate_WhenGenerationFails_ReturnsClassifiedPortError(
+        ImageGenerationPortErrorCode errorCode)
     {
-        // ID: PORT-02
-        // Source: docs/v1/api/ports.md §3-4.
-        // Given: a validated ImageGenerationRequest and each failure condition in turn (Theory candidate)
-        // When: image generation is requested through ImageGenerationPort
-        // Then: the Port returns RATE_LIMITED, TIMEOUT, UNAVAILABLE, INVALID_RESPONSE, or FAILED for the corresponding condition
-        // Error: preserve a safe retryAfter value only when its retry period can be determined
-        // Blocked by: feature/add-glyph-forge-adapter must provide the first observable Port implementation
-        // Priority: High
+        var request = CreateValidRequest();
+        var error = new ImageGenerationPortError(errorCode);
+        ImageGenerationPort port = new StubImageGenerationPort(
+            ImageGenerationPortResult.Failure(error));
+
+        var result = await port.GenerateAsync(request, CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Data);
+        Assert.Same(error, result.Error);
     }
 
     private static ImageGenerationRequest CreateValidRequest()
