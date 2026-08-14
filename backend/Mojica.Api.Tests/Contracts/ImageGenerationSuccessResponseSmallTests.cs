@@ -4,6 +4,13 @@ namespace Mojica.Api.Tests.Contracts;
 
 public sealed class ImageGenerationSuccessResponseSmallTests
 {
+    public static TheoryData<byte[]?, string?, string?> MissingValues => new()
+    {
+        { null, "image/png", "mojica-standard-123.png" },
+        { [], null, "mojica-standard-123.png" },
+        { [], "image/png", null },
+    };
+
     [Fact]
     public void Create_WhenGeneratedImageIsValid_RetainsContentMediaTypeAndFileName()
     {
@@ -26,16 +33,22 @@ public sealed class ImageGenerationSuccessResponseSmallTests
         // Priority: High
     }
 
-    [Fact(Skip = "TODO: Require complete successful image response data.")]
-    public void Create_WhenRequiredValueIsNull_ThrowsArgumentNullException()
+    [Theory]
+    [MemberData(nameof(MissingValues))]
+    public void Create_WhenRequiredValueIsNull_ThrowsArgumentNullException(
+        byte[]? content,
+        string? mediaType,
+        string? fileName)
     {
         // ID: SUCCESS-RESPONSE-02
         // Source: docs/v1/api/controllers.md §7; ADR-0026 result-variant invariant principle.
-        // Given: null for content, media type, or filename in turn (Theory candidate)
+        // Given: null for content, media type, or filename in turn
         // When: the successful public response contract is created
         // Then: construction throws ArgumentNullException for the missing required value
         // Error: no successful response instance may omit content, media type, or filename
-        // Blocked by: define ImageGenerationSuccessResponse
+        Assert.Throws<ArgumentNullException>(() =>
+            new ImageGenerationSuccessResponse(content!, mediaType!, fileName!));
+
         // Priority: Medium
     }
 }
