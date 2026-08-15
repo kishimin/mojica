@@ -29,16 +29,22 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         Assert.Equal("https://glyph-forge.example/images", requestUri?.ToString());
     }
 
-    [Fact(Skip = "TODO: implement the request method and endpoint contract assertion")]
-    public void Send_WhenImageTypeIsXBackground_UsesPostBackgroundEndpoint()
+    [Fact]
+    public async Task Send_WhenImageTypeIsXBackground_UsesPostBackgroundEndpoint()
     {
-        // ID: GF-ADAPTER-M-002
-        // Source: docs/v1/api/adapters.md §15, Endpoints
-        // Given: A valid x-background ImageGenerationRequest and a controllable HTTP handler
-        // When: The Adapter sends the generation request
-        // Then: The observed request uses POST and the /images/background endpoint
-        // Error: Fail if the endpoint does not correspond to ImageType.XBackground
-        // Priority: P1
+        HttpMethod? requestMethod = null;
+        Uri? requestUri = null;
+        var adapter = CreateAdapter(request =>
+        {
+            requestMethod = request.Method;
+            requestUri = request.RequestUri;
+            return PngResponse();
+        });
+
+        await adapter.GenerateAsync(ValidRequest(ImageType.XBackground), CancellationToken.None);
+
+        Assert.Equal(HttpMethod.Post, requestMethod);
+        Assert.Equal("https://glyph-forge.example/images/background", requestUri?.ToString());
     }
 
     [Fact(Skip = "TODO: implement the request method and endpoint contract assertion")]
@@ -125,13 +131,18 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
 
     private static ImageGenerationRequest ValidRequest()
     {
+        return ValidRequest(ImageType.Standard);
+    }
+
+    private static ImageGenerationRequest ValidRequest(ImageType imageType)
+    {
         Assert.True(RenderText.TryCreate("KA", out var text, out _));
         Assert.True(PatternCharacter.TryCreate("🌻", out var foregroundCharacter, out _));
         Assert.True(HexColor.TryCreate("#FFD400", out var foregroundColor, out _));
         Assert.True(PatternCharacter.TryCreate("☀", out var backgroundCharacter, out _));
         Assert.True(HexColor.TryCreate("#FF69B4", out var backgroundColor, out _));
         Assert.True(ImageGenerationRequest.TryCreate(
-            ImageType.Standard,
+            imageType,
             text,
             foregroundCharacter,
             foregroundColor,
