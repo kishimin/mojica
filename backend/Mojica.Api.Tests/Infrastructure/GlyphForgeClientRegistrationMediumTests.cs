@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Mojica.Api.Infrastructure;
+using Mojica.Api.Ports;
 
 namespace Mojica.Api.Tests.Infrastructure;
 
@@ -79,5 +80,22 @@ public sealed class GlyphForgeClientRegistrationMediumTests
             .CreateClient("GlyphForge");
 
         Assert.Null(client.DefaultRequestHeaders.Authorization);
+    }
+
+    [Fact]
+    public void Resolve_WhenConfigurationIsValid_ResolvesImageGenerationPort()
+    {
+        using var factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder => builder.ConfigureAppConfiguration((_, configuration) =>
+                configuration.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["GlyphForge:BaseUrl"] = "https://glyph-forge.example/",
+                    ["GlyphForge:Timeout"] = "00:00:35"
+                })));
+
+        using var scope = factory.Services.CreateScope();
+        var port = scope.ServiceProvider.GetRequiredService<ImageGenerationPort>();
+
+        Assert.IsType<GlyphForgeImageGenerationAdapter>(port);
     }
 }

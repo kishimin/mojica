@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using Mojica.Api.Infrastructure;
+using Mojica.Api.Ports;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddHttpClient("GlyphForge", (serviceProvider, client) =>
     client.BaseAddress = options.BaseUrl;
     client.Timeout = options.Timeout;
 });
+builder.Services.AddSingleton<ImageGenerationPort, GlyphForgeImageGenerationAdapter>();
 
 var app = builder.Build();
 

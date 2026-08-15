@@ -4,8 +4,8 @@ $workflow = Get-Content -Raw -LiteralPath $workflowPath
 $expectedRules = @(
     'schedule:'
     'workflow_dispatch:'
-    "github.event_name == 'pull_request' && '[{`"size`":`"Small`",`"filter`":`"FullyQualifiedName~SmallTests`"}]'"
-    "github.event_name == 'push' && '[{`"size`":`"Small`",`"filter`":`"FullyQualifiedName~SmallTests`"},{`"size`":`"Medium`",`"filter`":`"FullyQualifiedName~MediumTests`"}]'"
+    "(github.event_name == 'pull_request' || github.event_name == 'push')"
+    "'[{`"size`":`"Small`",`"filter`":`"FullyQualifiedName~SmallTests`"},{`"size`":`"Medium`",`"filter`":`"FullyQualifiedName~MediumTests`"}]'"
     "|| '[{`"size`":`"Large`",`"filter`":`"FullyQualifiedName~LargeTests`"}]'"
     "github.event_name == 'pull_request' || github.event_name == 'push'"
 )

@@ -11,9 +11,9 @@ if ($coverageParts.Count -ne 2) {
 $coverageJob = $coverageParts[1]
 
 if ($coverageJob -notmatch "--filter" -or
-    $coverageJob -notmatch "github.event_name == 'pull_request'" -or
+    $coverageJob -notmatch "FullyQualifiedName~SmallTests\|FullyQualifiedName~MediumTests" -or
     $coverageJob -notmatch "FullyQualifiedName~SmallTests" -or
     $coverageJob -notmatch "FullyQualifiedName~MediumTests" -or
     $coverageJob -match "FullyQualifiedName~LargeTests") {
-    throw "Coverage must run Small tests for pull requests and Small plus Medium tests for pushes."
+    throw "Coverage must run Small plus Medium tests for pull requests and pushes."
 }

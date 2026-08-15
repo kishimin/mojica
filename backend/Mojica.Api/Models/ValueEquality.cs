@@ -2,10 +2,12 @@ namespace Mojica.Api.Models;
 
 internal static class ValueEquality
 {
-    public static bool ContentEquals<T>(T[] left, T[] right)
+    public static bool ContentEquals<T>(T[]? left, T[]? right)
         where T : IEquatable<T>
     {
-        return left.AsSpan().SequenceEqual(right);
+        return left is null
+            ? right is null
+            : right is not null && left.AsSpan().SequenceEqual(right);
     }
 
     public static int GetStableHashCode(params string[] metadata)
