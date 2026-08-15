@@ -12,6 +12,15 @@ namespace Mojica.Api.Tests.Infrastructure;
 public sealed class GlyphForgeClientRegistrationMediumTests
 {
     [Fact]
+    public void Start_InProduction_WhenConfigurationIsMissing_FailsFast()
+    {
+        using var factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder => builder.UseEnvironment("Production"));
+
+        Assert.Throws<OptionsValidationException>(() => _ = factory.Services);
+    }
+
+    [Fact]
     public async Task Start_WhenGlyphForgeConfigurationIsMissing_AllowsHealthEndpointToStart()
     {
         using var factory = new WebApplicationFactory<Program>();
