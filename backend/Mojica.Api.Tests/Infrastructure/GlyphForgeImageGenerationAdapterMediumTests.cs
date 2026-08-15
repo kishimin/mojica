@@ -82,10 +82,15 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         Assert.False(document.RootElement.TryGetProperty("output_font_size", out _));
         var observedHeaders = requestHeaders
             ?? throw new XunitException("The HTTP handler did not observe request headers.");
-        Assert.DoesNotContain(observedHeaders, header =>
-            header.Equals("Authorization", StringComparison.OrdinalIgnoreCase)
-            || header.Equals("X-API-Key", StringComparison.OrdinalIgnoreCase)
-            || header.Equals("Api-Key", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(
+            observedHeaders,
+            header => header.Equals("Authorization", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(
+            observedHeaders,
+            header => header.Equals("X-API-Key", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(
+            observedHeaders,
+            header => header.Equals("Api-Key", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
