@@ -47,6 +47,11 @@ public static class ApiErrorMapper
 
         return error.ErrorCode.Value switch
         {
+            "RATE_LIMITED" => CreateError(
+                StatusCodes.Status429TooManyRequests,
+                "RATE_LIMIT_EXCEEDED",
+                language,
+                error.RetryAfter),
             "OUTPUT_SIZE_EXCEEDED" => CreateError(
                 StatusCodes.Status422UnprocessableEntity,
                 "IMAGE_SIZE_LIMIT_EXCEEDED",
