@@ -144,6 +144,19 @@ public sealed class ApiErrorMappingSmallTests
     }
 
     [Fact]
+    public void Map_WhenProviderIsUnavailableWithRetryAfter_ForwardsRetryAfter()
+    {
+        var portError = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.Unavailable,
+            retryAfter: 30,
+            details: "connection refused");
+
+        var result = ApiErrorMapper.MapPortFailure(portError, ApiLanguage.English);
+
+        Assert.Equal(30, result.RetryAfter);
+    }
+
+    [Fact]
     public void Map_WhenUnexpectedExceptionIsClassified_ReturnsInternalServerErrorContract()
     {
         var result = ApiErrorMapper.MapUnexpectedFailure(ApiLanguage.English);
