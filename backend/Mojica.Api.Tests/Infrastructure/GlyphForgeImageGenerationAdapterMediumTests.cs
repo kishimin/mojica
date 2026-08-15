@@ -60,10 +60,10 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         string forbiddenHeader)
     {
         string[]? requestHeaders = null;
-        var adapter = CreateAsyncAdapter((request, _) =>
+        var adapter = CreateAdapter(request =>
         {
             requestHeaders = request.Headers.Select(header => header.Key).ToArray();
-            return Task.FromResult(PngResponse());
+            return PngResponse();
         });
 
         await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
