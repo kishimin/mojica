@@ -1,3 +1,8 @@
+using System.Net;
+using System.Net.Http.Headers;
+using Mojica.Api.Infrastructure;
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class GlyphForgeImageGenerationAdapterMediumTests
@@ -15,16 +20,64 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         // Priority: P1
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
-    public void Send_WhenSuccessfulPngResponse_PreservesContentTypeAndBinaryData()
+    [Fact]
+    public async Task Send_WhenSuccessfulPngResponse_PreservesContentTypeAndBinaryData()
     {
-        // ID: 8B-MED-001
-        // Source: docs/v1/api/adapters.md §10, §14, §15
-        // Given: A controllable HTTP handler returns 200, image/png, and valid PNG bytes.
-        // When: The Adapter sends a generation request and maps the HTTP response.
-        // Then: The port result is successful and GeneratedImageData preserves the response bytes and media type.
-        // Blocked by: The response mapper and controllable HTTP handler are not yet implemented.
-        // Priority: P0
+        var content = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
+        using var client = new HttpClient(new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(content)
+            {
+                Headers = { ContentType = new MediaTypeHeaderValue("image/png") },
+            },
+        }))
+        {
+            BaseAddress = new Uri("https://glyph-forge.example/"),
+        };
+        client.DefaultRequestHeaders.Accept.ParseAdd("image/png");
+        var adapter = new GlyphForgeImageGenerationAdapter(new StubHttpClientFactory(client));
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(content, result.Data?.Content);
+        Assert.Equal("image/png", result.Data?.MediaType);
+    }
+
+    private static ImageGenerationRequest ValidRequest()
+    {
+        Assert.True(RenderText.TryCreate("KA", out var text, out _));
+        Assert.True(PatternCharacter.TryCreate("🌻", out var foregroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#FFD400", out var foregroundColor, out _));
+        Assert.True(PatternCharacter.TryCreate("☀", out var backgroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#FF69B4", out var backgroundColor, out _));
+        Assert.True(ImageGenerationRequest.TryCreate(
+            ImageType.Standard,
+            text,
+            foregroundCharacter,
+            foregroundColor,
+            backgroundCharacter,
+            backgroundColor,
+            out var request,
+            out _));
+
+        return request!;
+    }
+
+    private sealed class StubHttpClientFactory(HttpClient client) : IHttpClientFactory
+    {
+        public HttpClient CreateClient(string name) => client;
+    }
+
+    private sealed class StubHttpMessageHandler(
+        Func<HttpRequestMessage, HttpResponseMessage> handler) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            return Task.FromResult(handler(request));
+        }
     }
 
     [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
