@@ -8,11 +8,11 @@ public static class GlyphForgeRequestMapper
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var path = request.Type switch
+        var path = request.Type.Value switch
         {
-            ImageType type when type == ImageType.Standard => "/images",
-            ImageType type when type == ImageType.XBackground => "/images/background",
-            ImageType type when type == ImageType.XIcon => "/images/x-icon",
+            "standard" => "/images",
+            "x-background" => "/images/background",
+            "x-icon" => "/images/x-icon",
             _ => throw new InvalidOperationException("Validated image type is not supported."),
         };
 
