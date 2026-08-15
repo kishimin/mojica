@@ -56,15 +56,7 @@ public static class ApiErrorMapper
                 StatusCodes.Status504GatewayTimeout,
                 "IMAGE_GENERATION_TIMEOUT",
                 language),
-            "UNAVAILABLE" => CreateError(
-                StatusCodes.Status502BadGateway,
-                "IMAGE_GENERATION_FAILED",
-                language),
-            "INVALID_RESPONSE" => CreateError(
-                StatusCodes.Status502BadGateway,
-                "IMAGE_GENERATION_FAILED",
-                language),
-            "FAILED" => CreateError(
+            "UNAVAILABLE" or "INVALID_RESPONSE" or "FAILED" => CreateError(
                 StatusCodes.Status502BadGateway,
                 "IMAGE_GENERATION_FAILED",
                 language),

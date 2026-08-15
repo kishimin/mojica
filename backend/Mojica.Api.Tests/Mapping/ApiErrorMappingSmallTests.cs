@@ -88,46 +88,14 @@ public sealed class ApiErrorMappingSmallTests
             response.Message);
     }
 
-    [Fact]
-    public void Map_WhenUpstreamIsUnavailable_ReturnsGenerationFailureContract()
+    [Theory]
+    [InlineData("UNAVAILABLE")]
+    [InlineData("INVALID_RESPONSE")]
+    [InlineData("FAILED")]
+    public void Map_WhenProviderFailureIsClassified_ReturnsGenerationFailureContract(
+        string failureCode)
     {
-        var portError = new ImageGenerationPortError(
-            ImageGenerationPortErrorCode.Unavailable,
-            details: "connection refused");
-
-        var result = ApiErrorMapper.MapPortFailure(portError, ApiLanguage.English);
-
-        var response = Assert.IsType<ApiErrorResponse>(result.Response);
-        Assert.Equal(502, result.StatusCode);
-        Assert.Equal("IMAGE_GENERATION_FAILED", response.Code);
-        Assert.Equal(
-            "Image generation failed. Please try again later.",
-            response.Message);
-    }
-
-    [Fact]
-    public void Map_WhenUpstreamResponseIsInvalid_ReturnsGenerationFailureContract()
-    {
-        var portError = new ImageGenerationPortError(
-            ImageGenerationPortErrorCode.InvalidResponse,
-            details: "provider body and internal URL");
-
-        var result = ApiErrorMapper.MapPortFailure(portError, ApiLanguage.English);
-
-        var response = Assert.IsType<ApiErrorResponse>(result.Response);
-        Assert.Equal(502, result.StatusCode);
-        Assert.Equal("IMAGE_GENERATION_FAILED", response.Code);
-        Assert.Equal(
-            "Image generation failed. Please try again later.",
-            response.Message);
-    }
-
-    [Fact]
-    public void Map_WhenGenerationFailsUnexpectedly_ReturnsGenerationFailureContract()
-    {
-        var portError = new ImageGenerationPortError(
-            ImageGenerationPortErrorCode.Failed,
-            details: "provider stack trace");
+        var portError = CreateProviderFailure(failureCode);
 
         var result = ApiErrorMapper.MapPortFailure(portError, ApiLanguage.English);
 
@@ -150,5 +118,22 @@ public sealed class ApiErrorMappingSmallTests
         Assert.Equal(
             "An unexpected error occurred while generating the image.",
             response.Message);
+    }
+
+    private static ImageGenerationPortError CreateProviderFailure(string failureCode)
+    {
+        return failureCode switch
+        {
+            "UNAVAILABLE" => new ImageGenerationPortError(
+                ImageGenerationPortErrorCode.Unavailable,
+                details: "connection refused"),
+            "INVALID_RESPONSE" => new ImageGenerationPortError(
+                ImageGenerationPortErrorCode.InvalidResponse,
+                details: "provider body and internal URL"),
+            "FAILED" => new ImageGenerationPortError(
+                ImageGenerationPortErrorCode.Failed,
+                details: "provider stack trace"),
+            _ => throw new ArgumentOutOfRangeException(nameof(failureCode), failureCode, null),
+        };
     }
 }
