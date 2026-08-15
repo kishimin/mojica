@@ -93,7 +93,8 @@ public sealed class GlyphForgeClientRegistrationMediumTests
                     ["GlyphForge:Timeout"] = "00:00:35"
                 })));
 
-        var port = factory.Services.GetRequiredService<ImageGenerationPort>();
+        using var scope = factory.Services.CreateScope();
+        var port = scope.ServiceProvider.GetRequiredService<ImageGenerationPort>();
 
         Assert.IsType<GlyphForgeImageGenerationAdapter>(port);
     }
