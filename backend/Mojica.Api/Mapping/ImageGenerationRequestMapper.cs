@@ -47,16 +47,12 @@ public static class ImageGenerationRequestMapper
         {
             if (foregroundCharacter is not null && backgroundCharacter is not null)
             {
-                var patternReason = ImageGenerationRequest.GetPatternCombinationFailureReason(
+                var patternError = ImageGenerationRequest.GetPatternCombinationFailure(
                     foregroundCharacter,
                     backgroundCharacter);
-                if (patternReason is not null)
+                if (patternError is not null)
                 {
-                    AddFieldErrors(
-                        errors,
-                        new ModelValidationError(
-                            ["foregroundCharacter", "backgroundCharacter"],
-                            patternReason));
+                    AddFieldErrors(errors, patternError);
                 }
             }
             return ImageGenerationRequestMappingResult.Failure(errors);
