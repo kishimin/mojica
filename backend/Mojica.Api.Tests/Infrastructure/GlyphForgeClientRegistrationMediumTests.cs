@@ -42,11 +42,14 @@ public sealed class GlyphForgeClientRegistrationMediumTests
     }
 
     [Fact]
-    public void Start_WhenRequiredConfigurationIsMissing_FailsBeforeResolvingClient()
+    public void Resolve_WhenRequiredConfigurationIsMissing_FailsBeforeSendingRequest()
     {
         using var factory = new WebApplicationFactory<Program>();
 
-        var exception = Assert.Throws<OptionsValidationException>(() => _ = factory.Services);
+        var clientFactory = factory.Services.GetRequiredService<IHttpClientFactory>();
+
+        var exception = Assert.Throws<OptionsValidationException>(
+            () => clientFactory.CreateClient("GlyphForge"));
 
         Assert.Contains("Glyph Forge", exception.ToString());
     }
