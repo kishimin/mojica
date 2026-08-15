@@ -65,16 +65,22 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         Assert.Equal("https://glyph-forge.example/images/x-icon", requestUri?.ToString());
     }
 
-    [Fact(Skip = "TODO: implement the request Content-Type contract assertion")]
-    public void Send_WhenCreatingGlyphForgeRequest_UsesApplicationJsonContentType()
+    [Fact]
+    public async Task Send_WhenCreatingGlyphForgeRequest_UsesApplicationJsonContentType()
     {
-        // ID: GF-ADAPTER-M-004
-        // Source: docs/v1/api/adapters.md §15, Request
-        // Given: A valid ImageGenerationRequest and a controllable HTTP handler
-        // When: The Adapter serializes and sends the request
-        // Then: The request Content-Type is application/json with the contract charset
-        // Error: Fail if the request omits Content-Type or uses a different media type
-        // Priority: P1
+        string? mediaType = null;
+        string? charset = null;
+        var adapter = CreateAdapter(request =>
+        {
+            mediaType = request.Content?.Headers.ContentType?.MediaType;
+            charset = request.Content?.Headers.ContentType?.CharSet;
+            return PngResponse();
+        });
+
+        await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal("application/json", mediaType);
+        Assert.Equal("utf-8", charset);
     }
 
     [Fact]
