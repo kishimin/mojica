@@ -37,6 +37,6 @@ public sealed record ImageGenerationSuccessResponse
     public override int GetHashCode()
     {
         // Mutable image content cannot safely participate in a stable hash code.
-        return ImageFileValue.GetStableHashCode(MediaType, FileName);
+        return BinaryValueEquality.GetStableHashCode(MediaType, FileName);
     }
 }

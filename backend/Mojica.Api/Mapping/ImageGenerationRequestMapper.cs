@@ -52,12 +52,11 @@ public static class ImageGenerationRequestMapper
                     backgroundCharacter);
                 if (patternReason is not null)
                 {
-                    errors.Add(new ModelValidationError(
-                        "foregroundCharacter",
-                        patternReason));
-                    errors.Add(new ModelValidationError(
-                        "backgroundCharacter",
-                        patternReason));
+                    AddFieldErrors(
+                        errors,
+                        new ModelValidationError(
+                            ["foregroundCharacter", "backgroundCharacter"],
+                            patternReason));
                 }
             }
             return ImageGenerationRequestMappingResult.Failure(errors);
@@ -76,13 +75,23 @@ public static class ImageGenerationRequestMapper
             return ImageGenerationRequestMappingResult.Success(request);
         }
 
-        var fieldErrors = requestError.Targets
-            .Select(target => new ModelValidationError(
-                target,
-                requestError.Reason,
-                requestError.Details));
+        var fieldErrors = new List<ModelValidationError>();
+        AddFieldErrors(fieldErrors, requestError);
 
         return ImageGenerationRequestMappingResult.Failure(fieldErrors);
+    }
+
+    private static void AddFieldErrors(
+        ICollection<ModelValidationError> errors,
+        ModelValidationError error)
+    {
+        foreach (var target in error.Targets)
+        {
+            errors.Add(new ModelValidationError(
+                target,
+                error.Reason,
+                error.Details));
+        }
     }
 
     private delegate bool TryCreateValue<T>(

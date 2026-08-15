@@ -22,8 +22,4 @@ internal static class ImageFileValue
             && fileName == otherFileName;
     }
 
-    public static int GetStableHashCode(string mediaType, string fileName)
-    {
-        return BinaryValueEquality.GetStableHashCode(mediaType, fileName);
-    }
 }
