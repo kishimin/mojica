@@ -7,8 +7,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services
     .AddOptions<GlyphForgeClientOptions>()
-    .BindConfiguration(GlyphForgeClientOptions.SectionName)
-    .ValidateOnStart();
+    .BindConfiguration(GlyphForgeClientOptions.SectionName);
 builder.Services.AddSingleton<IValidateOptions<GlyphForgeClientOptions>, GlyphForgeClientOptionsValidator>();
 builder.Services.AddHttpClient("GlyphForge", (serviceProvider, client) =>
 {
