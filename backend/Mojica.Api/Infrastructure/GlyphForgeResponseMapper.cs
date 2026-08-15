@@ -25,28 +25,33 @@ public static class GlyphForgeResponseMapper
             return Failure(ImageGenerationPortErrorCode.Unavailable);
         }
 
-        if (response.StatusCode is HttpStatusCode.TooManyRequests)
-        {
-            return Failure(ImageGenerationPortErrorCode.RateLimited, response.RetryAfter);
-        }
-
-        if (response.StatusCode is HttpStatusCode.UnprocessableEntity)
-        {
-            return Failure(ImageGenerationPortErrorCode.OutputSizeExceeded);
-        }
-
-        if (response.StatusCode is HttpStatusCode.ServiceUnavailable)
-        {
-            return Failure(ImageGenerationPortErrorCode.Unavailable, response.RetryAfter);
-        }
-
-        if (response.StatusCode is >= HttpStatusCode.InternalServerError and < HttpStatusCode.NetworkAuthenticationRequired)
+        if (response.Failure is GlyphForgeResponseFailure.Failed)
         {
             return Failure(ImageGenerationPortErrorCode.Failed);
         }
 
-        if (response.StatusCode is >= HttpStatusCode.OK and < HttpStatusCode.MultipleChoices &&
-            response.MediaType is { } mediaType &&
+        if (response.StatusCode is not { } statusCode)
+        {
+            return Failure(ImageGenerationPortErrorCode.InvalidResponse);
+        }
+
+        return ((int)statusCode) switch
+        {
+            (int)HttpStatusCode.TooManyRequests =>
+                Failure(ImageGenerationPortErrorCode.RateLimited, response.RetryAfter),
+            (int)HttpStatusCode.UnprocessableEntity =>
+                Failure(ImageGenerationPortErrorCode.OutputSizeExceeded),
+            (int)HttpStatusCode.ServiceUnavailable =>
+                Failure(ImageGenerationPortErrorCode.Unavailable, response.RetryAfter),
+            >= 500 and <= 599 => Failure(ImageGenerationPortErrorCode.Failed),
+            >= 200 and <= 299 => MapSuccessfulResponse(response),
+            _ => Failure(ImageGenerationPortErrorCode.InvalidResponse),
+        };
+    }
+
+    private static ImageGenerationPortResult MapSuccessfulResponse(GlyphForgeResponse response)
+    {
+        if (response.MediaType is { } mediaType &&
             SupportedMediaTypes.Contains(mediaType) &&
             response.Content is { Length: > 0 } content)
         {
