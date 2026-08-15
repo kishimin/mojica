@@ -4,15 +4,15 @@ namespace Mojica.Api.Infrastructure;
 
 public static class GlyphForgeRequestMapper
 {
-    public static GlyphForgeRequestMappingResult Map(ImageGenerationRequest request)
+    public static (string Path, GlyphForgeRequest Payload) Map(ImageGenerationRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         var path = request.Type.Value switch
         {
-            "standard" => "/images",
-            "x-background" => "/images/background",
-            "x-icon" => "/images/x-icon",
+            ImageType.StandardValue => "/images",
+            ImageType.XBackgroundValue => "/images/background",
+            ImageType.XIconValue => "/images/x-icon",
             _ => throw new InvalidOperationException("Validated image type is not supported."),
         };
 
@@ -22,9 +22,9 @@ public static class GlyphForgeRequestMapper
             request.Text.Value,
             request.ForegroundCharacter.Value,
             request.BackgroundCharacter.Value,
-            [foregroundColor.Red, foregroundColor.Green, foregroundColor.Blue],
-            [backgroundColor.Red, backgroundColor.Green, backgroundColor.Blue]);
+            foregroundColor.ToArray(),
+            backgroundColor.ToArray());
 
-        return new GlyphForgeRequestMappingResult(path, payload);
+        return (path, payload);
     }
 }

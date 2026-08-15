@@ -4,11 +4,17 @@ namespace Mojica.Api.Models;
 
 public sealed record ImageType
 {
-    public static ImageType Standard { get; } = new("standard");
+    public const string StandardValue = "standard";
 
-    public static ImageType XBackground { get; } = new("x-background");
+    public const string XBackgroundValue = "x-background";
 
-    public static ImageType XIcon { get; } = new("x-icon");
+    public const string XIconValue = "x-icon";
+
+    public static ImageType Standard { get; } = new(StandardValue);
+
+    public static ImageType XBackground { get; } = new(XBackgroundValue);
+
+    public static ImageType XIcon { get; } = new(XIconValue);
 
     private ImageType(string value)
     {
@@ -31,9 +37,9 @@ public sealed record ImageType
 
         imageType = value switch
         {
-            "standard" => Standard,
-            "x-background" => XBackground,
-            "x-icon" => XIcon,
+            StandardValue => Standard,
+            XBackgroundValue => XBackground,
+            XIconValue => XIcon,
             _ => null,
         };
         error = imageType is null

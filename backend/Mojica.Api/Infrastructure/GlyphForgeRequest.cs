@@ -12,11 +12,17 @@ public sealed record GlyphForgeRequest
         int[] innerColor,
         int[] outerColor)
     {
+        ArgumentNullException.ThrowIfNull(frameText);
+        ArgumentNullException.ThrowIfNull(innerText);
+        ArgumentNullException.ThrowIfNull(outerText);
+        ArgumentNullException.ThrowIfNull(innerColor);
+        ArgumentNullException.ThrowIfNull(outerColor);
+
         FrameText = frameText;
         InnerText = innerText;
         OuterText = outerText;
-        InnerColor = innerColor;
-        OuterColor = outerColor;
+        this.innerColor = [.. innerColor];
+        this.outerColor = [.. outerColor];
     }
 
     [JsonPropertyName("frame_text")]
@@ -28,11 +34,15 @@ public sealed record GlyphForgeRequest
     [JsonPropertyName("outer_text")]
     public string OuterText { get; }
 
+    private readonly int[] innerColor;
+
     [JsonPropertyName("inner_color")]
-    public int[] InnerColor { get; }
+    public int[] InnerColor => [.. innerColor];
+
+    private readonly int[] outerColor;
 
     [JsonPropertyName("outer_color")]
-    public int[] OuterColor { get; }
+    public int[] OuterColor => [.. outerColor];
 
     public bool Equals(GlyphForgeRequest? other)
     {
@@ -40,12 +50,12 @@ public sealed record GlyphForgeRequest
             && FrameText == other.FrameText
             && InnerText == other.InnerText
             && OuterText == other.OuterText
-            && BinaryValueEquality.ContentEquals(InnerColor, other.InnerColor)
-            && BinaryValueEquality.ContentEquals(OuterColor, other.OuterColor);
+            && ValueEquality.ContentEquals(innerColor, other.innerColor)
+            && ValueEquality.ContentEquals(outerColor, other.outerColor);
     }
 
     public override int GetHashCode()
     {
-        return BinaryValueEquality.GetStableHashCode(FrameText, InnerText, OuterText);
+        return ValueEquality.GetStableHashCode(FrameText, InnerText, OuterText);
     }
 }

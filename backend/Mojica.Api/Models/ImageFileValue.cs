@@ -18,13 +18,13 @@ internal sealed class ImageBinaryValue
     public bool EqualsValue(ImageBinaryValue? other)
     {
         return other is not null
-            && BinaryValueEquality.ContentEquals(Content, other.Content)
+            && ValueEquality.ContentEquals(Content, other.Content)
             && MediaType == other.MediaType;
     }
 
     public int GetStableHashCode()
     {
-        return BinaryValueEquality.GetStableHashCode(MediaType);
+        return ValueEquality.GetStableHashCode(MediaType);
     }
 }
 
@@ -51,6 +51,6 @@ internal sealed class ImageFileValue
 
     public int GetStableHashCode()
     {
-        return BinaryValueEquality.GetStableHashCode(Binary.MediaType, FileName);
+        return ValueEquality.GetStableHashCode(Binary.MediaType, FileName);
     }
 }

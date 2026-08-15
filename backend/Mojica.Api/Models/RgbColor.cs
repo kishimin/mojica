@@ -18,6 +18,8 @@ public sealed record RgbColor
 
     public int Blue { get; }
 
+    public int[] ToArray() => [Red, Green, Blue];
+
     public static bool TryCreate(
         int red,
         int green,
