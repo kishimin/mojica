@@ -5,10 +5,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services
+var glyphForgeOptions = builder.Services
     .AddOptions<GlyphForgeClientOptions>()
     .BindConfiguration(GlyphForgeClientOptions.SectionName);
 builder.Services.AddSingleton<IValidateOptions<GlyphForgeClientOptions>, GlyphForgeClientOptionsValidator>();
+if (!builder.Environment.IsDevelopment())
+{
+    // Development can serve local health checks without a running Glyph Forge instance;
+    // deployed environments must fail fast when their required external configuration is missing.
+    glyphForgeOptions.ValidateOnStart();
+}
 builder.Services.AddHttpClient("GlyphForge", (serviceProvider, client) =>
 {
     var options = serviceProvider.GetRequiredService<IOptions<GlyphForgeClientOptions>>().Value;

@@ -1,25 +1,56 @@
 namespace Mojica.Api.Models;
 
-internal static class ImageFileValue
+internal sealed class ImageBinaryValue
 {
-    public static void Validate(byte[] content, string mediaType, string fileName)
+    public ImageBinaryValue(byte[] content, string mediaType)
     {
         ArgumentNullException.ThrowIfNull(content);
         ArgumentNullException.ThrowIfNull(mediaType);
-        ArgumentNullException.ThrowIfNull(fileName);
+
+        Content = content;
+        MediaType = mediaType;
     }
 
-    public static bool ContentEquals(
-        byte[] content,
-        byte[] otherContent,
-        string mediaType,
-        string otherMediaType,
-        string fileName,
-        string otherFileName)
+    public byte[] Content { get; }
+
+    public string MediaType { get; }
+
+    public bool EqualsValue(ImageBinaryValue? other)
     {
-        return BinaryValueEquality.ContentEquals(content, otherContent)
-            && mediaType == otherMediaType
-            && fileName == otherFileName;
+        return other is not null
+            && BinaryValueEquality.ContentEquals(Content, other.Content)
+            && MediaType == other.MediaType;
     }
 
+    public int GetStableHashCode()
+    {
+        return BinaryValueEquality.GetStableHashCode(MediaType);
+    }
+}
+
+internal sealed class ImageFileValue
+{
+    public ImageFileValue(byte[] content, string mediaType, string fileName)
+    {
+        ArgumentNullException.ThrowIfNull(fileName);
+
+        Binary = new ImageBinaryValue(content, mediaType);
+        FileName = fileName;
+    }
+
+    public ImageBinaryValue Binary { get; }
+
+    public string FileName { get; }
+
+    public bool EqualsValue(ImageFileValue? other)
+    {
+        return other is not null
+            && Binary.EqualsValue(other.Binary)
+            && FileName == other.FileName;
+    }
+
+    public int GetStableHashCode()
+    {
+        return BinaryValueEquality.GetStableHashCode(Binary.MediaType, FileName);
+    }
 }
