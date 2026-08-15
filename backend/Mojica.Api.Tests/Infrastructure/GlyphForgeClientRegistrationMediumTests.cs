@@ -18,7 +18,9 @@ public sealed class GlyphForgeClientRegistrationMediumTests
         using var factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder => builder.UseEnvironment("Production"));
 
-        Assert.Throws<OptionsValidationException>(() => _ = factory.Services);
+        var exception = Assert.ThrowsAny<Exception>(() => _ = factory.Services);
+
+        Assert.Contains("Glyph Forge base URL is required.", exception.ToString());
     }
 
     [Fact]
