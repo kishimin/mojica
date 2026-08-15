@@ -66,6 +66,16 @@ public sealed class GlyphForgeRequestMapperSmallTests
         Assert.True(document.RootElement.TryGetProperty("outer_color", out _));
     }
 
+    [Fact]
+    public void Map_WhenEquivalentPayloadsUseDifferentColorArrays_ComparesThemByContent()
+    {
+        var first = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
+        var second = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
+
+        Assert.Equal(first.Payload, second.Payload);
+        Assert.Equal(first.Payload.GetHashCode(), second.Payload.GetHashCode());
+    }
+
     private static ImageGenerationRequest ValidRequest(ImageType type)
     {
         Assert.True(RenderText.TryCreate("KA", out var text, out _));
