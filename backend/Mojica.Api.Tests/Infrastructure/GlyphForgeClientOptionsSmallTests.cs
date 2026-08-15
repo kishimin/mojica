@@ -1,19 +1,22 @@
 using Xunit;
+using Microsoft.Extensions.Options;
 
 namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class GlyphForgeClientOptionsSmallTests
 {
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void Validate_WhenBaseUrlAndTimeoutAreValid_AcceptsConfiguration()
     {
-        // ID: GLYPH-CONFIG-01
-        // Source: docs/v1/api/adapters.md section 13 and section 15
-        // Given: an absolute Glyph Forge base URL and a positive timeout
-        // When: the client options are validated
-        // Then: the configuration is accepted without exposing or requiring secrets
-        // Level: Unit
-        // Priority: High
+        var options = new GlyphForgeClientOptions
+        {
+            BaseUrl = new Uri("https://glyph-forge.example/"),
+            Timeout = TimeSpan.FromSeconds(20)
+        };
+
+        var result = new GlyphForgeClientOptionsValidator().Validate(null, options);
+
+        Assert.Equal(ValidateOptionsResult.Success, result);
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
