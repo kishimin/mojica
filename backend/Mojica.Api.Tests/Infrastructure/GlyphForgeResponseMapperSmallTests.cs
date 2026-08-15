@@ -1,4 +1,5 @@
 using System.Net;
+using Mojica.Api.Infrastructure;
 using Mojica.Api.Ports;
 
 namespace Mojica.Api.Tests.Infrastructure;
