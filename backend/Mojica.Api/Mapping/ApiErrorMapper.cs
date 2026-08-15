@@ -9,11 +9,10 @@ public static class ApiErrorMapper
 {
     public static ApiErrorMappingResult MapMalformedRequest(ApiLanguage language)
     {
-        return new(
+        return CreateError(
             StatusCodes.Status400BadRequest,
-            new ApiErrorResponse(
-                PublicApiErrorCode.BadRequest,
-                ApiErrorMessageProvider.GetPublicMessage(language, PublicApiErrorCode.BadRequest)));
+            PublicApiErrorCode.BadRequest,
+            language);
     }
 
     public static ApiErrorMappingResult MapValidationFailure(
@@ -70,12 +69,15 @@ public static class ApiErrorMapper
                 || code == ImageGenerationPortErrorCode.Failed => CreateError(
                 StatusCodes.Status502BadGateway,
                 PublicApiErrorCode.ImageGenerationFailed,
-                language),
+                language,
+                error.RetryAfter),
             _ when code == ImageGenerationPortErrorCode.OutputSizeExceeded => CreateError(
                 StatusCodes.Status422UnprocessableEntity,
                 PublicApiErrorCode.ImageSizeLimitExceeded,
                 language),
-            _ => throw new InvalidOperationException(
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(error),
+                code.Value,
                 $"Port error '{code.Value}' is not mapped yet."),
         };
     }
