@@ -13,14 +13,24 @@ public sealed class GlyphForgeImageGenerationAdapter(
     {
         ArgumentNullException.ThrowIfNull(request);
 
+        (string Path, GlyphForgeRequest Payload) mapped;
         try
         {
-            var mapped = GlyphForgeRequestMapper.Map(request);
-            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, mapped.Path)
-            {
-                Content = JsonContent.Create(mapped.Payload),
-            };
+            mapped = GlyphForgeRequestMapper.Map(request);
+        }
+        catch (InvalidOperationException)
+        {
+            return GlyphForgeResponseMapper.Map(
+                new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Failed));
+        }
 
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Post, mapped.Path)
+        {
+            Content = JsonContent.Create(mapped.Payload),
+        };
+
+        try
+        {
             var client = httpClientFactory.CreateClient("GlyphForge");
             using var response = await client.SendAsync(
                 httpRequest,
@@ -39,17 +49,15 @@ public sealed class GlyphForgeImageGenerationAdapter(
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
             return GlyphForgeResponseMapper.Map(
-                new GlyphForgeResponse(null, null, null, Failure: GlyphForgeResponseFailure.Timeout));
+                new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Timeout));
         }
-        catch (HttpRequestException)
+        catch (Exception exception) when (
+            exception is HttpRequestException
+            or IOException
+            or InvalidOperationException)
         {
             return GlyphForgeResponseMapper.Map(
-                new GlyphForgeResponse(null, null, null, Failure: GlyphForgeResponseFailure.Communication));
-        }
-        catch (InvalidOperationException)
-        {
-            return GlyphForgeResponseMapper.Map(
-                new GlyphForgeResponse(null, null, null, Failure: GlyphForgeResponseFailure.Failed));
+                new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Communication));
         }
     }
 
@@ -63,7 +71,12 @@ public sealed class GlyphForgeImageGenerationAdapter(
         if (value?.Date is { } date)
         {
             var seconds = (date - DateTimeOffset.UtcNow).TotalSeconds;
-            if (seconds >= 0 && seconds <= int.MaxValue)
+            if (seconds < 0)
+            {
+                return 0;
+            }
+
+            if (seconds <= int.MaxValue)
             {
                 return (int)Math.Ceiling(seconds);
             }

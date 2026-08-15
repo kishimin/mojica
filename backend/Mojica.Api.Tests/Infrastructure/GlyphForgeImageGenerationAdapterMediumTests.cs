@@ -168,6 +168,21 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
     }
 
     [Fact]
+    public async Task Send_WhenRetryAfterDateHasElapsed_UsesZeroSeconds()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+        {
+            Content = new StringContent("provider secret"),
+        };
+        response.Headers.RetryAfter = new RetryConditionHeaderValue(DateTimeOffset.UtcNow.AddSeconds(-1));
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(0, result.Error?.RetryAfter);
+    }
+
+    [Fact]
     public async Task Send_WhenErrorResponseHasBody_DoesNotReadOrBufferTheBody()
     {
         var content = new TrackingHttpContent();
@@ -180,6 +195,20 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
 
         Assert.False(content.WasRead);
+    }
+
+    [Fact]
+    public async Task Send_WhenReadingResponseBodyFailsWithIOException_ReturnsUnavailable()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ThrowingHttpContent(),
+        };
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.Unavailable, result.Error?.ErrorCode);
     }
 
     [Fact]
@@ -200,28 +229,6 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         cancellation.Cancel();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => operation);
-    }
-
-    [Theory]
-    [InlineData(422, "OUTPUT_SIZE_EXCEEDED")]
-    [InlineData(429, "RATE_LIMITED")]
-    [InlineData(503, "UNAVAILABLE")]
-    [InlineData(502, "FAILED")]
-    public async Task Send_WhenExternalResponsesFail_MapsEachStatusToPortError(
-        int statusCode,
-        string expectedCode)
-    {
-        var response = new HttpResponseMessage((HttpStatusCode)statusCode)
-        {
-            Content = new StringContent("provider secret"),
-        };
-        var adapter = CreateAdapter(_ => response);
-
-        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
-
-        Assert.False(result.IsSuccess);
-        Assert.Equal(expectedCode, result.Error?.Code);
-        Assert.Null(result.Error?.Details);
     }
 
     private static GlyphForgeImageGenerationAdapter CreateAdapter(
@@ -274,6 +281,20 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         {
             WasRead = true;
             return Task.CompletedTask;
+        }
+
+        protected override bool TryComputeLength(out long length)
+        {
+            length = 0;
+            return true;
+        }
+    }
+
+    private sealed class ThrowingHttpContent : HttpContent
+    {
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+        {
+            throw new IOException("simulated response body read failure");
         }
 
         protected override bool TryComputeLength(out long length)

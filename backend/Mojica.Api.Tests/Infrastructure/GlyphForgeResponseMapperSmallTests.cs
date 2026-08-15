@@ -95,7 +95,7 @@ public sealed class GlyphForgeResponseMapperSmallTests
     [Fact]
     public void Map_WhenTimeoutOccurs_ReturnsTimeoutError()
     {
-        var response = new GlyphForgeResponse(null, null, null, Failure: GlyphForgeResponseFailure.Timeout);
+        var response = new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Timeout);
 
         var result = GlyphForgeResponseMapper.Map(response);
 
@@ -107,7 +107,7 @@ public sealed class GlyphForgeResponseMapperSmallTests
     [Fact]
     public void Map_WhenCommunicationFails_ReturnsUnavailableError()
     {
-        var response = new GlyphForgeResponse(null, null, null, Failure: GlyphForgeResponseFailure.Communication);
+        var response = new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Communication);
 
         var result = GlyphForgeResponseMapper.Map(response);
 
@@ -134,5 +134,15 @@ public sealed class GlyphForgeResponseMapperSmallTests
 
         Assert.Equal(first, second);
         Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void Response_WhenStatusAndFailureAreBothSpecified_RejectsAmbiguousState()
+    {
+        Assert.Throws<ArgumentException>(() => new GlyphForgeResponse(
+            HttpStatusCode.BadGateway,
+            null,
+            null,
+            failure: GlyphForgeResponseFailure.Failed));
     }
 }
