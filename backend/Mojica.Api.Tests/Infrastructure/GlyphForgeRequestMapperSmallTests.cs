@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Mojica.Api.Infrastructure;
 using Mojica.Api.Models;
 
@@ -49,6 +50,20 @@ public sealed class GlyphForgeRequestMapperSmallTests
         var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
 
         Assert.Equal([255, 105, 180], result.Payload.OuterColor);
+    }
+
+    [Fact]
+    public void Map_WhenPayloadIsSerialized_UsesGlyphForgeSnakeCaseFieldNames()
+    {
+        var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
+
+        using var document = JsonDocument.Parse(JsonSerializer.Serialize(result.Payload));
+
+        Assert.True(document.RootElement.TryGetProperty("frame_text", out _));
+        Assert.True(document.RootElement.TryGetProperty("inner_text", out _));
+        Assert.True(document.RootElement.TryGetProperty("outer_text", out _));
+        Assert.True(document.RootElement.TryGetProperty("inner_color", out _));
+        Assert.True(document.RootElement.TryGetProperty("outer_color", out _));
     }
 
     private static ImageGenerationRequest ValidRequest(ImageType type)
