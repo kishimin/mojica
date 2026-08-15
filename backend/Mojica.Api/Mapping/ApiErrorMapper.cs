@@ -77,6 +77,14 @@ public static class ApiErrorMapper
         };
     }
 
+    public static ApiErrorMappingResult MapUnexpectedFailure(ApiLanguage language)
+    {
+        return CreateError(
+            StatusCodes.Status500InternalServerError,
+            "INTERNAL_SERVER_ERROR",
+            language);
+    }
+
     private static ApiErrorMappingResult CreateError(
         int statusCode,
         string code,
