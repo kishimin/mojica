@@ -45,14 +45,6 @@ public sealed class GlyphForgeRequestMapperSmallTests
     }
 
     [Fact]
-    public void Map_WhenHexColorIsPink_ConvertsItToExpectedRgbComponents()
-    {
-        var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
-
-        Assert.Equal([255, 105, 180], result.Payload.OuterColor);
-    }
-
-    [Fact]
     public void Map_WhenPayloadIsSerialized_UsesGlyphForgeSnakeCaseFieldNames()
     {
         var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
@@ -74,6 +66,17 @@ public sealed class GlyphForgeRequestMapperSmallTests
 
         Assert.Equal(first.Payload, second.Payload);
         Assert.Equal(first.Payload.GetHashCode(), second.Payload.GetHashCode());
+    }
+
+    [Fact]
+    public void Map_WhenCallerMutatesReturnedColorArray_DoesNotChangePayloadValue()
+    {
+        var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
+        var innerColor = result.Payload.InnerColor;
+
+        innerColor[0] = 0;
+
+        Assert.Equal([255, 212, 0], result.Payload.InnerColor);
     }
 
     private static ImageGenerationRequest ValidRequest(ImageType type)
