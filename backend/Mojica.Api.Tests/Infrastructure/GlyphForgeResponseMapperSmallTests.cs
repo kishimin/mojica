@@ -1,17 +1,20 @@
+using System.Net;
+using Mojica.Api.Ports;
+
 namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class GlyphForgeResponseMapperSmallTests
 {
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
+    [Fact]
     public void Map_WhenSuccessfulPngResponse_ReturnsGeneratedImageData()
     {
-        // ID: 8B-RES-001
-        // Source: docs/v1/api/adapters.md §10, §14, §15
-        // Given: A successful response with image/png content type and non-empty PNG bytes.
-        // When: The response mapper converts the Glyph Forge response to a port result.
-        // Then: The result is successful and preserves the binary content and media type in GeneratedImageData.
-        // Blocked by: The response mapper contract and implementation are not yet present.
-        // Priority: P0
+        var content = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
+        var response = new GlyphForgeResponse(HttpStatusCode.OK, "image/png", content);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(new GeneratedImageData(content, "image/png"), result.Data);
     }
 
     [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
