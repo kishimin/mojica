@@ -31,28 +31,24 @@ public sealed class GlyphForgeRequestMapperSmallTests
         Assert.Equal("/images/x-icon", result.Path);
     }
 
-    [Fact(Skip = "TODO: implement the request mapping contract")]
+    [Fact]
     public void Map_WhenRequestValuesAreValidated_MapsDomainFieldsToGlyphForgeFields()
     {
-        // ID: 8A-REQ-004
-        // Source: docs/v1/api/adapters.md §15 Request
-        // Given: A validated request with text, foreground/background characters, and HEX colors.
-        // When: The request mapper creates the Glyph Forge request DTO.
-        // Then: text maps to frame_text, foregroundCharacter to inner_text, and backgroundCharacter to outer_text without changing their values.
-        // Then: foregroundColor and backgroundColor map to inner_color and outer_color as RGB components.
-        // Theory candidate: use representative Unicode text/characters and normalized HEX colors.
-        // Priority: P0
+        var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
+
+        Assert.Equal("KA", result.Payload.FrameText);
+        Assert.Equal("🌻", result.Payload.InnerText);
+        Assert.Equal("☀", result.Payload.OuterText);
+        Assert.Equal(new[] { 255, 212, 0 }, result.Payload.InnerColor);
+        Assert.Equal(new[] { 255, 105, 180 }, result.Payload.OuterColor);
     }
 
-    [Fact(Skip = "TODO: implement the request mapping contract")]
+    [Fact]
     public void Map_WhenHexColorIsPink_ConvertsItToExpectedRgbComponents()
     {
-        // ID: 8A-REQ-005
-        // Source: docs/v1/api/adapters.md §14 Small Tests and §15 Request
-        // Given: A validated HEX color #FF69B4.
-        // When: The request mapper converts the color for Glyph Forge.
-        // Then: It produces RGB components 255, 105, and 180 in the correct array order.
-        // Priority: P0
+        var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
+
+        Assert.Equal(new[] { 255, 105, 180 }, result.Payload.OuterColor);
     }
 
     [Fact(Skip = "TODO: implement the request mapping contract")]
