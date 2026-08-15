@@ -12,16 +12,35 @@ namespace Mojica.Api.Tests.Infrastructure;
 public sealed class GlyphForgeImageGenerationAdapterMediumTests
 {
     [Fact]
-    public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverridesOrAuthentication()
+    public async Task Send_WhenCreatingGlyphForgeRequest_UsesApplicationJsonContentType()
+    {
+        string? mediaType = null;
+        string? charset = null;
+        var adapter = CreateAdapter(request =>
+        {
+            mediaType = request.Content?.Headers.ContentType?.MediaType;
+            charset = request.Content?.Headers.ContentType?.CharSet;
+            return PngResponse();
+        });
+
+        await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal("application/json", mediaType);
+        Assert.Equal("utf-8", charset);
+    }
+
+    [Theory]
+    [InlineData("frame_font_size")]
+    [InlineData("output_font_size")]
+    public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverride(
+        string forbiddenField)
     {
         string? requestBody = null;
-        string[]? requestHeaders = null;
         var adapter = CreateAsyncAdapter(async (request, _) =>
         {
             var content = request.Content
                 ?? throw new XunitException("The Adapter must send a request body.");
             requestBody = await content.ReadAsStringAsync();
-            requestHeaders = request.Headers.Select(header => header.Key).ToArray();
             return PngResponse();
         });
 
@@ -30,14 +49,30 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         var serializedRequest = requestBody
             ?? throw new XunitException("The HTTP handler did not observe a request body.");
         using var document = JsonDocument.Parse(serializedRequest);
-        Assert.False(document.RootElement.TryGetProperty("frame_font_size", out _));
-        Assert.False(document.RootElement.TryGetProperty("output_font_size", out _));
+        Assert.False(document.RootElement.TryGetProperty(forbiddenField, out _));
+    }
+
+    [Theory]
+    [InlineData("Authorization")]
+    [InlineData("X-API-Key")]
+    [InlineData("Api-Key")]
+    public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyAuthenticationHeader(
+        string forbiddenHeader)
+    {
+        string[]? requestHeaders = null;
+        var adapter = CreateAdapter(request =>
+        {
+            requestHeaders = request.Headers.Select(header => header.Key).ToArray();
+            return PngResponse();
+        });
+
+        await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
         var observedHeaders = requestHeaders
             ?? throw new XunitException("The HTTP handler did not observe request headers.");
-        Assert.DoesNotContain(observedHeaders, header =>
-            header.Equals("Authorization", StringComparison.OrdinalIgnoreCase)
-            || header.Equals("X-API-Key", StringComparison.OrdinalIgnoreCase)
-            || header.Equals("Api-Key", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(
+            observedHeaders,
+            header => header.Equals(forbiddenHeader, StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
