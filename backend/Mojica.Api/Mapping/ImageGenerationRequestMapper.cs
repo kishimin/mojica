@@ -43,24 +43,18 @@ public static class ImageGenerationRequestMapper
             errors,
             HexColor.TryCreate);
 
-        if (foregroundCharacter is not null && backgroundCharacter is not null)
-        {
-            var patternReason = ImageGenerationRequest.GetPatternCombinationFailureReason(
-                foregroundCharacter,
-                backgroundCharacter);
-            if (patternReason is not null)
-            {
-                errors.Add(new ModelValidationError(
-                    "foregroundCharacter",
-                    patternReason));
-                errors.Add(new ModelValidationError(
-                    "backgroundCharacter",
-                    patternReason));
-            }
-        }
-
         if (errors.Count > 0)
         {
+            if (foregroundCharacter is not null && backgroundCharacter is not null)
+            {
+                var patternError = ImageGenerationRequest.GetPatternCombinationFailure(
+                    foregroundCharacter,
+                    backgroundCharacter);
+                if (patternError is not null)
+                {
+                    AddFieldErrors(errors, patternError);
+                }
+            }
             return ImageGenerationRequestMappingResult.Failure(errors);
         }
 
@@ -77,13 +71,23 @@ public static class ImageGenerationRequestMapper
             return ImageGenerationRequestMappingResult.Success(request);
         }
 
-        var fieldErrors = requestError.Targets
-            .Select(target => new ModelValidationError(
-                target,
-                requestError.Reason,
-                requestError.Details));
+        var fieldErrors = new List<ModelValidationError>();
+        AddFieldErrors(fieldErrors, requestError);
 
         return ImageGenerationRequestMappingResult.Failure(fieldErrors);
+    }
+
+    private static void AddFieldErrors(
+        ICollection<ModelValidationError> errors,
+        ModelValidationError error)
+    {
+        foreach (var target in error.Targets)
+        {
+            errors.Add(new ModelValidationError(
+                target,
+                error.Reason,
+                error.Details));
+        }
     }
 
     private delegate bool TryCreateValue<T>(

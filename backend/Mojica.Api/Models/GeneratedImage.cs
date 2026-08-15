@@ -2,34 +2,27 @@ namespace Mojica.Api.Models;
 
 public sealed record GeneratedImage
 {
+    private readonly ImageFileValue value;
+
     public GeneratedImage(byte[] content, string mediaType, string fileName)
     {
-        ArgumentNullException.ThrowIfNull(content);
-        ArgumentNullException.ThrowIfNull(mediaType);
-        ArgumentNullException.ThrowIfNull(fileName);
-
-        Content = content;
-        MediaType = mediaType;
-        FileName = fileName;
+        value = new ImageFileValue(content, mediaType, fileName);
     }
 
-    public byte[] Content { get; }
+    public byte[] Content => value.Binary.Content;
 
-    public string MediaType { get; }
+    public string MediaType => value.Binary.MediaType;
 
-    public string FileName { get; }
+    public string FileName => value.FileName;
 
     public bool Equals(GeneratedImage? other)
     {
-        return other is not null
-            && BinaryValueEquality.ContentEquals(Content, other.Content)
-            && MediaType == other.MediaType
-            && FileName == other.FileName;
+        return other is not null && value.EqualsValue(other.value);
     }
 
     public override int GetHashCode()
     {
         // Mutable image content cannot safely participate in a stable hash code.
-        return BinaryValueEquality.GetStableHashCode(MediaType, FileName);
+        return value.GetStableHashCode();
     }
 }

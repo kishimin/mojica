@@ -4,29 +4,25 @@ namespace Mojica.Api.Ports;
 
 public sealed record GeneratedImageData
 {
+    private readonly ImageBinaryValue value;
+
     public GeneratedImageData(byte[] content, string mediaType)
     {
-        ArgumentNullException.ThrowIfNull(content);
-        ArgumentNullException.ThrowIfNull(mediaType);
-
-        Content = content;
-        MediaType = mediaType;
+        value = new ImageBinaryValue(content, mediaType);
     }
 
-    public byte[] Content { get; }
+    public byte[] Content => value.Content;
 
-    public string MediaType { get; }
+    public string MediaType => value.MediaType;
 
     public bool Equals(GeneratedImageData? other)
     {
-        return other is not null
-            && BinaryValueEquality.ContentEquals(Content, other.Content)
-            && MediaType == other.MediaType;
+        return other is not null && value.EqualsValue(other.value);
     }
 
     public override int GetHashCode()
     {
         // Mutable image content cannot safely participate in a stable hash code.
-        return BinaryValueEquality.GetStableHashCode(MediaType);
+        return value.GetStableHashCode();
     }
 }
