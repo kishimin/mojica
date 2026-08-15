@@ -11,16 +11,22 @@ namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class GlyphForgeImageGenerationAdapterMediumTests
 {
-    [Fact(Skip = "TODO: implement the request method and endpoint contract assertion")]
-    public void Send_WhenImageTypeIsStandard_UsesPostImagesEndpoint()
+    [Fact]
+    public async Task Send_WhenImageTypeIsStandard_UsesPostImagesEndpoint()
     {
-        // ID: GF-ADAPTER-M-001
-        // Source: docs/v1/api/adapters.md §15, Endpoints
-        // Given: A valid standard ImageGenerationRequest and a controllable HTTP handler
-        // When: The Adapter sends the generation request
-        // Then: The observed request uses POST and the /images endpoint
-        // Error: Fail if the method or endpoint path does not match the ImageType contract
-        // Priority: P1
+        HttpMethod? requestMethod = null;
+        Uri? requestUri = null;
+        var adapter = CreateAdapter(request =>
+        {
+            requestMethod = request.Method;
+            requestUri = request.RequestUri;
+            return PngResponse();
+        });
+
+        await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(HttpMethod.Post, requestMethod);
+        Assert.Equal("https://glyph-forge.example/images", requestUri?.ToString());
     }
 
     [Fact(Skip = "TODO: implement the request method and endpoint contract assertion")]
