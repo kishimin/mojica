@@ -1,16 +1,18 @@
+using Mojica.Api.Infrastructure;
+using Mojica.Api.Models;
+
 namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class GlyphForgeRequestMapperSmallTests
 {
-    [Fact(Skip = "TODO: implement the request mapping contract")]
+    [Fact]
     public void Map_WhenImageTypeIsStandard_SelectsImagesEndpoint()
     {
-        // ID: 8A-REQ-001
-        // Source: docs/v1/api/adapters.md §15 Endpoints
-        // Given: A validated ImageGenerationRequest whose ImageType is standard.
-        // When: The request mapper selects the Glyph Forge endpoint.
-        // Then: It returns POST /images and preserves the validated request payload.
-        // Priority: P0
+        var request = ValidRequest(ImageType.Standard);
+
+        var result = GlyphForgeRequestMapper.Map(request);
+
+        Assert.Equal("/images", result.Path);
     }
 
     [Fact(Skip = "TODO: implement the request mapping contract")]
@@ -70,5 +72,25 @@ public sealed class GlyphForgeRequestMapperSmallTests
         // Then: It does not add an authentication header to the request mapping result.
         // Error: Do not assert HTTP handler details here; those belong to the Adapter boundary.
         // Priority: P1
+    }
+
+    private static ImageGenerationRequest ValidRequest(ImageType type)
+    {
+        Assert.True(RenderText.TryCreate("KA", out var text, out _));
+        Assert.True(PatternCharacter.TryCreate("🌻", out var foregroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#FFD400", out var foregroundColor, out _));
+        Assert.True(PatternCharacter.TryCreate("☀", out var backgroundCharacter, out _));
+        Assert.True(HexColor.TryCreate("#FF69B4", out var backgroundColor, out _));
+        Assert.True(ImageGenerationRequest.TryCreate(
+            type,
+            text,
+            foregroundCharacter,
+            foregroundColor,
+            backgroundCharacter,
+            backgroundColor,
+            out var request,
+            out _));
+
+        return request!;
     }
 }
