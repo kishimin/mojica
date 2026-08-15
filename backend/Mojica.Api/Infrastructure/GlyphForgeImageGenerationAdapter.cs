@@ -27,7 +27,6 @@ public sealed class GlyphForgeImageGenerationAdapter(
                 new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Failed));
         }
 
-        using var httpRequest = new HttpRequestMessage(HttpMethod.Post, mapped.Path.TrimStart('/'));
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         try
@@ -38,6 +37,9 @@ public sealed class GlyphForgeImageGenerationAdapter(
                 timeout.CancelAfter(client.Timeout);
             }
 
+            using var httpRequest = new HttpRequestMessage(
+                HttpMethod.Post,
+                CreateRequestUri(client.BaseAddress, mapped.Path));
             httpRequest.Content = JsonContent.Create(mapped.Payload);
             using var response = await client.SendAsync(
                 httpRequest,
@@ -79,6 +81,20 @@ public sealed class GlyphForgeImageGenerationAdapter(
     {
         await response.Content.CopyToAsync(Stream.Null, cancellationToken);
         return null;
+    }
+
+    private static Uri CreateRequestUri(Uri? baseAddress, string path)
+    {
+        var relativePath = path.TrimStart('/');
+        if (baseAddress is null)
+        {
+            return new Uri(relativePath, UriKind.Relative);
+        }
+
+        var directoryBase = baseAddress.AbsoluteUri.EndsWith('/')
+            ? baseAddress
+            : new Uri($"{baseAddress.AbsoluteUri}/");
+        return new Uri(directoryBase, relativePath);
     }
 
     private static int? ParseRetryAfter(System.Net.Http.Headers.RetryConditionHeaderValue? value)

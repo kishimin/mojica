@@ -232,7 +232,7 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
             return PngResponse();
         }))
         {
-            BaseAddress = new Uri("https://glyph-forge.example/api/")
+            BaseAddress = new Uri("https://glyph-forge.example/api")
         };
         var adapter = new GlyphForgeImageGenerationAdapter(new StubHttpClientFactory(client));
 
