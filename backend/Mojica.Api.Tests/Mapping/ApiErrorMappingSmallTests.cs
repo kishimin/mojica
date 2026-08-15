@@ -139,15 +139,16 @@ public sealed class ApiErrorMappingSmallTests
             response.Message);
     }
 
-    [Fact(Skip = "TODO: implement API error mapping")]
+    [Fact]
     public void Map_WhenUnexpectedExceptionIsClassified_ReturnsInternalServerErrorContract()
     {
-        // ID: API-ERROR-MAP-S-009
-        // Source: docs/v1/api/controllers.md §9-10; docs/v1/api/api.md §12
-        // Given: An unexpected application failure classified for public error conversion
-        // When: The API error mapping converts the failure to the public contract
-        // Then: The result represents HTTP 500 with code INTERNAL_SERVER_ERROR and a safe localized message
-        // Error: Log details internally but never expose exception messages, stack traces, URLs, or credentials
-        // Priority: High
+        var result = ApiErrorMapper.MapUnexpectedFailure(ApiLanguage.English);
+
+        var response = Assert.IsType<ApiErrorResponse>(result.Response);
+        Assert.Equal(500, result.StatusCode);
+        Assert.Equal("INTERNAL_SERVER_ERROR", response.Code);
+        Assert.Equal(
+            "An unexpected error occurred while generating the image.",
+            response.Message);
     }
 }
