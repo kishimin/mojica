@@ -143,16 +143,24 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         Assert.Null(result.Error?.Details);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
-    public void Send_WhenCallerCancellationIsRequested_PropagatesCancellationToHttpCommunication()
+    [Fact]
+    public async Task Send_WhenCallerCancellationIsRequested_PropagatesCancellationToHttpCommunication()
     {
-        // ID: 8B-MED-005
-        // Source: docs/v1/api/adapters.md §14 and §15
-        // Given: The HTTP handler blocks until the caller cancellation token is cancelled.
-        // When: The caller cancels the generation operation.
-        // Then: Cancellation reaches the HTTP communication boundary without a real-time sleep or retry.
-        // Blocked by: The Adapter and its controllable HTTP handler are not yet implemented.
-        // Priority: P1
+        var handlerStarted = new TaskCompletionSource(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        var adapter = CreateAsyncAdapter(async (_, cancellationToken) =>
+        {
+            handlerStarted.SetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+            return PngResponse();
+        });
+        using var cancellation = new CancellationTokenSource();
+
+        var operation = adapter.GenerateAsync(ValidRequest(), cancellation.Token);
+        await handlerStarted.Task;
+        cancellation.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => operation);
     }
 
     [Theory]
