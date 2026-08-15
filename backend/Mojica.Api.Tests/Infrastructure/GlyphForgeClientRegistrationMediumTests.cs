@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Mojica.Api.Infrastructure;
 
 namespace Mojica.Api.Tests.Infrastructure;
@@ -28,17 +29,14 @@ public sealed class GlyphForgeClientRegistrationMediumTests
         Assert.Equal(TimeSpan.FromSeconds(35), client.Timeout);
     }
 
-    [Fact(Skip = "TODO: Implement from documented test plan.")]
+    [Fact]
     public void Start_WhenRequiredConfigurationIsMissing_FailsBeforeResolvingClient()
     {
-        // ID: GLYPH-CONFIG-07
-        // Source: docs/v1/api/adapters.md section 13
-        // Given: a test host with missing or invalid Glyph Forge client configuration
-        // When: the ASP.NET Core host is built
-        // Then: startup or options resolution fails before an outbound HTTP request can be sent
-        // Level: ASP.NET Core integration
-        // Blocked by: define the production options binding and validation entry point
-        // Priority: High
+        using var factory = new WebApplicationFactory<Program>();
+
+        var exception = Assert.Throws<OptionsValidationException>(() => _ = factory.Services);
+
+        Assert.Contains("Glyph Forge", exception.ToString());
     }
 
     [Fact(Skip = "TODO: Implement from documented test plan.")]
