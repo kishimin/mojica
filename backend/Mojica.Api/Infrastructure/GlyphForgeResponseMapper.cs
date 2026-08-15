@@ -5,6 +5,12 @@ namespace Mojica.Api.Infrastructure;
 
 public static class GlyphForgeResponseMapper
 {
+    private static readonly HashSet<string> SupportedMediaTypes =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "image/png",
+        };
+
     public static ImageGenerationPortResult Map(GlyphForgeResponse response)
     {
         ArgumentNullException.ThrowIfNull(response);
@@ -41,7 +47,7 @@ public static class GlyphForgeResponseMapper
 
         if (response.StatusCode is >= HttpStatusCode.OK and < HttpStatusCode.MultipleChoices &&
             response.MediaType is { } mediaType &&
-            string.Equals(mediaType, "image/png", StringComparison.OrdinalIgnoreCase) &&
+            SupportedMediaTypes.Contains(mediaType) &&
             response.Content is { Length: > 0 } content)
         {
             return ImageGenerationPortResult.Success(
