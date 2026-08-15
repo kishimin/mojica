@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using System.Threading.RateLimiting;
 using Mojica.Api.Infrastructure;
 using Mojica.Api.Ports;
 
@@ -24,7 +26,32 @@ builder.Services.AddHttpClient("GlyphForge", (serviceProvider, client) =>
 });
 builder.Services.AddSingleton<ImageGenerationPort, GlyphForgeImageGenerationAdapter>();
 
+var rateLimitOptions = builder.Services
+    .AddOptions<RateLimitOptions>()
+    .BindConfiguration(RateLimitOptions.SectionName);
+builder.Services.AddSingleton<IValidateOptions<RateLimitOptions>, RateLimitOptionsValidator>();
+if (!builder.Environment.IsDevelopment())
+{
+    // Development can serve local health checks without a rate limit configured;
+    // deployed environments must fail fast when their required configuration is missing.
+    rateLimitOptions.ValidateOnStart();
+}
+builder.Services.AddRateLimiter(limiterOptions =>
+{
+    limiterOptions.OnRejected = RateLimitRejectionHandler.WriteAsync;
+    limiterOptions.AddPolicy(ImageGenerationRateLimiterPolicy.PolicyName, httpContext =>
+    {
+        var options = httpContext.RequestServices
+            .GetRequiredService<IOptions<RateLimitOptions>>().Value;
+        return RateLimitPartition.Get(
+            ImageGenerationRateLimiterPolicy.PolicyName,
+            _ => ImageGenerationRateLimiterPolicy.CreateLimiter(options));
+    });
+});
+
 var app = builder.Build();
+
+app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
 {
