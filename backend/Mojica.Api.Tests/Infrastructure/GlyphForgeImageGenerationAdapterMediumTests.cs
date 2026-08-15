@@ -4,6 +4,7 @@ using System.Text.Json;
 using Mojica.Api.Infrastructure;
 using Mojica.Api.Models;
 using Mojica.Api.Ports;
+using Xunit.Sdk;
 
 namespace Mojica.Api.Tests.Infrastructure;
 
@@ -16,14 +17,18 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         var hasAuthorizationHeader = false;
         var adapter = CreateAsyncAdapter(async (request, _) =>
         {
-            requestBody = await request.Content!.ReadAsStringAsync();
+            var content = request.Content
+                ?? throw new XunitException("The Adapter must send a request body.");
+            requestBody = await content.ReadAsStringAsync();
             hasAuthorizationHeader = request.Headers.Authorization is not null;
             return PngResponse();
         });
 
         await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
 
-        using var document = JsonDocument.Parse(requestBody!);
+        var serializedRequest = requestBody
+            ?? throw new XunitException("The HTTP handler did not observe a request body.");
+        using var document = JsonDocument.Parse(serializedRequest);
         Assert.False(document.RootElement.TryGetProperty("frame_font_size", out _));
         Assert.False(document.RootElement.TryGetProperty("output_font_size", out _));
         Assert.False(hasAuthorizationHeader);
