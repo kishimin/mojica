@@ -11,6 +11,54 @@ namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class GlyphForgeImageGenerationAdapterMediumTests
 {
+    [Fact(Skip = "TODO: implement the request method and endpoint contract assertion")]
+    public void Send_WhenImageTypeIsStandard_UsesPostImagesEndpoint()
+    {
+        // ID: GF-ADAPTER-M-001
+        // Source: docs/v1/api/adapters.md §15, Endpoints
+        // Given: A valid standard ImageGenerationRequest and a controllable HTTP handler
+        // When: The Adapter sends the generation request
+        // Then: The observed request uses POST and the /images endpoint
+        // Error: Fail if the method or endpoint path does not match the ImageType contract
+        // Priority: P1
+    }
+
+    [Fact(Skip = "TODO: implement the request method and endpoint contract assertion")]
+    public void Send_WhenImageTypeIsXBackground_UsesPostBackgroundEndpoint()
+    {
+        // ID: GF-ADAPTER-M-002
+        // Source: docs/v1/api/adapters.md §15, Endpoints
+        // Given: A valid x-background ImageGenerationRequest and a controllable HTTP handler
+        // When: The Adapter sends the generation request
+        // Then: The observed request uses POST and the /images/background endpoint
+        // Error: Fail if the endpoint does not correspond to ImageType.XBackground
+        // Priority: P1
+    }
+
+    [Fact(Skip = "TODO: implement the request method and endpoint contract assertion")]
+    public void Send_WhenImageTypeIsXIcon_UsesPostXIconEndpoint()
+    {
+        // ID: GF-ADAPTER-M-003
+        // Source: docs/v1/api/adapters.md §15, Endpoints
+        // Given: A valid x-icon ImageGenerationRequest and a controllable HTTP handler
+        // When: The Adapter sends the generation request
+        // Then: The observed request uses POST and the /images/x-icon endpoint
+        // Error: Fail if the endpoint does not correspond to ImageType.XIcon
+        // Priority: P1
+    }
+
+    [Fact(Skip = "TODO: implement the request Content-Type contract assertion")]
+    public void Send_WhenCreatingGlyphForgeRequest_UsesApplicationJsonContentType()
+    {
+        // ID: GF-ADAPTER-M-004
+        // Source: docs/v1/api/adapters.md §15, Request
+        // Given: A valid ImageGenerationRequest and a controllable HTTP handler
+        // When: The Adapter serializes and sends the request
+        // Then: The request Content-Type is application/json with the contract charset
+        // Error: Fail if the request omits Content-Type or uses a different media type
+        // Priority: P1
+    }
+
     [Fact]
     public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverridesOrAuthentication()
     {
