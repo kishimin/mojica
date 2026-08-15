@@ -1,50 +1,88 @@
+using Xunit;
+using Microsoft.Extensions.Options;
+using Mojica.Api.Infrastructure;
+
 namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class RateLimitOptionsSmallTests
 {
-    [Fact(Skip = "TODO: implement local API rate limiting")]
+    [Fact]
     public void Validate_WhenPermitLimitWindowAndQueueLimitAreValid_AcceptsConfiguration()
     {
         // ID: RATE-LIMIT-S-001
         // Source: docs/v1/api/api.md §13
-        // Given: A positive PermitLimit, a positive Window, and a non-negative QueueLimit
-        // When: The rate limit configuration is validated
-        // Then: Validation succeeds
-        // Priority: High
+        var options = new RateLimitOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        };
+
+        var result = new RateLimitOptionsValidator().Validate(null, options);
+
+        Assert.Equal(ValidateOptionsResult.Success, result);
     }
 
-    [Fact(Skip = "TODO: implement local API rate limiting")]
-    public void Validate_WhenPermitLimitIsNotPositive_RejectsConfiguration()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void Validate_WhenPermitLimitIsNotPositive_RejectsConfiguration(int permitLimit)
     {
         // ID: RATE-LIMIT-S-002
         // Source: docs/v1/api/api.md §13
-        // Given: A PermitLimit of zero or a negative value
-        // When: The rate limit configuration is validated
-        // Then: Validation fails with a message identifying the permit limit
-        // Priority: High
-        // Theory candidate: zero and negative PermitLimit
+        var options = new RateLimitOptions
+        {
+            PermitLimit = permitLimit,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        };
+
+        var result = new RateLimitOptionsValidator().Validate(null, options);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("permit limit", result.FailureMessage);
     }
 
-    [Fact(Skip = "TODO: implement local API rate limiting")]
-    public void Validate_WhenWindowIsNotPositive_RejectsConfiguration()
+    [Theory]
+    [MemberData(nameof(NonPositiveWindows))]
+    public void Validate_WhenWindowIsNotPositive_RejectsConfiguration(TimeSpan window)
     {
         // ID: RATE-LIMIT-S-003
         // Source: docs/v1/api/api.md §13
-        // Given: A Window of TimeSpan.Zero or a negative TimeSpan
-        // When: The rate limit configuration is validated
-        // Then: Validation fails with a message identifying the window
-        // Priority: High
-        // Theory candidate: zero and negative Window
+        var options = new RateLimitOptions
+        {
+            PermitLimit = 10,
+            Window = window,
+            QueueLimit = 0
+        };
+
+        var result = new RateLimitOptionsValidator().Validate(null, options);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("window", result.FailureMessage);
     }
 
-    [Fact(Skip = "TODO: implement local API rate limiting")]
+    [Fact]
     public void Validate_WhenQueueLimitIsNegative_RejectsConfiguration()
     {
         // ID: RATE-LIMIT-S-004
         // Source: docs/v1/api/api.md §13
-        // Given: A negative QueueLimit
-        // When: The rate limit configuration is validated
-        // Then: Validation fails with a message identifying the queue limit
-        // Priority: Medium
+        var options = new RateLimitOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = -1
+        };
+
+        var result = new RateLimitOptionsValidator().Validate(null, options);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("queue limit", result.FailureMessage);
     }
+
+    public static TheoryData<TimeSpan> NonPositiveWindows => new()
+    {
+        TimeSpan.Zero,
+        TimeSpan.FromSeconds(-1)
+    };
 }
