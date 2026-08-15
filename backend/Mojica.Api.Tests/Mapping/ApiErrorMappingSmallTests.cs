@@ -122,15 +122,21 @@ public sealed class ApiErrorMappingSmallTests
             response.Message);
     }
 
-    [Fact(Skip = "TODO: implement API error mapping")]
+    [Fact]
     public void Map_WhenGenerationFailsUnexpectedly_ReturnsGenerationFailureContract()
     {
-        // ID: API-ERROR-MAP-S-008
-        // Source: docs/v1/api/controllers.md §6, §9-10; docs/v1/api/api.md §11
-        // Given: A service result classified as FAILED
-        // When: The API error mapping converts the failure to the public contract
-        // Then: The result represents HTTP 502 with code IMAGE_GENERATION_FAILED and no internal details
-        // Priority: High
+        var portError = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.Failed,
+            details: "provider stack trace");
+
+        var result = ApiErrorMapper.MapPortFailure(portError, ApiLanguage.English);
+
+        var response = Assert.IsType<ApiErrorResponse>(result.Response);
+        Assert.Equal(502, result.StatusCode);
+        Assert.Equal("IMAGE_GENERATION_FAILED", response.Code);
+        Assert.Equal(
+            "Image generation failed. Please try again later.",
+            response.Message);
     }
 
     [Fact(Skip = "TODO: implement API error mapping")]
