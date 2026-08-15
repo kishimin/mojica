@@ -29,8 +29,11 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         Assert.Equal("utf-8", charset);
     }
 
-    [Fact]
-    public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverrides()
+    [Theory]
+    [InlineData("frame_font_size")]
+    [InlineData("output_font_size")]
+    public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverride(
+        string forbiddenField)
     {
         string? requestBody = null;
         var adapter = CreateAsyncAdapter(async (request, _) =>
@@ -46,8 +49,7 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         var serializedRequest = requestBody
             ?? throw new XunitException("The HTTP handler did not observe a request body.");
         using var document = JsonDocument.Parse(serializedRequest);
-        Assert.False(document.RootElement.TryGetProperty("frame_font_size", out _));
-        Assert.False(document.RootElement.TryGetProperty("output_font_size", out _));
+        Assert.False(document.RootElement.TryGetProperty(forbiddenField, out _));
     }
 
     [Theory]
