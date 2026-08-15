@@ -2,9 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Mojica.Api.Contracts;
 
-[JsonPolymorphic]
-[JsonDerivedType(typeof(ApiErrorResponse))]
-[JsonDerivedType(typeof(ApiValidationErrorResponse))]
+[JsonConverter(typeof(ApiErrorResponseJsonConverter))]
 public interface IApiErrorResponse
 {
     string Code { get; }
