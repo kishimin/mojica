@@ -1,5 +1,6 @@
 using Xunit;
 using Microsoft.Extensions.Options;
+using Mojica.Api.Infrastructure;
 
 namespace Mojica.Api.Tests.Infrastructure;
 
