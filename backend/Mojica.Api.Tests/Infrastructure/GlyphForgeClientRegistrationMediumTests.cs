@@ -1,3 +1,4 @@
+using System.Net;
 using Xunit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -10,6 +11,17 @@ namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class GlyphForgeClientRegistrationMediumTests
 {
+    [Fact]
+    public async Task Start_WhenGlyphForgeConfigurationIsMissing_AllowsHealthEndpointToStart()
+    {
+        using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        using var response = await client.GetAsync("/health");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
     [Fact]
     public void Resolve_WhenConfigurationIsValid_UsesConfiguredBaseAddressAndTimeout()
     {
