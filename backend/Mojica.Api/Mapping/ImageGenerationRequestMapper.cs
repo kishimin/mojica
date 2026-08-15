@@ -43,24 +43,23 @@ public static class ImageGenerationRequestMapper
             errors,
             HexColor.TryCreate);
 
-        if (foregroundCharacter is not null && backgroundCharacter is not null)
-        {
-            var patternReason = ImageGenerationRequest.GetPatternCombinationFailureReason(
-                foregroundCharacter,
-                backgroundCharacter);
-            if (patternReason is not null)
-            {
-                errors.Add(new ModelValidationError(
-                    "foregroundCharacter",
-                    patternReason));
-                errors.Add(new ModelValidationError(
-                    "backgroundCharacter",
-                    patternReason));
-            }
-        }
-
         if (errors.Count > 0)
         {
+            if (foregroundCharacter is not null && backgroundCharacter is not null)
+            {
+                var patternReason = ImageGenerationRequest.GetPatternCombinationFailureReason(
+                    foregroundCharacter,
+                    backgroundCharacter);
+                if (patternReason is not null)
+                {
+                    errors.Add(new ModelValidationError(
+                        "foregroundCharacter",
+                        patternReason));
+                    errors.Add(new ModelValidationError(
+                        "backgroundCharacter",
+                        patternReason));
+                }
+            }
             return ImageGenerationRequestMappingResult.Failure(errors);
         }
 
