@@ -65,6 +65,21 @@ public sealed class GlyphForgeClientOptionsSmallTests
     }
 
     [Fact]
+    public void Validate_WhenTimeoutExceedsHttpClientMaximum_RejectsConfiguration()
+    {
+        var options = new GlyphForgeClientOptions
+        {
+            BaseUrl = new Uri("https://glyph-forge.example/"),
+            Timeout = TimeSpan.FromMilliseconds(int.MaxValue + 1L)
+        };
+
+        var result = new GlyphForgeClientOptionsValidator().Validate(null, options);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("maximum", result.FailureMessage);
+    }
+
+    [Fact]
     public void Validate_WhenTimeoutIsThirtyFiveSeconds_AcceptsProviderLimitConfiguration()
     {
         var options = new GlyphForgeClientOptions
