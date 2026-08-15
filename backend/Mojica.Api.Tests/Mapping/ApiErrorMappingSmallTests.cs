@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Mojica.Api.Contracts;
 using Mojica.Api.Localization;
 using Mojica.Api.Mapping;
@@ -37,6 +38,41 @@ public sealed class ApiErrorMappingSmallTests
         var fieldError = Assert.Single(response.Errors);
         Assert.Equal("text", fieldError.Field);
         Assert.Equal("The text field is required.", fieldError.Message);
+    }
+
+    [Fact]
+    public void Map_WhenValidationErrorsAreEmpty_ThrowsArgumentException()
+    {
+        var exception = Assert.Throws<ArgumentException>(() =>
+            ApiErrorMapper.MapValidationFailure(
+                Array.Empty<ModelValidationError>(),
+                ApiLanguage.English));
+
+        Assert.Equal("errors", exception.ParamName);
+        Assert.StartsWith(
+            "Validation failure mapping requires at least one validation error.",
+            exception.Message);
+    }
+
+    [Fact]
+    public void Map_WhenValidationFails_SerializesFieldErrorsThroughDeclaredResponseType()
+    {
+        var validationErrors = new[]
+        {
+            new ModelValidationError("text", ModelValidationReason.Required),
+        };
+
+        var result = ApiErrorMapper.MapValidationFailure(
+            validationErrors,
+            ApiLanguage.English);
+
+        IApiErrorResponse declaredResponse = result.Response;
+        using var document = JsonDocument.Parse(JsonSerializer.Serialize(declaredResponse));
+        var errors = document.RootElement.GetProperty("errors");
+
+        var fieldError = Assert.Single(errors.EnumerateArray());
+        Assert.Equal("text", fieldError.GetProperty("field").GetString());
+        Assert.Equal("The text field is required.", fieldError.GetProperty("message").GetString());
     }
 
     [Fact]
