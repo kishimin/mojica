@@ -18,99 +18,101 @@ public sealed class GlyphForgeResponseMapperSmallTests
         Assert.Equal(new GeneratedImageData(content, "image/png"), result.Data);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
+    [Fact]
     public void Map_WhenSuccessfulResponseHasNonPngContentType_ReturnsInvalidResponse()
     {
-        // ID: 8B-RES-002
-        // Source: docs/v1/api/adapters.md §10 and §14
-        // Given: A successful response whose content type is not an accepted image type.
-        // When: The response mapper converts the Glyph Forge response to a port result.
-        // Then: The result is a failure with the InvalidResponse error code.
-        // Blocked by: The response mapper contract and implementation are not yet present.
-        // Priority: P0
+        var response = new GlyphForgeResponse(HttpStatusCode.OK, "text/plain", [1, 2, 3]);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.InvalidResponse, result.Error?.ErrorCode);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
+    [Fact]
     public void Map_WhenSuccessfulResponseHasEmptyBody_ReturnsInvalidResponse()
     {
-        // ID: 8B-RES-003
-        // Source: docs/v1/api/adapters.md §10 and §14
-        // Given: A successful response with an empty image body.
-        // When: The response mapper converts the Glyph Forge response to a port result.
-        // Then: The result is a failure with the InvalidResponse error code.
-        // Blocked by: The response mapper contract and implementation are not yet present.
-        // Priority: P0
+        var response = new GlyphForgeResponse(HttpStatusCode.OK, "image/png", []);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.InvalidResponse, result.Error?.ErrorCode);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
+    [Fact]
     public void Map_WhenResponseIsRateLimited_ReturnsRateLimitedError()
     {
-        // ID: 8B-RES-004
-        // Source: docs/v1/api/adapters.md §11, §14, §15
-        // Given: A response with HTTP status 429.
-        // When: The response mapper converts the Glyph Forge response to a port result.
-        // Then: The result is a failure with the RateLimited error code and contains no provider response body.
-        // Blocked by: The response mapper contract and implementation are not yet present.
-        // Priority: P0
+        var response = new GlyphForgeResponse(HttpStatusCode.TooManyRequests, null, null, 7);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.RateLimited, result.Error?.ErrorCode);
+        Assert.Equal(7, result.Error?.RetryAfter);
+        Assert.Null(result.Error?.Details);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
+    [Fact]
     public void Map_WhenOutputSizeIsRejected_ReturnsOutputSizeExceededWithoutExternalDetails()
     {
-        // ID: 8B-RES-005
-        // Source: docs/v1/api/adapters.md §11, §14, §15
-        // Given: A response with HTTP status 422 and a provider error body containing external details.
-        // When: The response mapper converts the Glyph Forge response to a port result.
-        // Then: The result is a failure with the OutputSizeExceeded error code and does not expose the provider body.
-        // Blocked by: The response mapper contract and implementation are not yet present.
-        // Priority: P0
+        var response = new GlyphForgeResponse(
+            HttpStatusCode.UnprocessableEntity,
+            "application/json",
+            System.Text.Encoding.UTF8.GetBytes("internal stack trace"));
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.OutputSizeExceeded, result.Error?.ErrorCode);
+        Assert.Null(result.Error?.Details);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
+    [Fact]
     public void Map_WhenResponseIndicatesUnavailable_ReturnsUnavailableError()
     {
-        // ID: 8B-RES-006
-        // Source: docs/v1/api/adapters.md §11, §14, §15
-        // Given: A response with HTTP status 503.
-        // When: The response mapper converts the Glyph Forge response to a port result.
-        // Then: The result is a failure with the Unavailable error code and contains no provider response body.
-        // Blocked by: The response mapper contract and implementation are not yet present.
-        // Priority: P0
+        var response = new GlyphForgeResponse(HttpStatusCode.ServiceUnavailable, null, null);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.Unavailable, result.Error?.ErrorCode);
+        Assert.Null(result.Error?.Details);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
+    [Fact]
     public void Map_WhenResponseIsServerFailure_ReturnsFailedError()
     {
-        // ID: 8B-RES-007
-        // Source: docs/v1/api/adapters.md §11 and §15
-        // Given: A response with an unhandled 5xx HTTP status.
-        // When: The response mapper converts the Glyph Forge response to a port result.
-        // Then: The result is a failure with the Failed error code and contains no provider response body.
-        // Blocked by: The response mapper contract and implementation are not yet present.
-        // Priority: P1
+        var response = new GlyphForgeResponse(HttpStatusCode.BadGateway, null, null);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.Failed, result.Error?.ErrorCode);
+        Assert.Null(result.Error?.Details);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
+    [Fact]
     public void Map_WhenTimeoutOccurs_ReturnsTimeoutError()
     {
-        // ID: 8B-RES-008
-        // Source: docs/v1/api/adapters.md §11, §14, §15
-        // Given: The Glyph Forge call ends because its configured timeout elapses.
-        // When: The response mapping boundary converts the timeout outcome to a port result.
-        // Then: The result is a failure with the Timeout error code and no provider details.
-        // Blocked by: The response mapper contract and implementation are not yet present.
-        // Priority: P0
+        var response = new GlyphForgeResponse(null, null, null, Failure: GlyphForgeResponseFailure.Timeout);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.Timeout, result.Error?.ErrorCode);
+        Assert.Null(result.Error?.Details);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
+    [Fact]
     public void Map_WhenCommunicationFails_ReturnsUnavailableError()
     {
-        // ID: 8B-RES-009
-        // Source: docs/v1/api/adapters.md §11, §14, §15
-        // Given: The Glyph Forge call fails before receiving an HTTP response because of a communication error.
-        // When: The response mapping boundary converts the communication outcome to a port result.
-        // Then: The result is a failure with the Unavailable error code and no provider details.
-        // Blocked by: The response mapper contract and implementation are not yet present.
-        // Priority: P0
+        var response = new GlyphForgeResponse(null, null, null, Failure: GlyphForgeResponseFailure.Communication);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.Unavailable, result.Error?.ErrorCode);
+        Assert.Null(result.Error?.Details);
     }
 }
