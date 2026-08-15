@@ -1,8 +1,9 @@
 namespace Mojica.Api.Models;
 
-internal static class BinaryValueEquality
+internal static class ValueEquality
 {
-    public static bool ContentEquals(byte[] left, byte[] right)
+    public static bool ContentEquals<T>(T[] left, T[] right)
+        where T : IEquatable<T>
     {
         return left.AsSpan().SequenceEqual(right);
     }
