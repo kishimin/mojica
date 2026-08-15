@@ -21,8 +21,16 @@ public static class ApiErrorMapper
     {
         ArgumentNullException.ThrowIfNull(errors);
 
+        var errorList = errors.ToList();
+        if (errorList.Count == 0)
+        {
+            throw new ArgumentException(
+                "Validation failure mapping requires at least one validation error.",
+                nameof(errors));
+        }
+
         const string code = "VALIDATION_ERROR";
-        var fieldErrors = errors
+        var fieldErrors = errorList
             .Select(error => new ApiValidationFieldError(
                 error.Target,
                 ApiErrorMessageProvider.GetValidationMessage(
