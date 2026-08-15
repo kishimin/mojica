@@ -115,4 +115,24 @@ public sealed class GlyphForgeResponseMapperSmallTests
         Assert.Equal(ImageGenerationPortErrorCode.Unavailable, result.Error?.ErrorCode);
         Assert.Null(result.Error?.Details);
     }
+
+    [Fact]
+    public void Map_WhenServerStatusIs511_ReturnsFailedError()
+    {
+        var response = new GlyphForgeResponse((HttpStatusCode)511, null, null);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.Equal(ImageGenerationPortErrorCode.Failed, result.Error?.ErrorCode);
+    }
+
+    [Fact]
+    public void Response_WhenBinaryContentsMatch_UsesContentEquality()
+    {
+        var first = new GlyphForgeResponse(HttpStatusCode.OK, "image/png", [1, 2, 3]);
+        var second = new GlyphForgeResponse(HttpStatusCode.OK, "image/png", [1, 2, 3]);
+
+        Assert.Equal(first, second);
+        Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
 }

@@ -149,6 +149,40 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
     }
 
     [Fact]
+    public async Task Send_WhenRetryAfterIsHttpDate_ParsesRemainingSeconds()
+    {
+        var retryAt = DateTimeOffset.UtcNow.AddSeconds(8);
+        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+        {
+            Content = new StringContent("provider secret"),
+        };
+        response.Headers.RetryAfter = new RetryConditionHeaderValue(retryAt);
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.RateLimited, result.Error?.ErrorCode);
+        var retryAfter = result.Error?.RetryAfter
+            ?? throw new XunitException("Retry-After should be parsed.");
+        Assert.InRange(retryAfter, 1, 8);
+    }
+
+    [Fact]
+    public async Task Send_WhenErrorResponseHasBody_DoesNotReadOrBufferTheBody()
+    {
+        var content = new TrackingHttpContent();
+        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+        {
+            Content = content,
+        };
+        var adapter = CreateAdapter(_ => response);
+
+        await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.False(content.WasRead);
+    }
+
+    [Fact]
     public async Task Send_WhenCallerCancellationIsRequested_PropagatesCancellationToHttpCommunication()
     {
         var handlerStarted = new TaskCompletionSource(
@@ -229,6 +263,23 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
             CancellationToken cancellationToken)
         {
             return handler(request, cancellationToken);
+        }
+    }
+
+    private sealed class TrackingHttpContent : HttpContent
+    {
+        public bool WasRead { get; private set; }
+
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+        {
+            WasRead = true;
+            return Task.CompletedTask;
+        }
+
+        protected override bool TryComputeLength(out long length)
+        {
+            length = 0;
+            return true;
         }
     }
 }
