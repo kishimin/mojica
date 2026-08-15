@@ -4,7 +4,7 @@ namespace Mojica.Api.Infrastructure;
 
 public static class GlyphForgeRequestMapper
 {
-    public static GlyphForgeRequestMapping Map(ImageGenerationRequest request)
+    public static GlyphForgeRequestMappingResult Map(ImageGenerationRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -25,6 +25,6 @@ public static class GlyphForgeRequestMapper
             [foregroundColor.Red, foregroundColor.Green, foregroundColor.Blue],
             [backgroundColor.Red, backgroundColor.Green, backgroundColor.Blue]);
 
-        return new GlyphForgeRequestMapping(path, payload);
+        return new GlyphForgeRequestMappingResult(path, payload);
     }
 }
