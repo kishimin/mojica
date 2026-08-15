@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Mojica.Api.Infrastructure;
 using Mojica.Api.Models;
 using Mojica.Api.Ports;
@@ -14,13 +15,13 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
     public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverridesOrAuthentication()
     {
         string? requestBody = null;
-        var hasAuthorizationHeader = false;
+        string[]? requestHeaders = null;
         var adapter = CreateAsyncAdapter(async (request, _) =>
         {
             var content = request.Content
                 ?? throw new XunitException("The Adapter must send a request body.");
             requestBody = await content.ReadAsStringAsync();
-            hasAuthorizationHeader = request.Headers.Authorization is not null;
+            requestHeaders = request.Headers.Select(header => header.Key).ToArray();
             return PngResponse();
         });
 
@@ -31,7 +32,12 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         using var document = JsonDocument.Parse(serializedRequest);
         Assert.False(document.RootElement.TryGetProperty("frame_font_size", out _));
         Assert.False(document.RootElement.TryGetProperty("output_font_size", out _));
-        Assert.False(hasAuthorizationHeader);
+        var observedHeaders = requestHeaders
+            ?? throw new XunitException("The HTTP handler did not observe request headers.");
+        Assert.DoesNotContain(observedHeaders, header =>
+            header.Equals("Authorization", StringComparison.OrdinalIgnoreCase)
+            || header.Equals("X-API-Key", StringComparison.OrdinalIgnoreCase)
+            || header.Equals("Api-Key", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -81,6 +87,11 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
     private sealed class StubHttpClientFactory(HttpClient client) : IHttpClientFactory
     {
         public HttpClient CreateClient(string name) => client;
+    }
+
+    private sealed class ThrowingHttpClientFactory(Exception exception) : IHttpClientFactory
+    {
+        public HttpClient CreateClient(string name) => throw exception;
     }
 
     private sealed class StubHttpMessageHandler(
@@ -183,7 +194,7 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
     }
 
     [Fact]
-    public async Task Send_WhenErrorResponseHasBody_DoesNotReadOrBufferTheBody()
+    public async Task Send_WhenErrorResponseHasBody_DrainsWithoutExposingTheBody()
     {
         var content = new TrackingHttpContent();
         var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
@@ -194,7 +205,7 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
 
         await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
 
-        Assert.False(content.WasRead);
+        Assert.True(content.WasRead);
     }
 
     [Fact]
@@ -209,6 +220,57 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
 
         Assert.Equal(ImageGenerationPortErrorCode.Unavailable, result.Error?.ErrorCode);
+    }
+
+    [Fact]
+    public async Task Send_WhenBaseAddressContainsPath_AppendsEndpointPath()
+    {
+        Uri? requestUri = null;
+        var client = new HttpClient(new StubHttpMessageHandler(request =>
+        {
+            requestUri = request.RequestUri;
+            return PngResponse();
+        }))
+        {
+            BaseAddress = new Uri("https://glyph-forge.example/api/")
+        };
+        var adapter = new GlyphForgeImageGenerationAdapter(new StubHttpClientFactory(client));
+
+        await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal("https://glyph-forge.example/api/images", requestUri?.ToString());
+    }
+
+    [Fact]
+    public async Task Send_WhenClientConfigurationIsInvalid_ReturnsUnavailable()
+    {
+        var adapter = new GlyphForgeImageGenerationAdapter(
+            new ThrowingHttpClientFactory(new OptionsValidationException(
+                "GlyphForge",
+                typeof(GlyphForgeClientOptions),
+                [])));
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.Unavailable, result.Error?.ErrorCode);
+    }
+
+    [Fact]
+    public async Task Send_WhenResponseBodyExceedsClientTimeout_ReturnsTimeout()
+    {
+        var client = new HttpClient(new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new BlockingHttpContent(),
+        }))
+        {
+            BaseAddress = new Uri("https://glyph-forge.example/"),
+            Timeout = TimeSpan.FromMilliseconds(50),
+        };
+        var adapter = new GlyphForgeImageGenerationAdapter(new StubHttpClientFactory(client));
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.Timeout, result.Error?.ErrorCode);
     }
 
     [Fact]
@@ -295,6 +357,28 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
         {
             throw new IOException("simulated response body read failure");
+        }
+
+        protected override bool TryComputeLength(out long length)
+        {
+            length = 0;
+            return true;
+        }
+    }
+
+    private sealed class BlockingHttpContent : HttpContent
+    {
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+        {
+            return Task.Delay(Timeout.InfiniteTimeSpan);
+        }
+
+        protected override Task SerializeToStreamAsync(
+            Stream stream,
+            TransportContext? context,
+            CancellationToken cancellationToken)
+        {
+            return Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
         }
 
         protected override bool TryComputeLength(out long length)

@@ -44,7 +44,7 @@ public static class GlyphForgeResponseMapper
             (int)HttpStatusCode.ServiceUnavailable =>
                 Failure(ImageGenerationPortErrorCode.Unavailable, response.RetryAfter),
             >= 500 and <= 599 => Failure(ImageGenerationPortErrorCode.Failed),
-            >= 200 and <= 299 => MapSuccessfulResponse(response),
+            (int)HttpStatusCode.OK => MapSuccessfulResponse(response),
             _ => Failure(ImageGenerationPortErrorCode.InvalidResponse),
         };
     }

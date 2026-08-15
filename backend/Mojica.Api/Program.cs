@@ -22,7 +22,7 @@ builder.Services.AddHttpClient("GlyphForge", (serviceProvider, client) =>
     client.BaseAddress = options.BaseUrl;
     client.Timeout = options.Timeout;
 });
-builder.Services.AddScoped<ImageGenerationPort, GlyphForgeImageGenerationAdapter>();
+builder.Services.AddSingleton<ImageGenerationPort, GlyphForgeImageGenerationAdapter>();
 
 var app = builder.Build();
 

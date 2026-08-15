@@ -41,6 +41,16 @@ public sealed class GlyphForgeResponseMapperSmallTests
     }
 
     [Fact]
+    public void Map_WhenSuccessfulResponseIsCreated_ReturnsInvalidResponse()
+    {
+        var response = new GlyphForgeResponse(HttpStatusCode.Created, "image/png", [1, 2, 3]);
+
+        var result = GlyphForgeResponseMapper.Map(response);
+
+        Assert.Equal(ImageGenerationPortErrorCode.InvalidResponse, result.Error?.ErrorCode);
+    }
+
+    [Fact]
     public void Map_WhenResponseIsRateLimited_ReturnsRateLimitedError()
     {
         var response = new GlyphForgeResponse(HttpStatusCode.TooManyRequests, null, null, 7);

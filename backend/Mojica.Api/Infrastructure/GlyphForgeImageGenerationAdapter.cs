@@ -1,11 +1,14 @@
 using System.Net.Http.Json;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Mojica.Api.Models;
 using Mojica.Api.Ports;
 
 namespace Mojica.Api.Infrastructure;
 
 public sealed class GlyphForgeImageGenerationAdapter(
-    IHttpClientFactory httpClientFactory) : ImageGenerationPort
+    IHttpClientFactory httpClientFactory,
+    ILogger<GlyphForgeImageGenerationAdapter>? logger = null) : ImageGenerationPort
 {
     public async Task<ImageGenerationPortResult> GenerateAsync(
         ImageGenerationRequest request,
@@ -24,22 +27,26 @@ public sealed class GlyphForgeImageGenerationAdapter(
                 new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Failed));
         }
 
-        using var httpRequest = new HttpRequestMessage(HttpMethod.Post, mapped.Path)
-        {
-            Content = JsonContent.Create(mapped.Payload),
-        };
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Post, mapped.Path.TrimStart('/'));
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         try
         {
             var client = httpClientFactory.CreateClient("GlyphForge");
+            if (client.Timeout != Timeout.InfiniteTimeSpan)
+            {
+                timeout.CancelAfter(client.Timeout);
+            }
+
+            httpRequest.Content = JsonContent.Create(mapped.Payload);
             using var response = await client.SendAsync(
                 httpRequest,
                 HttpCompletionOption.ResponseHeadersRead,
-                cancellationToken);
+                timeout.Token);
             var statusCode = (int)response.StatusCode;
-            var content = statusCode is >= 200 and <= 299
-                ? await response.Content.ReadAsByteArrayAsync(cancellationToken)
-                : null;
+            var content = statusCode == 200
+                ? await response.Content.ReadAsByteArrayAsync(timeout.Token)
+                : await DrainErrorBodyAsync(response, timeout.Token);
             var mediaType = response.Content.Headers.ContentType?.MediaType;
             var retryAfter = ParseRetryAfter(response.Headers.RetryAfter);
 
@@ -48,17 +55,30 @@ public sealed class GlyphForgeImageGenerationAdapter(
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
+            logger?.LogWarning("Glyph Forge request timed out.");
             return GlyphForgeResponseMapper.Map(
                 new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Timeout));
         }
         catch (Exception exception) when (
             exception is HttpRequestException
             or IOException
-            or InvalidOperationException)
+            or InvalidOperationException
+            or OptionsValidationException)
         {
+            logger?.LogWarning(
+                "Glyph Forge communication failed with {ExceptionType}.",
+                exception.GetType().Name);
             return GlyphForgeResponseMapper.Map(
                 new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Communication));
         }
+    }
+
+    private static async Task<byte[]?> DrainErrorBodyAsync(
+        HttpResponseMessage response,
+        CancellationToken cancellationToken)
+    {
+        await response.Content.CopyToAsync(Stream.Null, cancellationToken);
+        return null;
     }
 
     private static int? ParseRetryAfter(System.Net.Http.Headers.RetryConditionHeaderValue? value)
