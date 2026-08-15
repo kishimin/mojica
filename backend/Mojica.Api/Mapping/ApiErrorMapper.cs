@@ -9,10 +9,11 @@ public static class ApiErrorMapper
 {
     public static ApiErrorMappingResult MapMalformedRequest(ApiLanguage language)
     {
-        const string code = "BAD_REQUEST";
         return new(
             StatusCodes.Status400BadRequest,
-            new ApiErrorResponse(code, ApiErrorMessageProvider.GetPublicMessage(language, code)));
+            new ApiErrorResponse(
+                PublicApiErrorCode.BadRequest,
+                ApiErrorMessageProvider.GetPublicMessage(language, PublicApiErrorCode.BadRequest)));
     }
 
     public static ApiErrorMappingResult MapValidationFailure(
@@ -29,7 +30,6 @@ public static class ApiErrorMapper
                 nameof(errors));
         }
 
-        const string code = "VALIDATION_ERROR";
         var fieldErrors = errorList
             .Select(error => new ApiValidationFieldError(
                 error.Target,
@@ -42,8 +42,8 @@ public static class ApiErrorMapper
         return new(
             StatusCodes.Status422UnprocessableEntity,
             new ApiValidationErrorResponse(
-                code,
-                ApiErrorMessageProvider.GetPublicMessage(language, code),
+                PublicApiErrorCode.ValidationError,
+                ApiErrorMessageProvider.GetPublicMessage(language, PublicApiErrorCode.ValidationError),
                 fieldErrors));
     }
 
@@ -53,27 +53,30 @@ public static class ApiErrorMapper
     {
         ArgumentNullException.ThrowIfNull(error);
 
-        return error.ErrorCode.Value switch
+        var code = error.ErrorCode;
+        return code switch
         {
-            "RATE_LIMITED" => CreateError(
+            _ when code == ImageGenerationPortErrorCode.RateLimited => CreateError(
                 StatusCodes.Status429TooManyRequests,
-                "RATE_LIMIT_EXCEEDED",
+                PublicApiErrorCode.RateLimitExceeded,
                 language,
                 error.RetryAfter),
-            "TIMEOUT" => CreateError(
+            _ when code == ImageGenerationPortErrorCode.Timeout => CreateError(
                 StatusCodes.Status504GatewayTimeout,
-                "IMAGE_GENERATION_TIMEOUT",
+                PublicApiErrorCode.ImageGenerationTimeout,
                 language),
-            "UNAVAILABLE" or "INVALID_RESPONSE" or "FAILED" => CreateError(
+            _ when code == ImageGenerationPortErrorCode.Unavailable
+                || code == ImageGenerationPortErrorCode.InvalidResponse
+                || code == ImageGenerationPortErrorCode.Failed => CreateError(
                 StatusCodes.Status502BadGateway,
-                "IMAGE_GENERATION_FAILED",
+                PublicApiErrorCode.ImageGenerationFailed,
                 language),
-            "OUTPUT_SIZE_EXCEEDED" => CreateError(
+            _ when code == ImageGenerationPortErrorCode.OutputSizeExceeded => CreateError(
                 StatusCodes.Status422UnprocessableEntity,
-                "IMAGE_SIZE_LIMIT_EXCEEDED",
+                PublicApiErrorCode.ImageSizeLimitExceeded,
                 language),
             _ => throw new InvalidOperationException(
-                $"Port error '{error.ErrorCode.Value}' is not mapped yet."),
+                $"Port error '{code.Value}' is not mapped yet."),
         };
     }
 
@@ -81,7 +84,7 @@ public static class ApiErrorMapper
     {
         return CreateError(
             StatusCodes.Status500InternalServerError,
-            "INTERNAL_SERVER_ERROR",
+            PublicApiErrorCode.InternalServerError,
             language);
     }
 
