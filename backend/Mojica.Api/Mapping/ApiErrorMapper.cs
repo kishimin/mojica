@@ -56,6 +56,10 @@ public static class ApiErrorMapper
                 StatusCodes.Status504GatewayTimeout,
                 "IMAGE_GENERATION_TIMEOUT",
                 language),
+            "UNAVAILABLE" => CreateError(
+                StatusCodes.Status502BadGateway,
+                "IMAGE_GENERATION_FAILED",
+                language),
             "OUTPUT_SIZE_EXCEEDED" => CreateError(
                 StatusCodes.Status422UnprocessableEntity,
                 "IMAGE_SIZE_LIMIT_EXCEEDED",
