@@ -1,27 +1,58 @@
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Primitives;
+using Xunit;
+using Mojica.Api.Infrastructure;
+
 namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class RateLimitRejectionHandlerSmallTests
 {
-    [Fact(Skip = "TODO: implement local API rate limiting")]
-    public void WriteAsync_WhenLeaseHasRetryAfterMetadata_SetsStatusAndRetryAfterHeader()
+    [Fact]
+    public async Task WriteAsync_WhenLeaseHasRetryAfterMetadata_SetsStatusAndRetryAfterHeader()
     {
         // ID: RATE-LIMIT-S-008
         // Source: docs/v1/api/controllers.md §6, §10; docs/v1/api/api.md §13
-        // Given: A rejected lease that carries Retry-After metadata
-        // When: The rejection handler writes the response
-        // Then: The response status is 429 and the Retry-After header carries the whole-second value
-        // Priority: High
+        var options = new RateLimitOptions { PermitLimit = 1, Window = TimeSpan.FromSeconds(30), QueueLimit = 0 };
+        using var limiter = ImageGenerationRateLimiterPolicy.CreateLimiter(options);
+        using var acquired = limiter.AttemptAcquire(1);
+        using var rejected = limiter.AttemptAcquire(1);
+
+        var httpContext = new DefaultHttpContext();
+        var context = new OnRejectedContext { HttpContext = httpContext, Lease = rejected };
+
+        await RateLimitRejectionHandler.WriteAsync(context, CancellationToken.None);
+
+        Assert.Equal(StatusCodes.Status429TooManyRequests, httpContext.Response.StatusCode);
+        Assert.True(int.TryParse(httpContext.Response.Headers.RetryAfter, out var seconds));
+        Assert.True(seconds > 0);
     }
 
-    [Fact(Skip = "TODO: implement local API rate limiting")]
-    public void WriteAsync_WhenLeaseHasNoRetryAfterMetadata_SetsStatusWithoutRetryAfterHeader()
+    [Fact]
+    public async Task WriteAsync_WhenLeaseHasNoRetryAfterMetadata_SetsStatusWithoutRetryAfterHeader()
     {
         // ID: RATE-LIMIT-S-009
         // Source: docs/v1/api/controllers.md §10
-        // Given: A rejected lease that carries no Retry-After metadata
-        // When: The rejection handler writes the response
-        // Then: The response status is 429 and no Retry-After header is added
-        // Error: Do not fabricate a retry hint when the retry timing is unknown
-        // Priority: Medium
+        var httpContext = new DefaultHttpContext();
+        var context = new OnRejectedContext { HttpContext = httpContext, Lease = new LeaseWithoutMetadata() };
+
+        await RateLimitRejectionHandler.WriteAsync(context, CancellationToken.None);
+
+        Assert.Equal(StatusCodes.Status429TooManyRequests, httpContext.Response.StatusCode);
+        Assert.True(StringValues.IsNullOrEmpty(httpContext.Response.Headers.RetryAfter));
+    }
+
+    private sealed class LeaseWithoutMetadata : RateLimitLease
+    {
+        public override bool IsAcquired => false;
+
+        public override IEnumerable<string> MetadataNames => Array.Empty<string>();
+
+        public override bool TryGetMetadata(string metadataName, out object? metadata)
+        {
+            metadata = null;
+            return false;
+        }
     }
 }
