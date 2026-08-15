@@ -51,7 +51,7 @@ public sealed class GlyphForgeRequestMapperSmallTests
         Assert.Equal(new[] { 255, 105, 180 }, result.Payload.OuterColor);
     }
 
-    [Fact(Skip = "TODO: implement the request mapping contract")]
+    [Fact(Skip = "TODO: verify these transport concerns at the Adapter boundary")]
     public void Map_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverridesOrAuthentication()
     {
         // ID: 8A-REQ-006
@@ -60,7 +60,7 @@ public sealed class GlyphForgeRequestMapperSmallTests
         // When: The mapper creates the outbound request representation.
         // Then: It omits frame_font_size and output_font_size so Glyph Forge uses its default of 20.
         // Then: It does not add an authentication header to the request mapping result.
-        // Error: Do not assert HTTP handler details here; those belong to the Adapter boundary.
+        // Blocked by: HTTP headers and serialized transport options are owned by the Adapter boundary.
         // Priority: P1
     }
 
