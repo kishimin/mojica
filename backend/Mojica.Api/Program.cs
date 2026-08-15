@@ -12,12 +12,7 @@ var glyphForgeOptions = builder.Services
     .AddOptions<GlyphForgeClientOptions>()
     .BindConfiguration(GlyphForgeClientOptions.SectionName);
 builder.Services.AddSingleton<IValidateOptions<GlyphForgeClientOptions>, GlyphForgeClientOptionsValidator>();
-if (!builder.Environment.IsDevelopment())
-{
-    // Development can serve local health checks without a running Glyph Forge instance;
-    // deployed environments must fail fast when their required external configuration is missing.
-    glyphForgeOptions.ValidateOnStart();
-}
+glyphForgeOptions.ValidateOnStartOutsideDevelopment(builder.Environment);
 builder.Services.AddHttpClient("GlyphForge", (serviceProvider, client) =>
 {
     var options = serviceProvider.GetRequiredService<IOptions<GlyphForgeClientOptions>>().Value;
@@ -30,12 +25,7 @@ var rateLimitOptions = builder.Services
     .AddOptions<RateLimitOptions>()
     .BindConfiguration(RateLimitOptions.SectionName);
 builder.Services.AddSingleton<IValidateOptions<RateLimitOptions>, RateLimitOptionsValidator>();
-if (!builder.Environment.IsDevelopment())
-{
-    // Development can serve local health checks without a rate limit configured;
-    // deployed environments must fail fast when their required configuration is missing.
-    rateLimitOptions.ValidateOnStart();
-}
+rateLimitOptions.ValidateOnStartOutsideDevelopment(builder.Environment);
 builder.Services.AddRateLimiter(limiterOptions =>
 {
     limiterOptions.OnRejected = RateLimitRejectionHandler.WriteAsync;
@@ -66,3 +56,21 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
 app.Run();
 
 public partial class Program { }
+
+internal static class OptionsBuilderStartupValidationExtensions
+{
+    // Development can serve local health checks without every external dependency configured;
+    // deployed environments must fail fast when their required configuration is missing.
+    public static void ValidateOnStartOutsideDevelopment<TOptions>(
+        this OptionsBuilder<TOptions> optionsBuilder,
+        IHostEnvironment environment)
+        where TOptions : class
+    {
+        if (environment.IsDevelopment())
+        {
+            return;
+        }
+
+        optionsBuilder.ValidateOnStart();
+    }
+}
