@@ -223,6 +223,35 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
     }
 
     [Fact]
+    public async Task Send_WhenErrorBodyDrainFails_PreservesStatusDerivedError()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+        {
+            Content = new ThrowingHttpContent(),
+        };
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.RateLimited, result.Error?.ErrorCode);
+    }
+
+    [Fact]
+    public async Task Send_WhenSuccessfulResponseExceedsMaximumImageSize_ReturnsInvalidResponse()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(new byte[10 * 1024 * 1024 + 1]),
+        };
+        response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.InvalidResponse, result.Error?.ErrorCode);
+    }
+
+    [Fact]
     public async Task Send_WhenBaseAddressContainsPath_AppendsEndpointPath()
     {
         Uri? requestUri = null;

@@ -10,6 +10,8 @@ public sealed class GlyphForgeImageGenerationAdapter(
     IHttpClientFactory httpClientFactory,
     ILogger<GlyphForgeImageGenerationAdapter>? logger = null) : ImageGenerationPort
 {
+    private const int MaximumImageBytes = 10 * 1024 * 1024;
+
     public async Task<ImageGenerationPortResult> GenerateAsync(
         ImageGenerationRequest request,
         CancellationToken cancellationToken)
@@ -47,8 +49,8 @@ public sealed class GlyphForgeImageGenerationAdapter(
                 timeout.Token);
             var statusCode = (int)response.StatusCode;
             var content = statusCode == 200
-                ? await response.Content.ReadAsByteArrayAsync(timeout.Token)
-                : await DrainErrorBodyAsync(response, timeout.Token);
+                ? await ReadSuccessBodyAsync(response.Content, timeout.Token)
+                : await DrainErrorBodyBestEffortAsync(response, timeout.Token, cancellationToken);
             var mediaType = response.Content.Headers.ContentType?.MediaType;
             var retryAfter = ParseRetryAfter(response.Headers.RetryAfter);
 
@@ -75,13 +77,88 @@ public sealed class GlyphForgeImageGenerationAdapter(
         }
     }
 
-    private static async Task<byte[]?> DrainErrorBodyAsync(
+    private static async Task<byte[]?> DrainErrorBodyBestEffortAsync(
         HttpResponseMessage response,
-        CancellationToken cancellationToken)
+        CancellationToken timeoutToken,
+        CancellationToken callerToken)
     {
-        await response.Content.CopyToAsync(Stream.Null, cancellationToken);
+        try
+        {
+            await response.Content.CopyToAsync(Stream.Null, timeoutToken);
+        }
+        catch (OperationCanceledException) when (!callerToken.IsCancellationRequested)
+        {
+        }
+        catch (HttpRequestException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
         return null;
     }
+
+    private static async Task<byte[]?> ReadSuccessBodyAsync(
+        HttpContent content,
+        CancellationToken cancellationToken)
+    {
+        if (content.Headers.ContentLength is > MaximumImageBytes)
+        {
+            return null;
+        }
+
+        using var destination = new BoundedMemoryStream(MaximumImageBytes);
+        try
+        {
+            await content.CopyToAsync(destination, null, cancellationToken);
+            return destination.ToArray();
+        }
+        catch (ResponseBodyTooLargeException)
+        {
+            return null;
+        }
+    }
+
+    private sealed class BoundedMemoryStream(int maximumLength) : MemoryStream
+    {
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            EnsureCapacity(count);
+            base.Write(buffer, offset, count);
+        }
+
+        public override Task WriteAsync(
+            byte[] buffer,
+            int offset,
+            int count,
+            CancellationToken cancellationToken)
+        {
+            EnsureCapacity(count);
+            return base.WriteAsync(buffer, offset, count, cancellationToken);
+        }
+
+        public override ValueTask WriteAsync(
+            ReadOnlyMemory<byte> buffer,
+            CancellationToken cancellationToken = default)
+        {
+            EnsureCapacity(buffer.Length);
+            return base.WriteAsync(buffer, cancellationToken);
+        }
+
+        private void EnsureCapacity(int count)
+        {
+            if (Length > maximumLength - count)
+            {
+                throw new ResponseBodyTooLargeException();
+            }
+        }
+    }
+
+    private sealed class ResponseBodyTooLargeException : Exception;
 
     private static Uri CreateRequestUri(Uri? baseAddress, string path)
     {
