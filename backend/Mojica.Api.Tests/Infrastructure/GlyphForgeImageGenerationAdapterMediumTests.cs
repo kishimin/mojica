@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using Mojica.Api.Infrastructure;
 using Mojica.Api.Models;
+using Mojica.Api.Ports;
 
 namespace Mojica.Api.Tests.Infrastructure;
 
@@ -80,40 +81,58 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         }
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
-    public void Send_WhenRateLimitedResponseHasRetryAfter_ParsesIntegerSeconds()
+    [Fact]
+    public async Task Send_WhenRateLimitedResponseHasRetryAfter_ParsesIntegerSeconds()
     {
-        // ID: 8B-MED-002
-        // Source: docs/v1/api/adapters.md §11 and §15
-        // Given: A controllable HTTP handler returns 429 with Retry-After set to an integer number of seconds.
-        // When: The Adapter sends a generation request and maps the HTTP response.
-        // Then: The port result is RateLimited and carries the parsed retry period without exposing the response body.
-        // Blocked by: The response mapper and controllable HTTP handler are not yet implemented.
-        // Priority: P0
+        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+        {
+            Content = new StringContent("provider secret"),
+        };
+        response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(7));
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.RateLimited, result.Error?.ErrorCode);
+        Assert.Equal(7, result.Error?.RetryAfter);
+        Assert.Null(result.Error?.Details);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
-    public void Send_WhenUnavailableResponseHasRetryAfter_ParsesIntegerSeconds()
+    [Fact]
+    public async Task Send_WhenUnavailableResponseHasRetryAfter_ParsesIntegerSeconds()
     {
-        // ID: 8B-MED-003
-        // Source: docs/v1/api/adapters.md §11 and §15
-        // Given: A controllable HTTP handler returns 503 with Retry-After set to an integer number of seconds.
-        // When: The Adapter sends a generation request and maps the HTTP response.
-        // Then: The port result is Unavailable and carries the parsed retry period without exposing the response body.
-        // Blocked by: The response mapper and controllable HTTP handler are not yet implemented.
-        // Priority: P1
+        var response = new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+        {
+            Content = new StringContent("provider secret"),
+        };
+        response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(1));
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.Unavailable, result.Error?.ErrorCode);
+        Assert.Equal(1, result.Error?.RetryAfter);
+        Assert.Null(result.Error?.Details);
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
-    public void Send_WhenRetryAfterIsMalformed_DoesNotExposeOrInventRetryPeriod()
+    [Fact]
+    public async Task Send_WhenRetryAfterIsMalformed_DoesNotExposeOrInventRetryPeriod()
     {
-        // ID: 8B-MED-004
-        // Source: docs/v1/api/adapters.md §11 and §15
-        // Given: A rate-limit or unavailable response has a missing or malformed Retry-After header.
-        // When: The Adapter sends a generation request and maps the HTTP response.
-        // Then: The port result remains safe and does not invent a retry period from untrusted header text.
-        // Blocked by: The response mapper and controllable HTTP handler are not yet implemented.
-        // Priority: P1
+        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+        {
+            Content = new StringContent("provider secret"),
+        };
+        response.Headers.TryAddWithoutValidation("Retry-After", "later");
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ImageGenerationPortErrorCode.RateLimited, result.Error?.ErrorCode);
+        Assert.Null(result.Error?.RetryAfter);
+        Assert.Null(result.Error?.Details);
     }
 
     [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
@@ -128,15 +147,35 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         // Priority: P1
     }
 
-    [Fact(Skip = "TODO: implement Glyph Forge response mapping")]
-    public void Send_WhenExternalResponsesFail_MapsEachStatusToPortError()
+    [Theory]
+    [InlineData(422, "OUTPUT_SIZE_EXCEEDED")]
+    [InlineData(429, "RATE_LIMITED")]
+    [InlineData(503, "UNAVAILABLE")]
+    [InlineData(502, "FAILED")]
+    public async Task Send_WhenExternalResponsesFail_MapsEachStatusToPortError(
+        int statusCode,
+        string expectedCode)
     {
-        // ID: 8B-MED-006
-        // Source: docs/v1/api/adapters.md §11, §14, §15
-        // Given: Controlled responses cover 422, 429, 503, and another 5xx status with provider error bodies.
-        // When: The Adapter sends a generation request for each response.
-        // Then: The outcomes map to OutputSizeExceeded, RateLimited, Unavailable, and Failed respectively without leaking bodies.
-        // Blocked by: The response mapper and controllable HTTP handler are not yet implemented.
-        // Priority: P0
+        var response = new HttpResponseMessage((HttpStatusCode)statusCode)
+        {
+            Content = new StringContent("provider secret"),
+        };
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(expectedCode, result.Error?.Code);
+        Assert.Null(result.Error?.Details);
+    }
+
+    private static GlyphForgeImageGenerationAdapter CreateAdapter(
+        Func<HttpRequestMessage, HttpResponseMessage> handler)
+    {
+        var client = new HttpClient(new StubHttpMessageHandler(handler))
+        {
+            BaseAddress = new Uri("https://glyph-forge.example/"),
+        };
+        return new GlyphForgeImageGenerationAdapter(new StubHttpClientFactory(client));
     }
 }
