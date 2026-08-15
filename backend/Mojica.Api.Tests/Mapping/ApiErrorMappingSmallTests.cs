@@ -56,17 +56,19 @@ public sealed class ApiErrorMappingSmallTests
             response.Message);
     }
 
-    [Fact(Skip = "TODO: implement API error mapping")]
+    [Fact]
     public void Map_WhenGenerationIsRateLimited_ReturnsRateLimitContract()
     {
-        // ID: API-ERROR-MAP-S-004
-        // Source: docs/v1/api/controllers.md §6, §10; docs/v1/api/api.md §8
-        // Given: A service result classified as RATE_LIMITED with an optional retryAfter value
-        // When: The API error mapping converts the failure to the public contract
-        // Then: The result represents HTTP 429 with code RATE_LIMIT_EXCEEDED and preserves a safe Retry-After value when available
-        // Error: Do not invent or expose an unsafe retry period
-        // Priority: High
-        // Theory candidate: vary retryAfter present, absent, and invalid at the mapping boundary
+        var portError = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.RateLimited,
+            retryAfter: 7);
+
+        var result = ApiErrorMapper.MapPortFailure(portError, ApiLanguage.English);
+
+        var response = Assert.IsType<ApiErrorResponse>(result.Response);
+        Assert.Equal(429, result.StatusCode);
+        Assert.Equal("RATE_LIMIT_EXCEEDED", response.Code);
+        Assert.Equal(7, result.RetryAfter);
     }
 
     [Fact(Skip = "TODO: implement API error mapping")]
