@@ -15,26 +15,20 @@ public sealed class GlyphForgeRequestMapperSmallTests
         Assert.Equal("/images", result.Path);
     }
 
-    [Fact(Skip = "TODO: implement the request mapping contract")]
+    [Fact]
     public void Map_WhenImageTypeIsXBackground_SelectsBackgroundEndpoint()
     {
-        // ID: 8A-REQ-002
-        // Source: docs/v1/api/adapters.md §15 Endpoints
-        // Given: A validated ImageGenerationRequest whose ImageType is x-background.
-        // When: The request mapper selects the Glyph Forge endpoint.
-        // Then: It returns POST /images/background and preserves the validated request payload.
-        // Priority: P0
+        var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.XBackground));
+
+        Assert.Equal("/images/background", result.Path);
     }
 
-    [Fact(Skip = "TODO: implement the request mapping contract")]
+    [Fact]
     public void Map_WhenImageTypeIsXIcon_SelectsIconEndpoint()
     {
-        // ID: 8A-REQ-003
-        // Source: docs/v1/api/adapters.md §15 Endpoints
-        // Given: A validated ImageGenerationRequest whose ImageType is x-icon.
-        // When: The request mapper selects the Glyph Forge endpoint.
-        // Then: It returns POST /images/x-icon and preserves the validated request payload.
-        // Priority: P0
+        var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.XIcon));
+
+        Assert.Equal("/images/x-icon", result.Path);
     }
 
     [Fact(Skip = "TODO: implement the request mapping contract")]
