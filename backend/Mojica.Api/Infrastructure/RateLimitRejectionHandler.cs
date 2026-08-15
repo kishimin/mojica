@@ -1,23 +1,46 @@
 using System.Globalization;
+using System.Text.Json;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
+using Mojica.Api.Localization;
+using Mojica.Api.Mapping;
+using Mojica.Api.Ports;
 
 namespace Mojica.Api.Infrastructure;
 
 public static class RateLimitRejectionHandler
 {
-    public static ValueTask WriteAsync(OnRejectedContext context, CancellationToken cancellationToken)
+    public static async ValueTask WriteAsync(OnRejectedContext context, CancellationToken cancellationToken)
     {
-        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        var language = ApiLanguageSelector.Select(context.HttpContext.Request.Headers.AcceptLanguage.ToString());
+        var portError = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.RateLimited,
+            retryAfter: TryGetRetryAfterSeconds(context.Lease));
+        var result = ApiErrorMapper.MapPortFailure(portError, language);
 
-        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+        context.HttpContext.Response.StatusCode = result.StatusCode;
+        context.HttpContext.Response.ContentType = "application/json";
+
+        if (result.RetryAfter is { } retryAfterSeconds)
         {
-            var retryAfterSeconds = (int)Math.Ceiling(retryAfter.TotalSeconds);
             context.HttpContext.Response.Headers.RetryAfter =
                 retryAfterSeconds.ToString(CultureInfo.InvariantCulture);
         }
 
-        return ValueTask.CompletedTask;
+        await JsonSerializer.SerializeAsync(
+            context.HttpContext.Response.Body,
+            result.Response,
+            cancellationToken: cancellationToken);
+    }
+
+    private static int? TryGetRetryAfterSeconds(RateLimitLease lease)
+    {
+        if (!lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+        {
+            return null;
+        }
+
+        return (int)Math.Ceiling(retryAfter.TotalSeconds);
     }
 }
