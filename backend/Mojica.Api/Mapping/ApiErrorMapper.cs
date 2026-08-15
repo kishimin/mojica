@@ -1,6 +1,7 @@
 using Mojica.Api.Contracts;
 using Mojica.Api.Localization;
 using Mojica.Api.Models;
+using Mojica.Api.Ports;
 
 namespace Mojica.Api.Mapping;
 
@@ -36,5 +37,34 @@ public static class ApiErrorMapper
                 code,
                 ApiErrorMessageProvider.GetPublicMessage(language, code),
                 fieldErrors));
+    }
+
+    public static ApiErrorMappingResult MapPortFailure(
+        ImageGenerationPortError error,
+        ApiLanguage language)
+    {
+        ArgumentNullException.ThrowIfNull(error);
+
+        return error.ErrorCode.Value switch
+        {
+            "OUTPUT_SIZE_EXCEEDED" => CreateError(
+                StatusCodes.Status422UnprocessableEntity,
+                "IMAGE_SIZE_LIMIT_EXCEEDED",
+                language),
+            _ => throw new InvalidOperationException(
+                $"Port error '{error.ErrorCode.Value}' is not mapped yet."),
+        };
+    }
+
+    private static ApiErrorMappingResult CreateError(
+        int statusCode,
+        string code,
+        ApiLanguage language,
+        int? retryAfter = null)
+    {
+        return new(
+            statusCode,
+            new ApiErrorResponse(code, ApiErrorMessageProvider.GetPublicMessage(language, code)),
+            retryAfter);
     }
 }
