@@ -47,16 +47,22 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         Assert.Equal("https://glyph-forge.example/images/background", requestUri?.ToString());
     }
 
-    [Fact(Skip = "TODO: implement the request method and endpoint contract assertion")]
-    public void Send_WhenImageTypeIsXIcon_UsesPostXIconEndpoint()
+    [Fact]
+    public async Task Send_WhenImageTypeIsXIcon_UsesPostXIconEndpoint()
     {
-        // ID: GF-ADAPTER-M-003
-        // Source: docs/v1/api/adapters.md §15, Endpoints
-        // Given: A valid x-icon ImageGenerationRequest and a controllable HTTP handler
-        // When: The Adapter sends the generation request
-        // Then: The observed request uses POST and the /images/x-icon endpoint
-        // Error: Fail if the endpoint does not correspond to ImageType.XIcon
-        // Priority: P1
+        HttpMethod? requestMethod = null;
+        Uri? requestUri = null;
+        var adapter = CreateAdapter(request =>
+        {
+            requestMethod = request.Method;
+            requestUri = request.RequestUri;
+            return PngResponse();
+        });
+
+        await adapter.GenerateAsync(ValidRequest(ImageType.XIcon), CancellationToken.None);
+
+        Assert.Equal(HttpMethod.Post, requestMethod);
+        Assert.Equal("https://glyph-forge.example/images/x-icon", requestUri?.ToString());
     }
 
     [Fact(Skip = "TODO: implement the request Content-Type contract assertion")]
