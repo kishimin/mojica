@@ -39,8 +39,8 @@ public sealed class GlyphForgeRequestMapperSmallTests
         Assert.Equal("KA", result.Payload.FrameText);
         Assert.Equal("🌻", result.Payload.InnerText);
         Assert.Equal("☀", result.Payload.OuterText);
-        Assert.Equal(new[] { 255, 212, 0 }, result.Payload.InnerColor);
-        Assert.Equal(new[] { 255, 105, 180 }, result.Payload.OuterColor);
+        Assert.Equal([255, 212, 0], result.Payload.InnerColor);
+        Assert.Equal([255, 105, 180], result.Payload.OuterColor);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public sealed class GlyphForgeRequestMapperSmallTests
     {
         var result = GlyphForgeRequestMapper.Map(ValidRequest(ImageType.Standard));
 
-        Assert.Equal(new[] { 255, 105, 180 }, result.Payload.OuterColor);
+        Assert.Equal([255, 105, 180], result.Payload.OuterColor);
     }
 
     [Fact(Skip = "TODO: verify these transport concerns at the Adapter boundary")]
