@@ -82,7 +82,7 @@ public sealed class GlyphForgeRequestMapperSmallTests
     [Fact]
     public void Request_WhenCallerMutatesConstructorColorArray_DoesNotChangePayloadValue()
     {
-        var innerColor = new[] { 255, 212, 0 };
+        int[] innerColor = [255, 212, 0];
         var request = new GlyphForgeRequest("KA", "🌻", "☀", innerColor, [255, 105, 180]);
 
         innerColor[0] = 0;
