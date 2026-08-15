@@ -2,4 +2,7 @@ using Mojica.Api.Contracts;
 
 namespace Mojica.Api.Mapping;
 
-public sealed record ApiErrorMappingResult(int StatusCode, ApiErrorResponse Response);
+public sealed record ApiErrorMappingResult(
+    int StatusCode,
+    IApiErrorResponse Response,
+    int? RetryAfter = null);
