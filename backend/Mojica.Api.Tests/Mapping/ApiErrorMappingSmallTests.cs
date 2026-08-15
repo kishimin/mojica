@@ -71,15 +71,21 @@ public sealed class ApiErrorMappingSmallTests
         Assert.Equal(7, result.RetryAfter);
     }
 
-    [Fact(Skip = "TODO: implement API error mapping")]
+    [Fact]
     public void Map_WhenGenerationTimesOut_ReturnsTimeoutContract()
     {
-        // ID: API-ERROR-MAP-S-005
-        // Source: docs/v1/api/controllers.md §6, §10; docs/v1/api/api.md §10
-        // Given: A service result classified as TIMEOUT
-        // When: The API error mapping converts the failure to the public contract
-        // Then: The result represents HTTP 504 with code IMAGE_GENERATION_TIMEOUT and no internal details
-        // Priority: High
+        var portError = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.Timeout,
+            details: "internal timeout diagnostics");
+
+        var result = ApiErrorMapper.MapPortFailure(portError, ApiLanguage.English);
+
+        var response = Assert.IsType<ApiErrorResponse>(result.Response);
+        Assert.Equal(504, result.StatusCode);
+        Assert.Equal("IMAGE_GENERATION_TIMEOUT", response.Code);
+        Assert.Equal(
+            "Image generation is taking too long. Please try again later.",
+            response.Message);
     }
 
     [Fact(Skip = "TODO: implement API error mapping")]
