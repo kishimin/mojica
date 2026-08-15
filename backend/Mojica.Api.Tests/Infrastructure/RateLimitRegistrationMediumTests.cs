@@ -14,8 +14,6 @@ public sealed class RateLimitRegistrationMediumTests
     [Fact]
     public void Start_InProduction_WhenConfigurationIsMissing_FailsFast()
     {
-        // ID: RATE-LIMIT-M-001
-        // Source: docs/v1/api/api.md §13
         using var factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder => builder.UseEnvironment("Production"));
 
@@ -27,8 +25,6 @@ public sealed class RateLimitRegistrationMediumTests
     [Fact]
     public async Task Start_WhenRateLimitConfigurationIsMissing_AllowsHealthEndpointToStart()
     {
-        // ID: RATE-LIMIT-M-002
-        // Source: docs/v1/api/api.md §13
         using var factory = new WebApplicationFactory<Program>();
         using var client = factory.CreateClient();
 
@@ -40,8 +36,6 @@ public sealed class RateLimitRegistrationMediumTests
     [Fact]
     public void Resolve_WhenConfigurationIsValid_RegistersRateLimiterWithoutThrowing()
     {
-        // ID: RATE-LIMIT-M-003
-        // Source: docs/v1/api/api.md §13
         using var factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder => builder.ConfigureAppConfiguration((_, configuration) =>
                 configuration.AddInMemoryCollection(new Dictionary<string, string?>

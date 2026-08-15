@@ -9,8 +9,6 @@ public sealed class RateLimitOptionsSmallTests
     [Fact]
     public void Validate_WhenPermitLimitWindowAndQueueLimitAreValid_AcceptsConfiguration()
     {
-        // ID: RATE-LIMIT-S-001
-        // Source: docs/v1/api/api.md §13
         var options = new RateLimitOptions
         {
             PermitLimit = 10,
@@ -28,8 +26,6 @@ public sealed class RateLimitOptionsSmallTests
     [InlineData(-1)]
     public void Validate_WhenPermitLimitIsNotPositive_RejectsConfiguration(int permitLimit)
     {
-        // ID: RATE-LIMIT-S-002
-        // Source: docs/v1/api/api.md §13
         var options = new RateLimitOptions
         {
             PermitLimit = permitLimit,
@@ -47,8 +43,6 @@ public sealed class RateLimitOptionsSmallTests
     [MemberData(nameof(NonPositiveWindows))]
     public void Validate_WhenWindowIsNotPositive_RejectsConfiguration(TimeSpan window)
     {
-        // ID: RATE-LIMIT-S-003
-        // Source: docs/v1/api/api.md §13
         var options = new RateLimitOptions
         {
             PermitLimit = 10,
@@ -65,8 +59,6 @@ public sealed class RateLimitOptionsSmallTests
     [Fact]
     public void Validate_WhenQueueLimitIsNegative_RejectsConfiguration()
     {
-        // ID: RATE-LIMIT-S-004
-        // Source: docs/v1/api/api.md §13
         var options = new RateLimitOptions
         {
             PermitLimit = 10,

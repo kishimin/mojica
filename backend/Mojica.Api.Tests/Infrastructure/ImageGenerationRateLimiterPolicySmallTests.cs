@@ -9,8 +9,6 @@ public sealed class ImageGenerationRateLimiterPolicySmallTests
     [Fact]
     public void Acquire_WhenRequestsAreWithinPermitLimit_AcquiresEachLease()
     {
-        // ID: RATE-LIMIT-S-005
-        // Source: docs/v1/api/api.md §13; docs/v1/api/controllers.md §6, §10
         var options = new RateLimitOptions { PermitLimit = 3, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 };
         using var limiter = ImageGenerationRateLimiterPolicy.CreateLimiter(options);
 
@@ -24,8 +22,6 @@ public sealed class ImageGenerationRateLimiterPolicySmallTests
     [Fact]
     public void Acquire_WhenRequestsExceedPermitLimit_RejectsAdditionalRequest()
     {
-        // ID: RATE-LIMIT-S-006
-        // Source: docs/v1/api/api.md §13; docs/v1/api/controllers.md §6, §10
         var options = new RateLimitOptions { PermitLimit = 2, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 };
         using var limiter = ImageGenerationRateLimiterPolicy.CreateLimiter(options);
 
@@ -47,8 +43,6 @@ public sealed class ImageGenerationRateLimiterPolicySmallTests
     [Fact]
     public void Acquire_WhenRequestIsRejected_ExposesRetryAfterMetadata()
     {
-        // ID: RATE-LIMIT-S-007
-        // Source: docs/v1/api/api.md §13; docs/v1/api/controllers.md §10
         var options = new RateLimitOptions { PermitLimit = 1, Window = TimeSpan.FromSeconds(30), QueueLimit = 0 };
         using var limiter = ImageGenerationRateLimiterPolicy.CreateLimiter(options);
 

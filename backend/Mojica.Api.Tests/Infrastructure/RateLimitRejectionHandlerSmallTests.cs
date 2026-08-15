@@ -13,8 +13,6 @@ public sealed class RateLimitRejectionHandlerSmallTests
     [Fact]
     public async Task WriteAsync_WhenLeaseHasRetryAfterMetadata_SetsStatusRetryAfterHeaderAndLocalizedBody()
     {
-        // ID: RATE-LIMIT-S-008
-        // Source: docs/v1/api/controllers.md §6, §10; docs/v1/api/api.md §8, §13
         var options = new RateLimitOptions { PermitLimit = 1, Window = TimeSpan.FromSeconds(30), QueueLimit = 0 };
         using var limiter = ImageGenerationRateLimiterPolicy.CreateLimiter(options);
         using var acquired = limiter.AttemptAcquire(1);
@@ -41,8 +39,6 @@ public sealed class RateLimitRejectionHandlerSmallTests
     [Fact]
     public async Task WriteAsync_WhenAcceptLanguageIsJapanese_WritesJapaneseBody()
     {
-        // ID: RATE-LIMIT-S-008
-        // Source: docs/v1/api/controllers.md §6, §10; docs/v1/api/api.md §8, §13
         var options = new RateLimitOptions { PermitLimit = 1, Window = TimeSpan.FromSeconds(30), QueueLimit = 0 };
         using var limiter = ImageGenerationRateLimiterPolicy.CreateLimiter(options);
         using var acquired = limiter.AttemptAcquire(1);
@@ -64,8 +60,6 @@ public sealed class RateLimitRejectionHandlerSmallTests
     [Fact]
     public async Task WriteAsync_WhenLeaseHasNoRetryAfterMetadata_SetsStatusAndBodyWithoutRetryAfterHeader()
     {
-        // ID: RATE-LIMIT-S-009
-        // Source: docs/v1/api/controllers.md §10
         var httpContext = new DefaultHttpContext { Response = { Body = new MemoryStream() } };
         var context = new OnRejectedContext { HttpContext = httpContext, Lease = new LeaseWithoutMetadata() };
 
