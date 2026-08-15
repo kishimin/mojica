@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace Mojica.Api.Contracts;
 
-public sealed record ApiValidationErrorResponse
+public sealed record ApiValidationErrorResponse : IApiErrorResponse
 {
     public ApiValidationErrorResponse(
         string code,
         string message,
-        IEnumerable<ApiValidationFieldError> errors)
+        IReadOnlyList<ApiValidationFieldError> errors)
     {
         ArgumentNullException.ThrowIfNull(code);
         ArgumentNullException.ThrowIfNull(message);

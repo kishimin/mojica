@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Mojica.Api.Contracts;
 
-public sealed record ApiErrorResponse
+public sealed record ApiErrorResponse : IApiErrorResponse
 {
     public ApiErrorResponse(string code, string message)
     {
