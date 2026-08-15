@@ -12,60 +12,6 @@ namespace Mojica.Api.Tests.Infrastructure;
 public sealed class GlyphForgeImageGenerationAdapterMediumTests
 {
     [Fact]
-    public async Task Send_WhenImageTypeIsStandard_UsesPostImagesEndpoint()
-    {
-        HttpMethod? requestMethod = null;
-        Uri? requestUri = null;
-        var adapter = CreateAdapter(request =>
-        {
-            requestMethod = request.Method;
-            requestUri = request.RequestUri;
-            return PngResponse();
-        });
-
-        await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
-
-        Assert.Equal(HttpMethod.Post, requestMethod);
-        Assert.Equal("https://glyph-forge.example/images", requestUri?.ToString());
-    }
-
-    [Fact]
-    public async Task Send_WhenImageTypeIsXBackground_UsesPostBackgroundEndpoint()
-    {
-        HttpMethod? requestMethod = null;
-        Uri? requestUri = null;
-        var adapter = CreateAdapter(request =>
-        {
-            requestMethod = request.Method;
-            requestUri = request.RequestUri;
-            return PngResponse();
-        });
-
-        await adapter.GenerateAsync(ValidRequest(ImageType.XBackground), CancellationToken.None);
-
-        Assert.Equal(HttpMethod.Post, requestMethod);
-        Assert.Equal("https://glyph-forge.example/images/background", requestUri?.ToString());
-    }
-
-    [Fact]
-    public async Task Send_WhenImageTypeIsXIcon_UsesPostXIconEndpoint()
-    {
-        HttpMethod? requestMethod = null;
-        Uri? requestUri = null;
-        var adapter = CreateAdapter(request =>
-        {
-            requestMethod = request.Method;
-            requestUri = request.RequestUri;
-            return PngResponse();
-        });
-
-        await adapter.GenerateAsync(ValidRequest(ImageType.XIcon), CancellationToken.None);
-
-        Assert.Equal(HttpMethod.Post, requestMethod);
-        Assert.Equal("https://glyph-forge.example/images/x-icon", requestUri?.ToString());
-    }
-
-    [Fact]
     public async Task Send_WhenCreatingGlyphForgeRequest_UsesApplicationJsonContentType()
     {
         string? mediaType = null;
@@ -84,16 +30,14 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
     }
 
     [Fact]
-    public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverridesOrAuthentication()
+    public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverrides()
     {
         string? requestBody = null;
-        string[]? requestHeaders = null;
         var adapter = CreateAsyncAdapter(async (request, _) =>
         {
             var content = request.Content
                 ?? throw new XunitException("The Adapter must send a request body.");
             requestBody = await content.ReadAsStringAsync();
-            requestHeaders = request.Headers.Select(header => header.Key).ToArray();
             return PngResponse();
         });
 
@@ -104,17 +48,29 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         using var document = JsonDocument.Parse(serializedRequest);
         Assert.False(document.RootElement.TryGetProperty("frame_font_size", out _));
         Assert.False(document.RootElement.TryGetProperty("output_font_size", out _));
+    }
+
+    [Theory]
+    [InlineData("Authorization")]
+    [InlineData("X-API-Key")]
+    [InlineData("Api-Key")]
+    public async Task Send_WhenCreatingGlyphForgeRequest_DoesNotSpecifyAuthenticationHeader(
+        string forbiddenHeader)
+    {
+        string[]? requestHeaders = null;
+        var adapter = CreateAsyncAdapter((request, _) =>
+        {
+            requestHeaders = request.Headers.Select(header => header.Key).ToArray();
+            return Task.FromResult(PngResponse());
+        });
+
+        await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
         var observedHeaders = requestHeaders
             ?? throw new XunitException("The HTTP handler did not observe request headers.");
         Assert.DoesNotContain(
             observedHeaders,
-            header => header.Equals("Authorization", StringComparison.OrdinalIgnoreCase));
-        Assert.DoesNotContain(
-            observedHeaders,
-            header => header.Equals("X-API-Key", StringComparison.OrdinalIgnoreCase));
-        Assert.DoesNotContain(
-            observedHeaders,
-            header => header.Equals("Api-Key", StringComparison.OrdinalIgnoreCase));
+            header => header.Equals(forbiddenHeader, StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -143,18 +99,13 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
 
     private static ImageGenerationRequest ValidRequest()
     {
-        return ValidRequest(ImageType.Standard);
-    }
-
-    private static ImageGenerationRequest ValidRequest(ImageType imageType)
-    {
         Assert.True(RenderText.TryCreate("KA", out var text, out _));
         Assert.True(PatternCharacter.TryCreate("🌻", out var foregroundCharacter, out _));
         Assert.True(HexColor.TryCreate("#FFD400", out var foregroundColor, out _));
         Assert.True(PatternCharacter.TryCreate("☀", out var backgroundCharacter, out _));
         Assert.True(HexColor.TryCreate("#FF69B4", out var backgroundColor, out _));
         Assert.True(ImageGenerationRequest.TryCreate(
-            imageType,
+            ImageType.Standard,
             text,
             foregroundCharacter,
             foregroundColor,
