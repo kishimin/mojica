@@ -1,6 +1,7 @@
 using Mojica.Api.Contracts;
 using Mojica.Api.Localization;
 using Mojica.Api.Mapping;
+using Mojica.Api.Models;
 
 namespace Mojica.Api.Tests.Mapping;
 
@@ -16,17 +17,25 @@ public sealed class ApiErrorMappingSmallTests
         Assert.Equal("The request format is invalid.", result.Response.Message);
     }
 
-    [Fact(Skip = "TODO: implement API error mapping")]
+    [Fact]
     public void Map_WhenValidationFails_ReturnsValidationErrorContract()
     {
-        // ID: API-ERROR-MAP-S-002
-        // Source: docs/v1/api/controllers.md §4-5, §10; docs/v1/api/api.md §6
-        // Given: One or more language-independent validation errors with their affected fields
-        // When: The API error mapping converts the failure to the public contract
-        // Then: The result represents HTTP 422 with code VALIDATION_ERROR and field errors
-        // Error: Preserve each affected field and validation reason without exposing implementation details
-        // Priority: High
-        // Theory candidate: vary the validation reason, target field, and selected language
+        var validationErrors = new[]
+        {
+            new ModelValidationError("text", ModelValidationReason.Required),
+        };
+
+        var result = ApiErrorMapper.MapValidationFailure(
+            validationErrors,
+            ApiLanguage.English);
+
+        var response = Assert.IsType<ApiValidationErrorResponse>(result.Response);
+        Assert.Equal(422, result.StatusCode);
+        Assert.Equal("VALIDATION_ERROR", response.Code);
+        Assert.Equal("The input contains validation errors.", response.Message);
+        var fieldError = Assert.Single(response.Errors);
+        Assert.Equal("text", fieldError.Field);
+        Assert.Equal("The text field is required.", fieldError.Message);
     }
 
     [Fact(Skip = "TODO: implement API error mapping")]
