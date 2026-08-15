@@ -52,6 +52,10 @@ public static class ApiErrorMapper
                 "RATE_LIMIT_EXCEEDED",
                 language,
                 error.RetryAfter),
+            "TIMEOUT" => CreateError(
+                StatusCodes.Status504GatewayTimeout,
+                "IMAGE_GENERATION_TIMEOUT",
+                language),
             "OUTPUT_SIZE_EXCEEDED" => CreateError(
                 StatusCodes.Status422UnprocessableEntity,
                 "IMAGE_SIZE_LIMIT_EXCEEDED",
