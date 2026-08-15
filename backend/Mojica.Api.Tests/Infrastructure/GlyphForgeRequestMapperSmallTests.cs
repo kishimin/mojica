@@ -51,19 +51,6 @@ public sealed class GlyphForgeRequestMapperSmallTests
         Assert.Equal([255, 105, 180], result.Payload.OuterColor);
     }
 
-    [Fact(Skip = "TODO: verify these transport concerns at the Adapter boundary")]
-    public void Map_WhenCreatingGlyphForgeRequest_DoesNotSpecifyFontSizeOverridesOrAuthentication()
-    {
-        // ID: 8A-REQ-006
-        // Source: docs/v1/api/adapters.md §15 Request
-        // Given: A validated ImageGenerationRequest mapped under the current Glyph Forge contract.
-        // When: The mapper creates the outbound request representation.
-        // Then: It omits frame_font_size and output_font_size so Glyph Forge uses its default of 20.
-        // Then: It does not add an authentication header to the request mapping result.
-        // Blocked by: HTTP headers and serialized transport options are owned by the Adapter boundary.
-        // Priority: P1
-    }
-
     private static ImageGenerationRequest ValidRequest(ImageType type)
     {
         Assert.True(RenderText.TryCreate("KA", out var text, out _));
