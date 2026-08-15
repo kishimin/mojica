@@ -4,9 +4,7 @@ public sealed record GeneratedImage
 {
     public GeneratedImage(byte[] content, string mediaType, string fileName)
     {
-        ArgumentNullException.ThrowIfNull(content);
-        ArgumentNullException.ThrowIfNull(mediaType);
-        ArgumentNullException.ThrowIfNull(fileName);
+        ImageFileValue.Validate(content, mediaType, fileName);
 
         Content = content;
         MediaType = mediaType;
@@ -22,14 +20,18 @@ public sealed record GeneratedImage
     public bool Equals(GeneratedImage? other)
     {
         return other is not null
-            && BinaryValueEquality.ContentEquals(Content, other.Content)
-            && MediaType == other.MediaType
-            && FileName == other.FileName;
+            && ImageFileValue.ContentEquals(
+                Content,
+                other.Content,
+                MediaType,
+                other.MediaType,
+                FileName,
+                other.FileName);
     }
 
     public override int GetHashCode()
     {
         // Mutable image content cannot safely participate in a stable hash code.
-        return BinaryValueEquality.GetStableHashCode(MediaType, FileName);
+        return ImageFileValue.GetStableHashCode(MediaType, FileName);
     }
 }
