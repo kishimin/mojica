@@ -79,6 +79,17 @@ public sealed class GlyphForgeRequestMapperSmallTests
         Assert.Equal([255, 212, 0], result.Payload.InnerColor);
     }
 
+    [Fact]
+    public void Request_WhenCallerMutatesConstructorColorArray_DoesNotChangePayloadValue()
+    {
+        var innerColor = new[] { 255, 212, 0 };
+        var request = new GlyphForgeRequest("KA", "🌻", "☀", innerColor, [255, 105, 180]);
+
+        innerColor[0] = 0;
+
+        Assert.Equal([255, 212, 0], request.InnerColor);
+    }
+
     private static ImageGenerationRequest ValidRequest(ImageType type)
     {
         Assert.True(RenderText.TryCreate("KA", out var text, out _));
