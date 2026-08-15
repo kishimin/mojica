@@ -2,6 +2,7 @@ using Mojica.Api.Contracts;
 using Mojica.Api.Localization;
 using Mojica.Api.Mapping;
 using Mojica.Api.Models;
+using Mojica.Api.Ports;
 
 namespace Mojica.Api.Tests.Mapping;
 
@@ -38,16 +39,21 @@ public sealed class ApiErrorMappingSmallTests
         Assert.Equal("The text field is required.", fieldError.Message);
     }
 
-    [Fact(Skip = "TODO: implement API error mapping")]
+    [Fact]
     public void Map_WhenOutputSizeIsExceeded_ReturnsOutputSizeLimitContract()
     {
-        // ID: API-ERROR-MAP-S-003
-        // Source: docs/v1/api/controllers.md §5-6; docs/v1/api/api.md §7
-        // Given: A service result classified as OUTPUT_SIZE_EXCEEDED
-        // When: The API error mapping converts the failure to the public contract
-        // Then: The result represents HTTP 422 with code IMAGE_SIZE_LIMIT_EXCEEDED and no field assignment
-        // Error: Do not expose Glyph Forge response details or internal pixel limits
-        // Priority: High
+        var portError = new ImageGenerationPortError(
+            ImageGenerationPortErrorCode.OutputSizeExceeded,
+            details: "Glyph Forge internal pixel limit: 12345");
+
+        var result = ApiErrorMapper.MapPortFailure(portError, ApiLanguage.English);
+
+        var response = Assert.IsType<ApiErrorResponse>(result.Response);
+        Assert.Equal(422, result.StatusCode);
+        Assert.Equal("IMAGE_SIZE_LIMIT_EXCEEDED", response.Code);
+        Assert.Equal(
+            "The generated image would exceed the size limit. Reduce the input text.",
+            response.Message);
     }
 
     [Fact(Skip = "TODO: implement API error mapping")]
