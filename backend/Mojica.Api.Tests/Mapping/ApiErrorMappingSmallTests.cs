@@ -1,16 +1,19 @@
+using Mojica.Api.Contracts;
+using Mojica.Api.Localization;
+using Mojica.Api.Mapping;
+
 namespace Mojica.Api.Tests.Mapping;
 
 public sealed class ApiErrorMappingSmallTests
 {
-    [Fact(Skip = "TODO: implement API error mapping")]
+    [Fact]
     public void Map_WhenRequestIsMalformed_ReturnsBadRequestContract()
     {
-        // ID: API-ERROR-MAP-S-001
-        // Source: docs/v1/api/controllers.md §6, §10; docs/v1/api/api.md §5
-        // Given: A request failure classified as malformed before Domain validation
-        // When: The API error mapping converts the failure to the public contract
-        // Then: The result represents HTTP 400 with code BAD_REQUEST and no internal details
-        // Priority: High
+        var result = ApiErrorMapper.MapMalformedRequest(ApiLanguage.English);
+
+        Assert.Equal(400, result.StatusCode);
+        Assert.Equal("BAD_REQUEST", result.Response.Code);
+        Assert.Equal("The request format is invalid.", result.Response.Message);
     }
 
     [Fact(Skip = "TODO: implement API error mapping")]
