@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Mojica.Api.Models;
 
 namespace Mojica.Api.Infrastructure;
 
@@ -39,12 +40,12 @@ public sealed record GlyphForgeRequest
             && FrameText == other.FrameText
             && InnerText == other.InnerText
             && OuterText == other.OuterText
-            && InnerColor.AsSpan().SequenceEqual(other.InnerColor)
-            && OuterColor.AsSpan().SequenceEqual(other.OuterColor);
+            && BinaryValueEquality.ContentEquals(InnerColor, other.InnerColor)
+            && BinaryValueEquality.ContentEquals(OuterColor, other.OuterColor);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(FrameText, InnerText, OuterText);
+        return BinaryValueEquality.GetStableHashCode(FrameText, InnerText, OuterText);
     }
 }

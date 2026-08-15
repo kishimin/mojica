@@ -7,6 +7,11 @@ internal static class BinaryValueEquality
         return left.AsSpan().SequenceEqual(right);
     }
 
+    public static bool ContentEquals(int[] left, int[] right)
+    {
+        return left.AsSpan().SequenceEqual(right);
+    }
+
     public static int GetStableHashCode(params string[] metadata)
     {
         var hash = new HashCode();
