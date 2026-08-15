@@ -13,6 +13,9 @@ public sealed class GlyphForgeClientOptions
 
 public sealed class GlyphForgeClientOptionsValidator : IValidateOptions<GlyphForgeClientOptions>
 {
+    private static readonly TimeSpan MaximumHttpClientTimeout =
+        TimeSpan.FromMilliseconds(int.MaxValue);
+
     public ValidateOptionsResult Validate(string? name, GlyphForgeClientOptions options)
     {
         if (options.BaseUrl is null)
@@ -29,6 +32,11 @@ public sealed class GlyphForgeClientOptionsValidator : IValidateOptions<GlyphFor
         if (options.Timeout <= TimeSpan.Zero)
         {
             return ValidateOptionsResult.Fail("Glyph Forge timeout must be positive.");
+        }
+
+        if (options.Timeout > MaximumHttpClientTimeout)
+        {
+            return ValidateOptionsResult.Fail("Glyph Forge timeout exceeds the HttpClient maximum.");
         }
 
         return ValidateOptionsResult.Success;
