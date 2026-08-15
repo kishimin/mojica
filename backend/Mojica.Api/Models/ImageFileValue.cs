@@ -32,9 +32,9 @@ internal sealed class ImageFileValue
 {
     public ImageFileValue(byte[] content, string mediaType, string fileName)
     {
+        Binary = new ImageBinaryValue(content, mediaType);
         ArgumentNullException.ThrowIfNull(fileName);
 
-        Binary = new ImageBinaryValue(content, mediaType);
         FileName = fileName;
     }
 
