@@ -55,7 +55,7 @@ public sealed class ImageController(
         }
     }
 
-    private IActionResult ToErrorResult(ApiErrorMappingResult error)
+    private ObjectResult ToErrorResult(ApiErrorMappingResult error)
     {
         if (error.RetryAfter is { } retryAfterSeconds)
         {
