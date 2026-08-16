@@ -272,6 +272,11 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         public HttpClient CreateClient(string name) => client;
     }
 
+    private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => now;
+    }
+
     private sealed class ThrowingHttpClientFactory(Exception exception) : IHttpClientFactory
     {
         public HttpClient CreateClient(string name) => throw exception;
@@ -374,6 +379,25 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
 
         Assert.Equal(0, result.Error?.RetryAfter);
+    }
+
+    [Fact]
+    public async Task Send_WhenRetryAfterDateIsExactlyMaximumSupportedSeconds_ParsesFullValue()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var timeProvider = new FixedTimeProvider(now);
+        var retryAt = now + TimeSpan.FromSeconds(int.MaxValue);
+        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+        {
+            Content = new StringContent("provider secret"),
+        };
+        response.Headers.RetryAfter = new RetryConditionHeaderValue(retryAt);
+        var adapter = CreateAdapter(_ => response, timeProvider);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.RateLimited, result.Error?.ErrorCode);
+        Assert.Equal(int.MaxValue, result.Error?.RetryAfter);
     }
 
     [Fact]
@@ -526,13 +550,14 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
     }
 
     private static GlyphForgeImageGenerationAdapter CreateAdapter(
-        Func<HttpRequestMessage, HttpResponseMessage> handler)
+        Func<HttpRequestMessage, HttpResponseMessage> handler,
+        TimeProvider? timeProvider = null)
     {
         var client = new HttpClient(new StubHttpMessageHandler(handler))
         {
             BaseAddress = new Uri("https://glyph-forge.example/"),
         };
-        return new GlyphForgeImageGenerationAdapter(new StubHttpClientFactory(client));
+        return new GlyphForgeImageGenerationAdapter(new StubHttpClientFactory(client), timeProvider: timeProvider);
     }
 
     private static GlyphForgeImageGenerationAdapter CreateAsyncAdapter(
