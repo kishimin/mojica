@@ -49,9 +49,9 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
         Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
         using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
         Assert.Equal("VALIDATION_ERROR", document.RootElement.GetProperty("code").GetString());
-        var fields = document.RootElement.GetProperty("errors").EnumerateArray()
-            .Select(error => error.GetProperty("field").GetString());
-        Assert.Contains(invalidField, fields);
+        Assert.Contains(
+            document.RootElement.GetProperty("errors").EnumerateArray(),
+            error => error.GetProperty("field").GetString() == invalidField);
         Assert.Equal(0, port.CallCount);
     }
 
@@ -102,11 +102,12 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
 
         Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
         using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
-        var fields = document.RootElement.GetProperty("errors").EnumerateArray()
-            .Select(error => error.GetProperty("field").GetString())
-            .ToList();
-        Assert.Contains("text", fields);
-        Assert.Contains("foregroundColor", fields);
+        Assert.Contains(
+            document.RootElement.GetProperty("errors").EnumerateArray(),
+            error => error.GetProperty("field").GetString() == "text");
+        Assert.Contains(
+            document.RootElement.GetProperty("errors").EnumerateArray(),
+            error => error.GetProperty("field").GetString() == "foregroundColor");
     }
 
     [Fact]
@@ -124,11 +125,12 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
 
         Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
         using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
-        var fields = document.RootElement.GetProperty("errors").EnumerateArray()
-            .Select(error => error.GetProperty("field").GetString())
-            .ToList();
-        Assert.Contains("foregroundCharacter", fields);
-        Assert.Contains("backgroundCharacter", fields);
+        Assert.Contains(
+            document.RootElement.GetProperty("errors").EnumerateArray(),
+            error => error.GetProperty("field").GetString() == "foregroundCharacter");
+        Assert.Contains(
+            document.RootElement.GetProperty("errors").EnumerateArray(),
+            error => error.GetProperty("field").GetString() == "backgroundCharacter");
     }
 
     [Fact]
