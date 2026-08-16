@@ -89,11 +89,47 @@ public sealed class ApiValidationErrorResponseSmallTests
     [Fact]
     public void Create_WhenErrorsAreEmpty_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.Throws<ArgumentException>(() =>
             new ApiValidationErrorResponse(
                 "VALIDATION_ERROR",
                 "The input contains validation errors.",
                 Array.Empty<ApiValidationFieldError>()));
+
+        Assert.StartsWith(
+            "A validation error response requires at least one field error.",
+            exception.Message);
+    }
+
+    [Fact]
+    public void Create_WhenCodeIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new ApiValidationErrorResponse(
+                null!,
+                "The input contains validation errors.",
+                [new ApiValidationFieldError("text", "The text field is required.")]));
+    }
+
+    [Fact]
+    public void Create_WhenMessageIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new ApiValidationErrorResponse(
+                "VALIDATION_ERROR",
+                null!,
+                [new ApiValidationFieldError("text", "The text field is required.")]));
+    }
+
+    [Fact]
+    public void Create_WhenErrorsIsNull_ThrowsArgumentNullExceptionForErrorsParameter()
+    {
+        var exception = Assert.Throws<ArgumentNullException>(() =>
+            new ApiValidationErrorResponse(
+                "VALIDATION_ERROR",
+                "The input contains validation errors.",
+                null!));
+
+        Assert.Equal("errors", exception.ParamName);
     }
 
     [Fact]
@@ -110,5 +146,53 @@ public sealed class ApiValidationErrorResponseSmallTests
 
         Assert.Equal(first, second);
         Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void Equality_WhenCodeDiffers_IsNotEqualAndHashCodeDiffers()
+    {
+        var first = new ApiValidationErrorResponse(
+            "VALIDATION_ERROR",
+            "The input contains validation errors.",
+            [new ApiValidationFieldError("text", "The text field is required.")]);
+        var second = new ApiValidationErrorResponse(
+            "BAD_REQUEST",
+            "The input contains validation errors.",
+            [new ApiValidationFieldError("text", "The text field is required.")]);
+
+        Assert.NotEqual(first, second);
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void Equality_WhenMessageDiffers_IsNotEqualAndHashCodeDiffers()
+    {
+        var first = new ApiValidationErrorResponse(
+            "VALIDATION_ERROR",
+            "The input contains validation errors.",
+            [new ApiValidationFieldError("text", "The text field is required.")]);
+        var second = new ApiValidationErrorResponse(
+            "VALIDATION_ERROR",
+            "A different message.",
+            [new ApiValidationFieldError("text", "The text field is required.")]);
+
+        Assert.NotEqual(first, second);
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void Equality_WhenErrorsDiffer_IsNotEqualAndHashCodeDiffers()
+    {
+        var first = new ApiValidationErrorResponse(
+            "VALIDATION_ERROR",
+            "The input contains validation errors.",
+            [new ApiValidationFieldError("text", "The text field is required.")]);
+        var second = new ApiValidationErrorResponse(
+            "VALIDATION_ERROR",
+            "The input contains validation errors.",
+            [new ApiValidationFieldError("text", "A different requirement.")]);
+
+        Assert.NotEqual(first, second);
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
     }
 }

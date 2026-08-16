@@ -71,6 +71,23 @@ public sealed class ImageGenerationServiceSmallTests
     }
 
     [Fact]
+    public async Task ImageGenerationService_GenerateAsync_WhenUsingDefaultUuidProvider_GeneratesUniqueRandomFileNames()
+    {
+        var request = CreateValidRequest();
+        var port = new RecordingImageGenerationPort(CreateSuccessfulPortResult());
+        var service = new ImageGenerationService(port);
+
+        var first = await service.GenerateAsync(request, CancellationToken.None);
+        var second = await service.GenerateAsync(request, CancellationToken.None);
+
+        Assert.NotNull(first.Image);
+        Assert.NotNull(second.Image);
+        Assert.NotEqual(first.Image.FileName, second.Image.FileName);
+        Assert.DoesNotContain("00000000-0000-0000-0000-000000000000", first.Image.FileName);
+        Assert.DoesNotContain("00000000-0000-0000-0000-000000000000", second.Image.FileName);
+    }
+
+    [Fact]
     public async Task ImageGenerationService_GenerateAsync_WhenCalledTwiceSuccessfully_UsesNewUuidForEachFileName()
     {
         var request = CreateValidRequest();

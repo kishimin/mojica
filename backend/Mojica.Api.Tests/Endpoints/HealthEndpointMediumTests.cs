@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +23,27 @@ public sealed class HealthEndpointMediumTests : IClassFixture<HealthEndpointFact
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("{\"status\":\"ok\"}", await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task SwaggerDocument_DeclaresHealthOperationWithGetHealthName()
+    {
+        using var document = await client.GetFromJsonAsync<JsonDocument>("/swagger/v1/swagger.json");
+
+        var healthOperation = document!.RootElement
+            .GetProperty("paths")
+            .GetProperty("/health")
+            .GetProperty("get");
+
+        Assert.Equal("GetHealth", healthOperation.GetProperty("operationId").GetString());
+    }
+
+    [Fact]
+    public async Task SwaggerUI_WhenRequestedInDevelopment_IsServed()
+    {
+        using var response = await client.GetAsync("/swagger/index.html");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 }
 

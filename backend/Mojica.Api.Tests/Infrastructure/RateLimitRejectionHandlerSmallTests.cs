@@ -25,6 +25,7 @@ public sealed class RateLimitRejectionHandlerSmallTests
         await RateLimitRejectionHandler.WriteAsync(context, CancellationToken.None);
 
         Assert.Equal(StatusCodes.Status429TooManyRequests, httpContext.Response.StatusCode);
+        Assert.Equal("application/json", httpContext.Response.ContentType);
         Assert.True(int.TryParse(httpContext.Response.Headers.RetryAfter, out var seconds));
         Assert.True(seconds > 0);
 

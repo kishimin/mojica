@@ -56,4 +56,17 @@ public sealed class GeneratedImageDataSmallTests
 
         Assert.NotEqual(first, second);
     }
+
+    [Fact]
+    public void GeneratedImageData_GetHashCode_WhenMediaTypeDiffers_ReturnsDifferentStableHashCode()
+    {
+        var first = new GeneratedImageData(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/png");
+        var second = new GeneratedImageData(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/webp");
+
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
 }

@@ -18,6 +18,12 @@ public sealed class ImageGenerationRequestMapperSmallTests
         };
 
     [Fact]
+    public void Map_WhenDtoIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => ImageGenerationRequestMapper.Map(null!));
+    }
+
+    [Fact]
     public void Map_WhenAllValuesAreValid_ReturnsImageGenerationRequest()
     {
         var dto = new ImageGenerationRequestDto(

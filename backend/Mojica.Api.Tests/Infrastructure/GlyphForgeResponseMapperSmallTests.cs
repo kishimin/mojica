@@ -7,6 +7,12 @@ namespace Mojica.Api.Tests.Infrastructure;
 public sealed class GlyphForgeResponseMapperSmallTests
 {
     [Fact]
+    public void Map_WhenResponseIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => GlyphForgeResponseMapper.Map(null!));
+    }
+
+    [Fact]
     public void Map_WhenSuccessfulPngResponse_ReturnsGeneratedImageData()
     {
         var content = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
@@ -147,12 +153,75 @@ public sealed class GlyphForgeResponseMapperSmallTests
     }
 
     [Fact]
+    public void Response_WhenStatusCodeDiffers_IsNotEqualAndHashCodeDiffers()
+    {
+        var first = new GlyphForgeResponse(HttpStatusCode.OK, "image/png", [1, 2, 3]);
+        var second = new GlyphForgeResponse(HttpStatusCode.BadGateway, "image/png", [1, 2, 3]);
+
+        Assert.NotEqual(first, second);
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void Response_WhenMediaTypeDiffers_IsNotEqualAndHashCodeDiffers()
+    {
+        var first = new GlyphForgeResponse(HttpStatusCode.OK, "image/png", [1, 2, 3]);
+        var second = new GlyphForgeResponse(HttpStatusCode.OK, "text/plain", [1, 2, 3]);
+
+        Assert.NotEqual(first, second);
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void Response_WhenRetryAfterDiffers_IsNotEqualAndHashCodeDiffers()
+    {
+        var first = new GlyphForgeResponse(HttpStatusCode.TooManyRequests, null, null, retryAfter: 5);
+        var second = new GlyphForgeResponse(HttpStatusCode.TooManyRequests, null, null, retryAfter: 10);
+
+        Assert.NotEqual(first, second);
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void Response_WhenBothAreTimeoutFailuresWithNoContent_AreEqual()
+    {
+        var first = new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Timeout);
+        var second = new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Timeout);
+
+        Assert.Equal(first, second);
+        Assert.Equal(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void Response_WhenFailureDiffers_IsNotEqualAndHashCodeDiffers()
+    {
+        var first = new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Timeout);
+        var second = new GlyphForgeResponse(null, null, null, failure: GlyphForgeResponseFailure.Communication);
+
+        Assert.NotEqual(first, second);
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void Response_WhenContentDiffers_IsNotEqual()
+    {
+        var first = new GlyphForgeResponse(HttpStatusCode.OK, "image/png", [1, 2, 3]);
+        var second = new GlyphForgeResponse(HttpStatusCode.OK, "image/png", [4, 5, 6]);
+
+        Assert.NotEqual(first, second);
+    }
+
+    [Fact]
     public void Response_WhenStatusAndFailureAreBothSpecified_RejectsAmbiguousState()
     {
-        Assert.Throws<ArgumentException>(() => new GlyphForgeResponse(
+        var exception = Assert.Throws<ArgumentException>(() => new GlyphForgeResponse(
             HttpStatusCode.BadGateway,
             null,
             null,
             failure: GlyphForgeResponseFailure.Failed));
+
+        Assert.StartsWith(
+            "A response cannot contain both an HTTP status and a transport failure.",
+            exception.Message);
     }
 }

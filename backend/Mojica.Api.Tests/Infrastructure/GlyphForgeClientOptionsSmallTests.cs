@@ -35,6 +35,20 @@ public sealed class GlyphForgeClientOptionsSmallTests
     }
 
     [Fact]
+    public void Validate_WhenBaseUrlUsesHttpScheme_AcceptsConfiguration()
+    {
+        var options = new GlyphForgeClientOptions
+        {
+            BaseUrl = new Uri("http://glyph-forge.example/"),
+            Timeout = TimeSpan.FromSeconds(20)
+        };
+
+        var result = new GlyphForgeClientOptionsValidator().Validate(null, options);
+
+        Assert.Equal(ValidateOptionsResult.Success, result);
+    }
+
+    [Fact]
     public void Validate_WhenBaseUrlIsNotAbsoluteHttpUrl_RejectsConfiguration()
     {
         var options = new GlyphForgeClientOptions
@@ -77,6 +91,20 @@ public sealed class GlyphForgeClientOptionsSmallTests
 
         Assert.False(result.Succeeded);
         Assert.Contains("maximum", result.FailureMessage);
+    }
+
+    [Fact]
+    public void Validate_WhenTimeoutEqualsHttpClientMaximum_AcceptsConfiguration()
+    {
+        var options = new GlyphForgeClientOptions
+        {
+            BaseUrl = new Uri("https://glyph-forge.example/"),
+            Timeout = TimeSpan.FromMilliseconds(int.MaxValue)
+        };
+
+        var result = new GlyphForgeClientOptionsValidator().Validate(null, options);
+
+        Assert.Equal(ValidateOptionsResult.Success, result);
     }
 
     [Fact]

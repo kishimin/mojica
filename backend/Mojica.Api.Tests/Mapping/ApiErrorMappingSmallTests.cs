@@ -41,6 +41,15 @@ public sealed class ApiErrorMappingSmallTests
     }
 
     [Fact]
+    public void Map_WhenValidationErrorsIsNull_ThrowsArgumentNullExceptionForErrorsParameter()
+    {
+        var exception = Assert.Throws<ArgumentNullException>(() =>
+            ApiErrorMapper.MapValidationFailure(null!, ApiLanguage.English));
+
+        Assert.Equal("errors", exception.ParamName);
+    }
+
+    [Fact]
     public void Map_WhenValidationErrorsAreEmpty_ThrowsArgumentException()
     {
         var exception = Assert.Throws<ArgumentException>(() =>
@@ -154,6 +163,13 @@ public sealed class ApiErrorMappingSmallTests
         var result = ApiErrorMapper.MapPortFailure(portError, ApiLanguage.English);
 
         Assert.Equal(30, result.RetryAfter);
+    }
+
+    [Fact]
+    public void Map_WhenPortErrorIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            ApiErrorMapper.MapPortFailure(null!, ApiLanguage.English));
     }
 
     [Fact]

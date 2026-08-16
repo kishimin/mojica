@@ -48,6 +48,22 @@ public sealed class ModelValidationErrorSmallTests
     }
 
     [Fact]
+    public void ModelValidationError_Create_WhenTargetsIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new ModelValidationError((IReadOnlyList<string>)null!, ModelValidationReason.Required));
+    }
+
+    [Fact]
+    public void ModelValidationError_Create_WhenTargetsAreEmpty_ThrowsArgumentException()
+    {
+        var exception = Assert.Throws<ArgumentException>(() =>
+            new ModelValidationError(Array.Empty<string>(), ModelValidationReason.Required));
+
+        Assert.StartsWith("At least one validation target is required.", exception.Message);
+    }
+
+    [Fact]
     public void ModelValidationError_Create_WhenDetailsAreOmitted_ExposesEmptyDetails()
     {
         var error = new ModelValidationError(
@@ -106,12 +122,14 @@ public sealed class ModelValidationErrorSmallTests
 
         Assert.True(baseline.Equals(baseline));
         Assert.False(baseline.Equals(null));
-        Assert.NotEqual(
-            baseline,
-            new ModelValidationError(
-                "foregroundCharacter",
-                ModelValidationReason.Required,
-                baseline.Details));
+
+        var differentTarget = new ModelValidationError(
+            "foregroundCharacter",
+            ModelValidationReason.Required,
+            baseline.Details);
+        Assert.NotEqual(baseline, differentTarget);
+        Assert.NotEqual(baseline.GetHashCode(), differentTarget.GetHashCode());
+
         Assert.NotEqual(
             baseline,
             new ModelValidationError("text", ModelValidationReason.Required));
@@ -133,5 +151,46 @@ public sealed class ModelValidationErrorSmallTests
                 {
                     ["minimumLength"] = "2",
                 }));
+    }
+
+    [Fact]
+    public void ModelValidationError_Equality_WhenReasonDiffers_IsNotEqualAndHashCodeDiffers()
+    {
+        var details = new Dictionary<string, string> { ["minimumLength"] = "1" };
+        var first = new ModelValidationError("text", ModelValidationReason.Required, details);
+        var second = new ModelValidationError("text", ModelValidationReason.LengthOutOfRange, details);
+
+        Assert.NotEqual(first, second);
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void ModelValidationError_Equality_WhenDetailKeyDiffers_HashCodeDiffers()
+    {
+        var first = new ModelValidationError(
+            "text",
+            ModelValidationReason.Required,
+            new Dictionary<string, string> { ["minimumLength"] = "1" });
+        var second = new ModelValidationError(
+            "text",
+            ModelValidationReason.Required,
+            new Dictionary<string, string> { ["maximumLength"] = "1" });
+
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
+
+    [Fact]
+    public void ModelValidationError_Equality_WhenDetailValueDiffers_HashCodeDiffers()
+    {
+        var first = new ModelValidationError(
+            "text",
+            ModelValidationReason.Required,
+            new Dictionary<string, string> { ["minimumLength"] = "1" });
+        var second = new ModelValidationError(
+            "text",
+            ModelValidationReason.Required,
+            new Dictionary<string, string> { ["minimumLength"] = "2" });
+
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
     }
 }
