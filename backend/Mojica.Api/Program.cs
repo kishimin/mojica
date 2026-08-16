@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using System.Threading.RateLimiting;
 using Mojica.Api.Infrastructure;
+using Mojica.Api.Infrastructure.OpenApi;
 using Mojica.Api.Ports;
 using Mojica.Api.Services;
 
@@ -9,7 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.OperationFilter<RequestBodyTypeOperationFilter>();
+    options.OperationFilter<ResponseOneOfOperationFilter>();
+});
 var glyphForgeOptions = builder.Services
     .AddOptions<GlyphForgeClientOptions>()
     .BindConfiguration(GlyphForgeClientOptions.SectionName);
