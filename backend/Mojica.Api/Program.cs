@@ -98,7 +98,8 @@ app.MapPost("/images", async (HttpContext context, IImageGenerationService servi
     }
 })
     .WithName("PostImages")
-    .WithOpenApi();
+    .WithOpenApi()
+    .RequireRateLimiting(ImageGenerationRateLimiterPolicy.PolicyName);
 
 app.Run();
 
