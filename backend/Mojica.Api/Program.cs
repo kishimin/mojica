@@ -59,7 +59,7 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
     .WithName("GetHealth")
     .WithOpenApi();
 
-app.MapPost("/images", async (HttpContext context) =>
+app.MapPost("/images", async (HttpContext context, IImageGenerationService service) =>
 {
     var language = ApiLanguageSelector.Select(context.Request.Headers.AcceptLanguage.ToString());
 
@@ -81,8 +81,15 @@ app.MapPost("/images", async (HttpContext context) =>
         return Results.Json(validationFailure.Response, statusCode: validationFailure.StatusCode);
     }
 
-    throw new NotImplementedException(
-        "POST /images generation and response mapping are not yet implemented.");
+    var serviceResult = await service.GenerateAsync(mapping.Request!, context.RequestAborted);
+    if (!serviceResult.IsSuccess)
+    {
+        throw new NotImplementedException(
+            "POST /images Service-failure response mapping is not yet implemented.");
+    }
+
+    var image = serviceResult.Image!;
+    return Results.File(image.Content, image.MediaType, image.FileName);
 })
     .WithName("PostImages")
     .WithOpenApi();
