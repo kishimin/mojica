@@ -261,27 +261,28 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
         Assert.Equal(body["text"], port.ReceivedRequest.Text.Value);
     }
 
-    public static TheoryData<ImageGenerationPortErrorCode, int?, HttpStatusCode, string> PortFailureCases => new()
+    public static TheoryData<ImageGenerationPortErrorCode, int?, TimeSpan?, HttpStatusCode, string> PortFailureCases => new()
     {
-        { ImageGenerationPortErrorCode.RateLimited, 60, HttpStatusCode.TooManyRequests, "RATE_LIMIT_EXCEEDED" },
-        { ImageGenerationPortErrorCode.Timeout, null, HttpStatusCode.GatewayTimeout, "IMAGE_GENERATION_TIMEOUT" },
-        { ImageGenerationPortErrorCode.Unavailable, 30, HttpStatusCode.BadGateway, "IMAGE_GENERATION_FAILED" },
-        { ImageGenerationPortErrorCode.InvalidResponse, null, HttpStatusCode.BadGateway, "IMAGE_GENERATION_FAILED" },
-        { ImageGenerationPortErrorCode.Failed, null, HttpStatusCode.BadGateway, "IMAGE_GENERATION_FAILED" },
+        { ImageGenerationPortErrorCode.RateLimited, 60, TimeSpan.FromSeconds(60), HttpStatusCode.TooManyRequests, "RATE_LIMIT_EXCEEDED" },
+        { ImageGenerationPortErrorCode.Timeout, null, null, HttpStatusCode.GatewayTimeout, "IMAGE_GENERATION_TIMEOUT" },
+        { ImageGenerationPortErrorCode.Unavailable, 30, TimeSpan.FromSeconds(30), HttpStatusCode.BadGateway, "IMAGE_GENERATION_FAILED" },
+        { ImageGenerationPortErrorCode.InvalidResponse, null, null, HttpStatusCode.BadGateway, "IMAGE_GENERATION_FAILED" },
+        { ImageGenerationPortErrorCode.Failed, null, null, HttpStatusCode.BadGateway, "IMAGE_GENERATION_FAILED" },
     };
 
     [Theory]
     [MemberData(nameof(PortFailureCases))]
     public async Task PostImages_WhenServiceReturnsPortFailure_ReturnsMappedHttpErrorWithRetryAfter(
         ImageGenerationPortErrorCode errorCode,
-        int? retryAfter,
+        int? retryAfterSeconds,
+        TimeSpan? expectedRetryAfter,
         HttpStatusCode expectedStatus,
         string expectedCode)
     {
         // ID: REQUEST-ENDPOINT-13..16, 18
         // Source: docs/v1/api/controllers.md §6 (Service Result Conversion table) and "Convert retryAfter to the Retry-After header"; docs/v1/api/api.md §11 (429/502/504).
         var body = ValidRequestBody();
-        var error = new ImageGenerationPortError(errorCode, retryAfter);
+        var error = new ImageGenerationPortError(errorCode, retryAfterSeconds);
         var port = new RecordingImageGenerationPort(ImageGenerationPortResult.Failure(error));
         using var factory = CreateFactory(port);
         using var failureClient = factory.CreateClient();
@@ -289,9 +290,7 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
         using var response = await failureClient.PostAsJsonAsync("/images", body);
 
         Assert.Equal(expectedStatus, response.StatusCode);
-        Assert.Equal(
-            retryAfter.HasValue ? TimeSpan.FromSeconds(retryAfter.Value) : null,
-            response.Headers.RetryAfter?.Delta);
+        Assert.Equal(expectedRetryAfter, response.Headers.RetryAfter?.Delta);
         using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
         Assert.Equal(expectedCode, document.RootElement.GetProperty("code").GetString());
     }
