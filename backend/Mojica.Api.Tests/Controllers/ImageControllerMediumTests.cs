@@ -12,13 +12,13 @@ using Mojica.Api.Models;
 using Mojica.Api.Ports;
 using Mojica.Api.Services;
 
-namespace Mojica.Api.Tests.Endpoints;
+namespace Mojica.Api.Tests.Controllers;
 
-public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGenerationEndpointFactory>
+public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFactory>
 {
     private readonly HttpClient client;
 
-    public ImageGenerationEndpointMediumTests(ImageGenerationEndpointFactory factory)
+    public ImageControllerMediumTests(ImageControllerFactory factory)
     {
         client = factory.CreateClient();
     }
@@ -483,7 +483,7 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
 
     private static WebApplicationFactory<Program> CreateGlyphForgeFactory(RecordingHttpMessageHandler handler)
     {
-        return new ImageGenerationEndpointFactory().WithWebHostBuilder(builder =>
+        return new ImageControllerFactory().WithWebHostBuilder(builder =>
         {
             builder.ConfigureTestServices(services =>
                 services.AddHttpClient("GlyphForge").ConfigurePrimaryHttpMessageHandler(() => handler));
@@ -494,7 +494,7 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         ImageGenerationPort? port = null,
         IDictionary<string, string?>? configOverrides = null)
     {
-        return new ImageGenerationEndpointFactory().WithWebHostBuilder(builder =>
+        return new ImageControllerFactory().WithWebHostBuilder(builder =>
         {
             if (configOverrides is not null)
             {
@@ -559,7 +559,7 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
     }
 }
 
-public sealed class ImageGenerationEndpointFactory : WebApplicationFactory<Program>
+public sealed class ImageControllerFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
