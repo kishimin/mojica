@@ -60,7 +60,7 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
     .WithName("GetHealth")
     .WithOpenApi();
 
-app.MapPost("/images", async (HttpContext context, IImageGenerationService service) =>
+app.MapPost("/images", async (HttpContext context, IImageGenerationService service, ILogger<Program> logger) =>
 {
     var language = ApiLanguageSelector.Select(context.Request.Headers.AcceptLanguage.ToString());
 
@@ -82,20 +82,29 @@ app.MapPost("/images", async (HttpContext context, IImageGenerationService servi
         return Results.Json(validationFailure.Response, statusCode: validationFailure.StatusCode);
     }
 
-    var serviceResult = await service.GenerateAsync(mapping.Request!, context.RequestAborted);
-    if (!serviceResult.IsSuccess)
+    try
     {
-        var portFailure = ApiErrorMapper.MapPortFailure(serviceResult.Error!, language);
-        if (portFailure.RetryAfter is { } retryAfterSeconds)
+        var serviceResult = await service.GenerateAsync(mapping.Request!, context.RequestAborted);
+        if (!serviceResult.IsSuccess)
         {
-            context.Response.Headers.RetryAfter = retryAfterSeconds.ToString(CultureInfo.InvariantCulture);
+            var portFailure = ApiErrorMapper.MapPortFailure(serviceResult.Error!, language);
+            if (portFailure.RetryAfter is { } retryAfterSeconds)
+            {
+                context.Response.Headers.RetryAfter = retryAfterSeconds.ToString(CultureInfo.InvariantCulture);
+            }
+
+            return Results.Json(portFailure.Response, statusCode: portFailure.StatusCode);
         }
 
-        return Results.Json(portFailure.Response, statusCode: portFailure.StatusCode);
+        var image = serviceResult.Image!;
+        return Results.File(image.Content, image.MediaType, image.FileName);
     }
-
-    var image = serviceResult.Image!;
-    return Results.File(image.Content, image.MediaType, image.FileName);
+    catch (Exception exception)
+    {
+        logger.LogError(exception, "Unexpected error while generating an image.");
+        var unexpected = ApiErrorMapper.MapUnexpectedFailure(language);
+        return Results.Json(unexpected.Response, statusCode: unexpected.StatusCode);
+    }
 })
     .WithName("PostImages")
     .WithOpenApi();
