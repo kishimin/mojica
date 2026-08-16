@@ -7,6 +7,11 @@ public sealed class RequestBodyTypeOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
+        if (context.MethodInfo is null)
+        {
+            return;
+        }
+
         var attribute = context.MethodInfo.GetCustomAttributes(typeof(SwaggerRequestBodyTypeAttribute), inherit: false)
             .OfType<SwaggerRequestBodyTypeAttribute>()
             .FirstOrDefault();
