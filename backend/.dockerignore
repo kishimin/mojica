@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/*.user
+Mojica.Api.Tests/
+TestResults/
+TestResults-CI/
+TestResults-CI-Verified/
+README.md
+Dockerfile
+.dockerignore
