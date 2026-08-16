@@ -42,6 +42,32 @@ public sealed class ImageControllerSwaggerDocumentMediumTests : IClassFixture<Im
             $"Expected the /images operation to document status code {statusCode}.");
     }
 
+    [Fact]
+    public async Task SwaggerDocument_ForPostImages_Declares422AsEitherValidationOrPlainError()
+    {
+        // ApiErrorMapper returns ApiValidationErrorResponse for field validation
+        // failures but a plain ApiErrorResponse (no "errors" array) for the
+        // IMAGE_SIZE_LIMIT_EXCEEDED case (docs/v1/api/api.md, Generated Image
+        // Size Error). Both share status 422, so the schema must document both.
+        var operation = await GetPostImagesOperationAsync();
+
+        var schema = operation
+            .GetProperty("responses")
+            .GetProperty("422")
+            .GetProperty("content")
+            .GetProperty("application/json")
+            .GetProperty("schema");
+
+        Assert.True(schema.TryGetProperty("oneOf", out var oneOf));
+
+        var referencedSchemas = oneOf.EnumerateArray()
+            .Select(element => element.GetProperty("$ref").GetString())
+            .ToList();
+
+        Assert.Contains("#/components/schemas/ApiValidationErrorResponse", referencedSchemas);
+        Assert.Contains("#/components/schemas/ApiErrorResponse", referencedSchemas);
+    }
+
     private async Task<JsonElement> GetPostImagesOperationAsync()
     {
         using var document = await client.GetFromJsonAsync<JsonDocument>("/swagger/v1/swagger.json");
