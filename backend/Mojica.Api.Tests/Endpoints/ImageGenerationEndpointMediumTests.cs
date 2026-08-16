@@ -85,28 +85,48 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         Assert.Equal("BAD_REQUEST", document.RootElement.GetProperty("code").GetString());
     }
 
-    [Fact(Skip = "TODO: Implement the POST /images multi-field validation collection.")]
-    public void PostImages_WhenMultipleFieldsAreInvalid_ReturnsAllErrorsInErrorsArray()
+    [Fact]
+    public async Task PostImages_WhenMultipleFieldsAreInvalid_ReturnsAllErrorsInErrorsArray()
     {
         // ID: REQUEST-ENDPOINT-04
         // Source: docs/v1/api/api.md §6 ("Whenever possible, all detected validation errors are included"), §11 (422 Unprocessable Entity); docs/v1/api/controllers.md §4 ("collect them in the errors array").
-        // Given: a POST /images request with at least two independently invalid fields (for example an invalid foregroundColor and a too-long text) and a controlled Service fake
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the API returns 422 VALIDATION_ERROR whose errors array contains one entry per invalid field and does not invoke the Service
-        // Error: 422 Unprocessable Entity; code VALIDATION_ERROR; errors.Count matches the number of independently invalid fields
-        // Priority: High
+        var body = ValidRequestBody();
+        body["text"] = "";
+        body["foregroundColor"] = "not-a-hex-color";
+        using var factory = CreateFactory();
+        using var multiFieldClient = factory.CreateClient();
+
+        using var response = await multiFieldClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        var fields = document.RootElement.GetProperty("errors").EnumerateArray()
+            .Select(error => error.GetProperty("field").GetString())
+            .ToList();
+        Assert.Contains("text", fields);
+        Assert.Contains("foregroundColor", fields);
     }
 
-    [Fact(Skip = "TODO: Implement the POST /images whitespace-only character combination rule.")]
-    public void PostImages_WhenBothPatternCharactersAreWhitespaceOnly_ReturnsErrorsForBothFields()
+    [Fact]
+    public async Task PostImages_WhenBothPatternCharactersAreWhitespaceOnly_ReturnsErrorsForBothFields()
     {
         // ID: REQUEST-ENDPOINT-05
         // Source: docs/v1/api/api.md §6 (Character Combination), §11 (Character Combination Error); docs/v1/api/controllers.md §4.
-        // Given: a POST /images request whose foregroundCharacter and backgroundCharacter are both whitespace-only, and a controlled Service fake
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the API returns 422 VALIDATION_ERROR with one error entry targeting foregroundCharacter and one targeting backgroundCharacter, and does not invoke the Service
-        // Error: 422 Unprocessable Entity; code VALIDATION_ERROR; errors contain both "foregroundCharacter" and "backgroundCharacter" targets
-        // Priority: High
+        var body = ValidRequestBody();
+        body["foregroundCharacter"] = " ";
+        body["backgroundCharacter"] = " ";
+        using var factory = CreateFactory();
+        using var whitespaceClient = factory.CreateClient();
+
+        using var response = await whitespaceClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        var fields = document.RootElement.GetProperty("errors").EnumerateArray()
+            .Select(error => error.GetProperty("field").GetString())
+            .ToList();
+        Assert.Contains("foregroundCharacter", fields);
+        Assert.Contains("backgroundCharacter", fields);
     }
 
     [Fact(Skip = "TODO: Implement Accept-Language wiring for the 422 validation contract.")]
