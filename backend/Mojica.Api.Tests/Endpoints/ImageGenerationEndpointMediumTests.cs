@@ -68,18 +68,21 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         Assert.Equal("BAD_REQUEST", document.RootElement.GetProperty("code").GetString());
     }
 
-    [Fact(Skip = "TODO: Implement the POST /images unsupported Content-Type boundary.")]
-    public void PostImages_WhenContentTypeIsNotJson_ReturnsBadRequest()
+    [Fact]
+    public async Task PostImages_WhenContentTypeIsNotJson_ReturnsBadRequest()
     {
         // ID: REQUEST-ENDPOINT-03
         // Source: docs/v1/api/api.md §5 (Headers), §11 (400 Bad Request); docs/v1/api/controllers.md §3, §5.
-        // Given: a POST /images request with a non-JSON Content-Type (for example text/plain) carrying an otherwise valid payload
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the API returns 400 with code BAD_REQUEST and does not invoke the image generation Service
-        // Error: 400 Bad Request; code BAD_REQUEST
-        // Priority: Medium
+        using var content = new StringContent(
+            JsonSerializer.Serialize(ValidRequestBody()), Encoding.UTF8, "text/plain");
+        using var factory = CreateFactory();
+        using var textPlainClient = factory.CreateClient();
 
-        // Theory candidate: parameterize over a small set of unexpected Content-Type values once fixtures exist.
+        using var response = await textPlainClient.PostAsync("/images", content);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        Assert.Equal("BAD_REQUEST", document.RootElement.GetProperty("code").GetString());
     }
 
     [Fact(Skip = "TODO: Implement the POST /images multi-field validation collection.")]
