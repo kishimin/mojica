@@ -68,7 +68,7 @@ app.MapPost("/images", async (HttpContext context) =>
     {
         dto = await context.Request.ReadFromJsonAsync<ImageGenerationRequestDto>(context.RequestAborted);
     }
-    catch (JsonException)
+    catch (Exception exception) when (exception is JsonException or InvalidOperationException)
     {
         var malformed = ApiErrorMapper.MapMalformedRequest(language);
         return Results.Json(malformed.Response, statusCode: malformed.StatusCode);
