@@ -36,8 +36,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
         string invalidField,
         string? invalidValue)
     {
-        // ID: REQUEST-ENDPOINT-01
-        // Source: docs/v1/api/controllers.md §4-5 and §10; docs/v1/api/api.md §6.
         var body = ValidRequestBody();
         body[invalidField] = invalidValue;
         var port = new RecordingImageGenerationPort(SuccessfulPortResult());
@@ -58,8 +56,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenBodyIsNotValidJson_ReturnsBadRequestWithoutInvokingService()
     {
-        // ID: REQUEST-ENDPOINT-02
-        // Source: docs/v1/api/controllers.md §5; docs/v1/api/api.md §11 (400 Bad Request), §14 step 1.
         using var content = new StringContent("{ this is not valid json", Encoding.UTF8, "application/json");
 
         using var response = await client.PostAsync("/images", content);
@@ -73,8 +69,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenContentTypeIsNotJson_ReturnsBadRequest()
     {
-        // ID: REQUEST-ENDPOINT-03
-        // Source: docs/v1/api/api.md §5 (Headers), §11 (400 Bad Request); docs/v1/api/controllers.md §3, §5.
         using var content = new StringContent(
             JsonSerializer.Serialize(ValidRequestBody()), Encoding.UTF8, "text/plain");
         using var factory = CreateFactory();
@@ -90,8 +84,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenMultipleFieldsAreInvalid_ReturnsAllErrorsInErrorsArray()
     {
-        // ID: REQUEST-ENDPOINT-04
-        // Source: docs/v1/api/api.md §6 ("Whenever possible, all detected validation errors are included"), §11 (422 Unprocessable Entity); docs/v1/api/controllers.md §4 ("collect them in the errors array").
         var body = ValidRequestBody();
         body["text"] = "";
         body["foregroundColor"] = "not-a-hex-color";
@@ -113,8 +105,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenBothPatternCharactersAreWhitespaceOnly_ReturnsErrorsForBothFields()
     {
-        // ID: REQUEST-ENDPOINT-05
-        // Source: docs/v1/api/api.md §6 (Character Combination), §11 (Character Combination Error); docs/v1/api/controllers.md §4.
         var body = ValidRequestBody();
         body["foregroundCharacter"] = " ";
         body["backgroundCharacter"] = " ";
@@ -136,8 +126,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenAcceptLanguageIsJapanese_ReturnsJapaneseValidationMessage()
     {
-        // ID: REQUEST-ENDPOINT-06
-        // Source: docs/v1/api/api.md §9 (Language Selection), §11 (Required Field Error, Japanese); docs/v1/api/controllers.md §8.
         var body = ValidRequestBody();
         body["text"] = null;
 
@@ -152,8 +140,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenAcceptLanguageIsEnglish_ReturnsEnglishValidationMessage()
     {
-        // ID: REQUEST-ENDPOINT-07
-        // Source: docs/v1/api/api.md §9 (Language Selection), §11 (Required Field Error, English); docs/v1/api/controllers.md §8.
         var body = ValidRequestBody();
         body["text"] = null;
 
@@ -168,8 +154,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenAcceptLanguageIsOmitted_FallsBackToJapanese()
     {
-        // ID: REQUEST-ENDPOINT-08
-        // Source: docs/v1/api/api.md §5 ("If Accept-Language is not specified, Japanese is used by default"), §9; docs/v1/api/controllers.md §8 (Language Selection table, "Omitted" -> Japanese).
         var body = ValidRequestBody();
         body["text"] = null;
 
@@ -184,8 +168,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenAcceptLanguageIsUnsupported_FallsBackToJapanese()
     {
-        // ID: REQUEST-ENDPOINT-09
-        // Source: docs/v1/api/api.md §5 ("If an unsupported language is specified, the API also falls back to Japanese"), §9; docs/v1/api/controllers.md §8 (Language Selection table, "Unsupported value" -> Japanese).
         var body = ValidRequestBody();
         body["text"] = null;
 
@@ -200,8 +182,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenAcceptLanguageChanges_KeepsCodeAndFieldStable()
     {
-        // ID: REQUEST-ENDPOINT-10
-        // Source: docs/v1/api/api.md §9 ("code and field are fixed values that do not depend on the selected language").
         var body = ValidRequestBody();
         body["text"] = null;
 
@@ -224,8 +204,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenServiceSucceeds_ReturnsGeneratedImageWithContentDisposition()
     {
-        // ID: REQUEST-ENDPOINT-11
-        // Source: docs/v1/api/api.md §10 (Successful Response); docs/v1/api/controllers.md §7 (Success Response).
         var body = ValidRequestBody();
         byte[] pngContent = [0x89, 0x50, 0x4E, 0x47];
         var port = new RecordingImageGenerationPort(
@@ -245,8 +223,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenRequestIsValid_InvokesServiceExactlyOnceWithMappedDomainRequest()
     {
-        // ID: REQUEST-ENDPOINT-12
-        // Source: docs/v1/api/controllers.md §4 (steps 4-7: convert to Value Objects, create ImageGenerationRequest, pass validated request to Service).
         var body = ValidRequestBody();
         var port = new RecordingImageGenerationPort(SuccessfulPortResult());
         using var factory = CreateFactory(port);
@@ -279,8 +255,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
         HttpStatusCode expectedStatus,
         string expectedCode)
     {
-        // ID: REQUEST-ENDPOINT-13..16, 18
-        // Source: docs/v1/api/controllers.md §6 (Service Result Conversion table) and "Convert retryAfter to the Retry-After header"; docs/v1/api/api.md §11 (429/502/504).
         var body = ValidRequestBody();
         var error = new ImageGenerationPortError(errorCode, retryAfterSeconds);
         var port = new RecordingImageGenerationPort(ImageGenerationPortResult.Failure(error));
@@ -298,8 +272,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenServiceReturnsOutputSizeExceeded_ReturnsUnprocessableEntityWithoutFieldTarget()
     {
-        // ID: REQUEST-ENDPOINT-17
-        // Source: docs/v1/api/controllers.md §5 ("return a top-level error without assigning the failure to one request field") and §6 (OUTPUT_SIZE_EXCEEDED -> 422 -> IMAGE_SIZE_LIMIT_EXCEEDED); docs/v1/api/api.md §11 (Generated Image Size Error).
         var body = ValidRequestBody();
         var error = new ImageGenerationPortError(ImageGenerationPortErrorCode.OutputSizeExceeded);
         var port = new RecordingImageGenerationPort(ImageGenerationPortResult.Failure(error));
@@ -317,8 +289,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenServiceThrowsUnexpectedException_ReturnsInternalServerErrorWithoutInternalDetails()
     {
-        // ID: REQUEST-ENDPOINT-19
-        // Source: docs/v1/api/controllers.md §9 (Unexpected Exceptions); docs/v1/api/api.md §11 (500 Internal Server Error).
         var body = ValidRequestBody();
         var port = new RecordingImageGenerationPort(
             (ImageGenerationRequest request, CancellationToken cancellationToken) =>
@@ -339,8 +309,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenLocalRateLimitIsExceeded_ReturnsTooManyRequestsWithoutCallingGlyphForge()
     {
-        // ID: REQUEST-ENDPOINT-20
-        // Source: docs/v1/api/api.md §13 (Rate Limiting), §14 step 5; docs/v1/api/implementation-plan.md Branch 11 ("wire all production dependencies"); ImageGenerationRateLimiterPolicy.PolicyName (backend/Mojica.Api/Infrastructure/ImageGenerationRateLimiterPolicy.cs).
         var body = ValidRequestBody();
         var port = new RecordingImageGenerationPort(SuccessfulPortResult());
         using var factory = CreateFactory(port, new Dictionary<string, string?>
@@ -365,8 +333,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenWithinLocalRateLimit_ProceedsToService()
     {
-        // ID: REQUEST-ENDPOINT-21
-        // Source: docs/v1/api/api.md §13, §14; docs/v1/api/implementation-plan.md Branch 11.
         var body = ValidRequestBody();
         var port = new RecordingImageGenerationPort(SuccessfulPortResult());
         using var factory = CreateFactory(port, new Dictionary<string, string?>
@@ -396,8 +362,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
         string type,
         string expectedPath)
     {
-        // ID: REQUEST-ENDPOINT-22..24
-        // Source: docs/v1/api/api.md §7 (Endpoint Routing table); docs/v1/api/implementation-plan.md Branch 11 ("wire all production dependencies").
         var body = ValidRequestBody();
         body["type"] = type;
         var handler = new RecordingHttpMessageHandler(SuccessfulGlyphForgeResponse());
@@ -414,8 +378,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public async Task PostImages_WhenRequestIsValid_ConvertsHexColorsToRgbBeforeCallingGlyphForge()
     {
-        // ID: REQUEST-ENDPOINT-25
-        // Source: docs/v1/api/api.md §8 (Color Conversion), §14 step 6; docs/v1/api/controllers.md dependency direction (Controller -> Service -> Port <- Adapter).
         // Note: unit-level HEX-to-RGB conversion is already covered by GlyphForgeRequestMapperSmallTests; this case only proves the endpoint wires the real conversion path end to end, and should not re-assert every HEX/RGB pair.
         var body = ValidRequestBody();
         body["foregroundColor"] = "#FF69B4";
@@ -435,8 +397,6 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     [Fact]
     public void PostImages_WhenApplicationStarts_ResolvesFullDependencyChainWithoutThrowing()
     {
-        // ID: REQUEST-ENDPOINT-26
-        // Source: docs/v1/api/implementation-plan.md Branch 11 ("wire all production dependencies"); docs/v1/api/controllers.md §2 (Dependency Direction).
         using var factory = CreateFactory();
 
         using var scope = factory.Services.CreateScope();
