@@ -257,78 +257,58 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         Assert.Equal(body["text"], port.ReceivedRequest.Text.Value);
     }
 
-    [Fact(Skip = "TODO: Implement RATE_LIMITED Service-result to HTTP mapping wiring.")]
-    public void PostImages_WhenServiceReturnsRateLimited_ReturnsTooManyRequestsWithRetryAfter()
+    public static TheoryData<ImageGenerationPortErrorCode, int?, HttpStatusCode, string> PortFailureCases => new()
     {
-        // ID: REQUEST-ENDPOINT-13
-        // Source: docs/v1/api/controllers.md §6 (Service Result Conversion table, RATE_LIMITED -> 429 -> RATE_LIMIT_EXCEEDED) and "Convert retryAfter to the Retry-After header"; docs/v1/api/api.md §11 (429 Too Many Requests).
-        // Given: a valid POST /images request and a controlled Service fake that returns a RATE_LIMITED failure with a retryAfter value
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the response is 429 with code RATE_LIMIT_EXCEEDED and a Retry-After header equal to the retryAfter value
-        // Error: 429 Too Many Requests; code RATE_LIMIT_EXCEEDED
-        // Priority: High
+        { ImageGenerationPortErrorCode.RateLimited, 60, HttpStatusCode.TooManyRequests, "RATE_LIMIT_EXCEEDED" },
+        { ImageGenerationPortErrorCode.Timeout, null, HttpStatusCode.GatewayTimeout, "IMAGE_GENERATION_TIMEOUT" },
+        { ImageGenerationPortErrorCode.Unavailable, 30, HttpStatusCode.BadGateway, "IMAGE_GENERATION_FAILED" },
+        { ImageGenerationPortErrorCode.InvalidResponse, null, HttpStatusCode.BadGateway, "IMAGE_GENERATION_FAILED" },
+        { ImageGenerationPortErrorCode.Failed, null, HttpStatusCode.BadGateway, "IMAGE_GENERATION_FAILED" },
+    };
 
-        // Theory candidate: REQUEST-ENDPOINT-13..18 share the same shape (PortErrorCode -> expected status/code) and can be consolidated into one [Theory] once fixtures exist.
+    [Theory]
+    [MemberData(nameof(PortFailureCases))]
+    public async Task PostImages_WhenServiceReturnsPortFailure_ReturnsMappedHttpErrorWithRetryAfter(
+        ImageGenerationPortErrorCode errorCode,
+        int? retryAfter,
+        HttpStatusCode expectedStatus,
+        string expectedCode)
+    {
+        // ID: REQUEST-ENDPOINT-13..16, 18
+        // Source: docs/v1/api/controllers.md §6 (Service Result Conversion table) and "Convert retryAfter to the Retry-After header"; docs/v1/api/api.md §11 (429/502/504).
+        var body = ValidRequestBody();
+        var error = new ImageGenerationPortError(errorCode, retryAfter);
+        var port = new RecordingImageGenerationPort(ImageGenerationPortResult.Failure(error));
+        using var factory = CreateFactory(port);
+        using var failureClient = factory.CreateClient();
+
+        using var response = await failureClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(expectedStatus, response.StatusCode);
+        Assert.Equal(
+            retryAfter.HasValue ? TimeSpan.FromSeconds(retryAfter.Value) : null,
+            response.Headers.RetryAfter?.Delta);
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        Assert.Equal(expectedCode, document.RootElement.GetProperty("code").GetString());
     }
 
-    [Fact(Skip = "TODO: Implement TIMEOUT Service-result to HTTP mapping wiring.")]
-    public void PostImages_WhenServiceReturnsTimeout_ReturnsGatewayTimeout()
-    {
-        // ID: REQUEST-ENDPOINT-14
-        // Source: docs/v1/api/controllers.md §6 (TIMEOUT -> 504 -> IMAGE_GENERATION_TIMEOUT); docs/v1/api/api.md §11 (504 Gateway Timeout).
-        // Given: a valid POST /images request and a controlled Service fake that returns a TIMEOUT failure
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the response is 504 with code IMAGE_GENERATION_TIMEOUT
-        // Error: 504 Gateway Timeout; code IMAGE_GENERATION_TIMEOUT
-        // Priority: High
-    }
-
-    [Fact(Skip = "TODO: Implement UNAVAILABLE Service-result to HTTP mapping wiring.")]
-    public void PostImages_WhenServiceReturnsUnavailable_ReturnsBadGateway()
-    {
-        // ID: REQUEST-ENDPOINT-15
-        // Source: docs/v1/api/controllers.md §6 (UNAVAILABLE -> 502 -> IMAGE_GENERATION_FAILED); docs/v1/api/api.md §11 (502 Bad Gateway).
-        // Given: a valid POST /images request and a controlled Service fake that returns an UNAVAILABLE failure with a retryAfter value
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the response is 502 with code IMAGE_GENERATION_FAILED and a Retry-After header equal to the retryAfter value when present
-        // Error: 502 Bad Gateway; code IMAGE_GENERATION_FAILED
-        // Priority: High
-    }
-
-    [Fact(Skip = "TODO: Implement INVALID_RESPONSE Service-result to HTTP mapping wiring.")]
-    public void PostImages_WhenServiceReturnsInvalidResponse_ReturnsBadGateway()
-    {
-        // ID: REQUEST-ENDPOINT-16
-        // Source: docs/v1/api/controllers.md §6 (INVALID_RESPONSE -> 502 -> IMAGE_GENERATION_FAILED).
-        // Given: a valid POST /images request and a controlled Service fake that returns an INVALID_RESPONSE failure
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the response is 502 with code IMAGE_GENERATION_FAILED
-        // Error: 502 Bad Gateway; code IMAGE_GENERATION_FAILED
-        // Priority: Medium
-    }
-
-    [Fact(Skip = "TODO: Implement OUTPUT_SIZE_EXCEEDED Service-result to HTTP mapping wiring.")]
-    public void PostImages_WhenServiceReturnsOutputSizeExceeded_ReturnsUnprocessableEntityWithoutFieldTarget()
+    [Fact]
+    public async Task PostImages_WhenServiceReturnsOutputSizeExceeded_ReturnsUnprocessableEntityWithoutFieldTarget()
     {
         // ID: REQUEST-ENDPOINT-17
         // Source: docs/v1/api/controllers.md §5 ("return a top-level error without assigning the failure to one request field") and §6 (OUTPUT_SIZE_EXCEEDED -> 422 -> IMAGE_SIZE_LIMIT_EXCEEDED); docs/v1/api/api.md §11 (Generated Image Size Error).
-        // Given: a valid POST /images request and a controlled Service fake that returns an OUTPUT_SIZE_EXCEEDED failure
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the response is 422 with top-level code IMAGE_SIZE_LIMIT_EXCEEDED and is not shaped as a field-targeted ApiValidationErrorResponse
-        // Error: 422 Unprocessable Entity; code IMAGE_SIZE_LIMIT_EXCEEDED
-        // Priority: High
-    }
+        var body = ValidRequestBody();
+        var error = new ImageGenerationPortError(ImageGenerationPortErrorCode.OutputSizeExceeded);
+        var port = new RecordingImageGenerationPort(ImageGenerationPortResult.Failure(error));
+        using var factory = CreateFactory(port);
+        using var outputSizeClient = factory.CreateClient();
 
-    [Fact(Skip = "TODO: Implement FAILED Service-result to HTTP mapping wiring.")]
-    public void PostImages_WhenServiceReturnsFailed_ReturnsBadGateway()
-    {
-        // ID: REQUEST-ENDPOINT-18
-        // Source: docs/v1/api/controllers.md §6 (FAILED -> 502 -> IMAGE_GENERATION_FAILED).
-        // Given: a valid POST /images request and a controlled Service fake that returns a FAILED failure
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the response is 502 with code IMAGE_GENERATION_FAILED
-        // Error: 502 Bad Gateway; code IMAGE_GENERATION_FAILED
-        // Priority: Medium
+        using var response = await outputSizeClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        Assert.Equal("IMAGE_SIZE_LIMIT_EXCEEDED", document.RootElement.GetProperty("code").GetString());
+        Assert.False(document.RootElement.TryGetProperty("errors", out _));
     }
 
     [Fact(Skip = "TODO: Implement the unexpected-exception boundary for POST /images.")]
