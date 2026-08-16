@@ -217,26 +217,44 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
             englishDocument.RootElement.GetProperty("errors")[0].GetProperty("message").GetString());
     }
 
-    [Fact(Skip = "TODO: Implement the POST /images success response wiring.")]
-    public void PostImages_WhenServiceSucceeds_ReturnsGeneratedImageWithContentDisposition()
+    [Fact]
+    public async Task PostImages_WhenServiceSucceeds_ReturnsGeneratedImageWithContentDisposition()
     {
         // ID: REQUEST-ENDPOINT-11
         // Source: docs/v1/api/api.md §10 (Successful Response); docs/v1/api/controllers.md §7 (Success Response).
-        // Given: a valid POST /images request and a controlled Service fake that returns a successful GeneratedImage(content, mediaType, fileName)
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the response is 200 OK, Content-Type image/png, the body bytes equal GeneratedImage.Content, and Content-Disposition is attachment with GeneratedImage.FileName
-        // Priority: High
+        var body = ValidRequestBody();
+        byte[] pngContent = [0x89, 0x50, 0x4E, 0x47];
+        var port = new RecordingImageGenerationPort(
+            ImageGenerationPortResult.Success(new GeneratedImageData(pngContent, "image/png")));
+        using var factory = CreateFactory(port);
+        using var successClient = factory.CreateClient();
+
+        using var response = await successClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("image/png", response.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(pngContent, await response.Content.ReadAsByteArrayAsync());
+        Assert.Equal("attachment", response.Content.Headers.ContentDisposition?.DispositionType);
+        Assert.False(string.IsNullOrEmpty(response.Content.Headers.ContentDisposition?.FileName));
     }
 
-    [Fact(Skip = "TODO: Implement the Controller-to-Service handoff for valid requests.")]
-    public void PostImages_WhenRequestIsValid_InvokesServiceExactlyOnceWithMappedDomainRequest()
+    [Fact]
+    public async Task PostImages_WhenRequestIsValid_InvokesServiceExactlyOnceWithMappedDomainRequest()
     {
         // ID: REQUEST-ENDPOINT-12
         // Source: docs/v1/api/controllers.md §4 (steps 4-7: convert to Value Objects, create ImageGenerationRequest, pass validated request to Service).
-        // Given: a valid POST /images request and a controlled Service fake that records its invocation count and received request
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the Service fake was invoked exactly once with an ImageGenerationRequest whose values match the request body
-        // Priority: High
+        var body = ValidRequestBody();
+        var port = new RecordingImageGenerationPort(SuccessfulPortResult());
+        using var factory = CreateFactory(port);
+        using var invokeClient = factory.CreateClient();
+
+        using var response = await invokeClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(1, port.CallCount);
+        Assert.NotNull(port.ReceivedRequest);
+        Assert.Equal(ImageType.Standard, port.ReceivedRequest!.Type);
+        Assert.Equal(body["text"], port.ReceivedRequest.Text.Value);
     }
 
     [Fact(Skip = "TODO: Implement RATE_LIMITED Service-result to HTTP mapping wiring.")]
