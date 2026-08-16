@@ -3,9 +3,11 @@ using Microsoft.Extensions.Options;
 using System.Threading.RateLimiting;
 using Mojica.Api.Infrastructure;
 using Mojica.Api.Ports;
+using Mojica.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var glyphForgeOptions = builder.Services
@@ -20,6 +22,7 @@ builder.Services.AddHttpClient("GlyphForge", (serviceProvider, client) =>
     client.Timeout = options.Timeout;
 });
 builder.Services.AddSingleton<ImageGenerationPort, GlyphForgeImageGenerationAdapter>();
+builder.Services.AddSingleton<IImageGenerationService, ImageGenerationService>();
 
 var rateLimitOptions = builder.Services
     .AddOptions<RateLimitOptions>()
@@ -48,6 +51,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapControllers();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
     .WithName("GetHealth")
