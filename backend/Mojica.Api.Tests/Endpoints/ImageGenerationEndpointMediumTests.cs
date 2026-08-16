@@ -1,9 +1,14 @@
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Mojica.Api.Models;
+using Mojica.Api.Ports;
 
 namespace Mojica.Api.Tests.Endpoints;
 
@@ -16,17 +21,36 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         client = factory.CreateClient();
     }
 
-    [Fact(Skip = "TODO: Implement after the image generation Service and POST /images endpoint exist.")]
-    public void PostImages_WhenRequestValueIsInvalid_ReturnsUnprocessableEntityWithoutCallingService()
+    public static TheoryData<string, string?> InvalidFieldCases => new()
+    {
+        { "type", "unsupported-type" },
+        { "text", "" },
+        { "foregroundColor", "not-a-hex-color" },
+    };
+
+    [Theory]
+    [MemberData(nameof(InvalidFieldCases))]
+    public async Task PostImages_WhenRequestValueIsInvalid_ReturnsUnprocessableEntityWithoutCallingService(
+        string invalidField,
+        string? invalidValue)
     {
         // ID: REQUEST-ENDPOINT-01
         // Source: docs/v1/api/controllers.md §4-5 and §10; docs/v1/api/api.md §6.
-        // Given: parseable POST /images JSON containing each Domain-invalid attribute in turn and a controlled Service fake (Theory candidate)
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the API returns 422 VALIDATION_ERROR with the affected field and does not invoke the image generation Service
-        // Error: 422 Unprocessable Entity; code VALIDATION_ERROR; field matches the invalid request attribute
-        // Blocked by: feature/add-image-generation-service, feature/add-image-api-contracts, feature/add-api-error-mapping, and feature/add-image-generation-endpoint
-        // Priority: High
+        var body = ValidRequestBody();
+        body[invalidField] = invalidValue;
+        var port = new RecordingImageGenerationPort(SuccessfulPortResult());
+        using var factory = CreateFactory(port);
+        using var invalidClient = factory.CreateClient();
+
+        using var response = await invalidClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        Assert.Equal("VALIDATION_ERROR", document.RootElement.GetProperty("code").GetString());
+        var fields = document.RootElement.GetProperty("errors").EnumerateArray()
+            .Select(error => error.GetProperty("field").GetString());
+        Assert.Contains(invalidField, fields);
+        Assert.Equal(0, port.CallCount);
     }
 
     [Fact]
@@ -325,6 +349,47 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         // When: the factory's Services are first accessed (or a request is sent) through WebApplicationFactory
         // Then: IImageGenerationService, ImageGenerationPort, and the POST /images endpoint all resolve without throwing
         // Priority: Medium
+    }
+
+    private static Dictionary<string, string?> ValidRequestBody() => new()
+    {
+        ["type"] = "standard",
+        ["text"] = "Mojica",
+        ["foregroundCharacter"] = "@",
+        ["foregroundColor"] = "#FF69B4",
+        ["backgroundCharacter"] = ".",
+        ["backgroundColor"] = "#000000",
+    };
+
+    private static ImageGenerationPortResult SuccessfulPortResult() =>
+        ImageGenerationPortResult.Success(new GeneratedImageData([0x89, 0x50, 0x4E, 0x47], "image/png"));
+
+    private static WebApplicationFactory<Program> CreateFactory(ImageGenerationPort? port = null)
+    {
+        return new ImageGenerationEndpointFactory().WithWebHostBuilder(builder =>
+        {
+            if (port is not null)
+            {
+                builder.ConfigureTestServices(services => services.AddSingleton(port));
+            }
+        });
+    }
+
+    private sealed class RecordingImageGenerationPort(
+        ImageGenerationPortResult result) : ImageGenerationPort
+    {
+        public int CallCount { get; private set; }
+
+        public ImageGenerationRequest? ReceivedRequest { get; private set; }
+
+        public Task<ImageGenerationPortResult> GenerateAsync(
+            ImageGenerationRequest request,
+            CancellationToken cancellationToken)
+        {
+            CallCount++;
+            ReceivedRequest = request;
+            return Task.FromResult(result);
+        }
     }
 }
 
