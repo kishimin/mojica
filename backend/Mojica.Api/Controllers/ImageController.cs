@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Mojica.Api.Contracts;
 using Mojica.Api.Infrastructure;
+using Mojica.Api.Infrastructure.OpenApi;
 using Mojica.Api.Localization;
 using Mojica.Api.Mapping;
 using Mojica.Api.Services;
@@ -17,6 +18,18 @@ public sealed class ImageController(
 {
     [HttpPost("/images")]
     [EnableRateLimiting(ImageGenerationRateLimiterPolicy.PolicyName)]
+    [SwaggerRequestBodyType(typeof(ImageGenerationRequestDto))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest, "application/json")]
+    [ProducesResponseType(typeof(ApiValidationErrorResponse), StatusCodes.Status422UnprocessableEntity, "application/json")]
+    [SwaggerResponseOneOf(
+        StatusCodes.Status422UnprocessableEntity,
+        typeof(ApiValidationErrorResponse),
+        typeof(ApiErrorResponse))]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status429TooManyRequests, "application/json")]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError, "application/json")]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status502BadGateway, "application/json")]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status504GatewayTimeout, "application/json")]
     public async Task<IActionResult> PostImages(CancellationToken cancellationToken)
     {
         var language = ApiLanguageSelector.Select(Request.Headers.AcceptLanguage.ToString());
