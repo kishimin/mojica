@@ -74,8 +74,15 @@ app.MapPost("/images", async (HttpContext context) =>
         return Results.Json(malformed.Response, statusCode: malformed.StatusCode);
     }
 
+    var mapping = ImageGenerationRequestMapper.Map(dto!);
+    if (!mapping.IsSuccess)
+    {
+        var validationFailure = ApiErrorMapper.MapValidationFailure(mapping.Errors, language);
+        return Results.Json(validationFailure.Response, statusCode: validationFailure.StatusCode);
+    }
+
     throw new NotImplementedException(
-        "POST /images validation, generation, and response mapping are not yet implemented.");
+        "POST /images generation and response mapping are not yet implemented.");
 })
     .WithName("PostImages")
     .WithOpenApi();
