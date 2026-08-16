@@ -8,9 +8,12 @@ namespace Mojica.Api.Infrastructure;
 
 public sealed class GlyphForgeImageGenerationAdapter(
     IHttpClientFactory httpClientFactory,
-    ILogger<GlyphForgeImageGenerationAdapter>? logger = null) : ImageGenerationPort
+    ILogger<GlyphForgeImageGenerationAdapter>? logger = null,
+    TimeProvider? timeProvider = null) : ImageGenerationPort
 {
     private const int MaximumImageBytes = 10 * 1024 * 1024;
+
+    private readonly TimeProvider timeProvider = timeProvider ?? TimeProvider.System;
 
     public async Task<ImageGenerationPortResult> GenerateAsync(
         ImageGenerationRequest request,
@@ -174,7 +177,7 @@ public sealed class GlyphForgeImageGenerationAdapter(
         return new Uri(directoryBase, relativePath);
     }
 
-    private static int? ParseRetryAfter(System.Net.Http.Headers.RetryConditionHeaderValue? value)
+    private int? ParseRetryAfter(System.Net.Http.Headers.RetryConditionHeaderValue? value)
     {
         if (value?.Delta is { } delay && delay >= TimeSpan.Zero && delay.TotalSeconds <= int.MaxValue)
         {
@@ -183,7 +186,7 @@ public sealed class GlyphForgeImageGenerationAdapter(
 
         if (value?.Date is { } date)
         {
-            var seconds = (date - DateTimeOffset.UtcNow).TotalSeconds;
+            var seconds = (date - timeProvider.GetUtcNow()).TotalSeconds;
             if (seconds < 0)
             {
                 return 0;
