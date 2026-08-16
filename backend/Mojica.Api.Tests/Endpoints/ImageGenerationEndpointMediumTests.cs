@@ -129,59 +129,92 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         Assert.Contains("backgroundCharacter", fields);
     }
 
-    [Fact(Skip = "TODO: Implement Accept-Language wiring for the 422 validation contract.")]
-    public void PostImages_WhenAcceptLanguageIsJapanese_ReturnsJapaneseValidationMessage()
+    [Fact]
+    public async Task PostImages_WhenAcceptLanguageIsJapanese_ReturnsJapaneseValidationMessage()
     {
         // ID: REQUEST-ENDPOINT-06
         // Source: docs/v1/api/api.md §9 (Language Selection), §11 (Required Field Error, Japanese); docs/v1/api/controllers.md §8.
-        // Given: an invalid POST /images request with header Accept-Language: ja and a controlled Service fake
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the 422 response body's message and errors[].message are in Japanese
-        // Priority: High
+        var body = ValidRequestBody();
+        body["text"] = null;
+
+        using var response = await PostImagesAsync(client, body, "ja");
+
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        Assert.Equal(
+            "描画する文字列は必須です。",
+            document.RootElement.GetProperty("errors")[0].GetProperty("message").GetString());
     }
 
-    [Fact(Skip = "TODO: Implement Accept-Language wiring for the 422 validation contract.")]
-    public void PostImages_WhenAcceptLanguageIsEnglish_ReturnsEnglishValidationMessage()
+    [Fact]
+    public async Task PostImages_WhenAcceptLanguageIsEnglish_ReturnsEnglishValidationMessage()
     {
         // ID: REQUEST-ENDPOINT-07
         // Source: docs/v1/api/api.md §9 (Language Selection), §11 (Required Field Error, English); docs/v1/api/controllers.md §8.
-        // Given: an invalid POST /images request with header Accept-Language: en and a controlled Service fake
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the 422 response body's message and errors[].message are in English
-        // Priority: High
+        var body = ValidRequestBody();
+        body["text"] = null;
+
+        using var response = await PostImagesAsync(client, body, "en");
+
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        Assert.Equal(
+            "The text field is required.",
+            document.RootElement.GetProperty("errors")[0].GetProperty("message").GetString());
     }
 
-    [Fact(Skip = "TODO: Implement Accept-Language fallback wiring for the 422 validation contract.")]
-    public void PostImages_WhenAcceptLanguageIsOmitted_FallsBackToJapanese()
+    [Fact]
+    public async Task PostImages_WhenAcceptLanguageIsOmitted_FallsBackToJapanese()
     {
         // ID: REQUEST-ENDPOINT-08
         // Source: docs/v1/api/api.md §5 ("If Accept-Language is not specified, Japanese is used by default"), §9; docs/v1/api/controllers.md §8 (Language Selection table, "Omitted" -> Japanese).
-        // Given: an invalid POST /images request with no Accept-Language header and a controlled Service fake
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the 422 response body's message and errors[].message are in Japanese
-        // Priority: High
+        var body = ValidRequestBody();
+        body["text"] = null;
+
+        using var response = await PostImagesAsync(client, body, acceptLanguage: null);
+
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        Assert.Equal(
+            "描画する文字列は必須です。",
+            document.RootElement.GetProperty("errors")[0].GetProperty("message").GetString());
     }
 
-    [Fact(Skip = "TODO: Implement Accept-Language fallback wiring for the 422 validation contract.")]
-    public void PostImages_WhenAcceptLanguageIsUnsupported_FallsBackToJapanese()
+    [Fact]
+    public async Task PostImages_WhenAcceptLanguageIsUnsupported_FallsBackToJapanese()
     {
         // ID: REQUEST-ENDPOINT-09
         // Source: docs/v1/api/api.md §5 ("If an unsupported language is specified, the API also falls back to Japanese"), §9; docs/v1/api/controllers.md §8 (Language Selection table, "Unsupported value" -> Japanese).
-        // Given: an invalid POST /images request with header Accept-Language: fr (unsupported) and a controlled Service fake
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the 422 response body's message and errors[].message are in Japanese
-        // Priority: Medium
+        var body = ValidRequestBody();
+        body["text"] = null;
+
+        using var response = await PostImagesAsync(client, body, "fr");
+
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        Assert.Equal(
+            "描画する文字列は必須です。",
+            document.RootElement.GetProperty("errors")[0].GetProperty("message").GetString());
     }
 
-    [Fact(Skip = "TODO: Implement the language-independent code/field contract for 422 responses.")]
-    public void PostImages_WhenAcceptLanguageChanges_KeepsCodeAndFieldStable()
+    [Fact]
+    public async Task PostImages_WhenAcceptLanguageChanges_KeepsCodeAndFieldStable()
     {
         // ID: REQUEST-ENDPOINT-10
         // Source: docs/v1/api/api.md §9 ("code and field are fixed values that do not depend on the selected language").
-        // Given: the same invalid POST /images request sent once with Accept-Language: ja and once with Accept-Language: en, with a controlled Service fake
-        // When: the client sends both requests through WebApplicationFactory
-        // Then: both responses share the same top-level code and the same errors[].field values; only message and errors[].message differ
-        // Priority: Medium
+        var body = ValidRequestBody();
+        body["text"] = null;
+
+        using var japaneseResponse = await PostImagesAsync(client, body, "ja");
+        using var japaneseDocument = await JsonDocument.ParseAsync(await japaneseResponse.Content.ReadAsStreamAsync());
+        using var englishResponse = await PostImagesAsync(client, body, "en");
+        using var englishDocument = await JsonDocument.ParseAsync(await englishResponse.Content.ReadAsStreamAsync());
+
+        Assert.Equal(
+            japaneseDocument.RootElement.GetProperty("code").GetString(),
+            englishDocument.RootElement.GetProperty("code").GetString());
+        Assert.Equal(
+            japaneseDocument.RootElement.GetProperty("errors")[0].GetProperty("field").GetString(),
+            englishDocument.RootElement.GetProperty("errors")[0].GetProperty("field").GetString());
+        Assert.NotEqual(
+            japaneseDocument.RootElement.GetProperty("errors")[0].GetProperty("message").GetString(),
+            englishDocument.RootElement.GetProperty("errors")[0].GetProperty("message").GetString());
     }
 
     [Fact(Skip = "TODO: Implement the POST /images success response wiring.")]
@@ -372,6 +405,23 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         // When: the factory's Services are first accessed (or a request is sent) through WebApplicationFactory
         // Then: IImageGenerationService, ImageGenerationPort, and the POST /images endpoint all resolve without throwing
         // Priority: Medium
+    }
+
+    private static async Task<HttpResponseMessage> PostImagesAsync(
+        HttpClient client,
+        Dictionary<string, string?> body,
+        string? acceptLanguage)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/images")
+        {
+            Content = JsonContent.Create(body),
+        };
+        if (acceptLanguage is not null)
+        {
+            request.Headers.AcceptLanguage.ParseAdd(acceptLanguage);
+        }
+
+        return await client.SendAsync(request);
     }
 
     private static Dictionary<string, string?> ValidRequestBody() => new()
