@@ -19,7 +19,7 @@ public sealed class RateLimitRegistrationMediumTests
 
         var exception = Assert.ThrowsAny<Exception>(() => _ = factory.Services);
 
-        Assert.Contains("Rate limit permit limit must be positive.", exception.ToString());
+        OptionsStartupValidationAssert.ContainsValidationFailure(exception, "Rate limit permit limit must be positive.");
     }
 
     [Fact]

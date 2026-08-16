@@ -20,7 +20,7 @@ public sealed class GlyphForgeClientRegistrationMediumTests
 
         var exception = Assert.ThrowsAny<Exception>(() => _ = factory.Services);
 
-        Assert.Contains("Glyph Forge base URL is required.", exception.ToString());
+        OptionsStartupValidationAssert.ContainsValidationFailure(exception, "Glyph Forge base URL is required.");
     }
 
     [Fact]
