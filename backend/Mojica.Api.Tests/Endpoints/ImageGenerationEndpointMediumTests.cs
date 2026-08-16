@@ -333,27 +333,51 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         Assert.Equal("INTERNAL_SERVER_ERROR", document.RootElement.GetProperty("code").GetString());
     }
 
-    [Fact(Skip = "TODO: Implement local rate-limit policy attachment for POST /images.")]
-    public void PostImages_WhenLocalRateLimitIsExceeded_ReturnsTooManyRequestsWithoutCallingGlyphForge()
+    [Fact]
+    public async Task PostImages_WhenLocalRateLimitIsExceeded_ReturnsTooManyRequestsWithoutCallingGlyphForge()
     {
         // ID: REQUEST-ENDPOINT-20
         // Source: docs/v1/api/api.md §13 (Rate Limiting), §14 step 5; docs/v1/api/implementation-plan.md Branch 11 ("wire all production dependencies"); ImageGenerationRateLimiterPolicy.PolicyName (backend/Mojica.Api/Infrastructure/ImageGenerationRateLimiterPolicy.cs).
-        // Given: a WebApplicationFactory configured with a small RateLimit:PermitLimit, a fake Glyph Forge HTTP handler that records call count, and enough valid POST /images requests to exceed the configured permit limit
-        // When: the client sends requests until the local limit is exceeded
-        // Then: the response beyond the limit is 429 with code RATE_LIMIT_EXCEEDED and a Retry-After header, and the fake Glyph Forge handler recorded no call for the rejected request
-        // Error: 429 Too Many Requests; code RATE_LIMIT_EXCEEDED
-        // Priority: High
+        var body = ValidRequestBody();
+        var port = new RecordingImageGenerationPort(SuccessfulPortResult());
+        using var factory = CreateFactory(port, new Dictionary<string, string?>
+        {
+            ["RateLimit:PermitLimit"] = "1",
+            ["RateLimit:Window"] = "00:01:00",
+            ["RateLimit:QueueLimit"] = "0",
+        });
+        using var rateLimitedClient = factory.CreateClient();
+
+        using var first = await rateLimitedClient.PostAsJsonAsync("/images", body);
+        using var second = await rateLimitedClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.OK, first.StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, second.StatusCode);
+        Assert.NotNull(second.Headers.RetryAfter);
+        using var document = await JsonDocument.ParseAsync(await second.Content.ReadAsStreamAsync());
+        Assert.Equal("RATE_LIMIT_EXCEEDED", document.RootElement.GetProperty("code").GetString());
+        Assert.Equal(1, port.CallCount);
     }
 
-    [Fact(Skip = "TODO: Implement local rate-limit policy attachment for POST /images.")]
-    public void PostImages_WhenWithinLocalRateLimit_ProceedsToService()
+    [Fact]
+    public async Task PostImages_WhenWithinLocalRateLimit_ProceedsToService()
     {
         // ID: REQUEST-ENDPOINT-21
         // Source: docs/v1/api/api.md §13, §14; docs/v1/api/implementation-plan.md Branch 11.
-        // Given: a WebApplicationFactory configured with a RateLimit:PermitLimit large enough for a single request, and a controlled Service fake
-        // When: the client sends one valid POST /images request through WebApplicationFactory
-        // Then: the request is not rejected by the rate limiter (no 429) and the Service fake is invoked
-        // Priority: Medium
+        var body = ValidRequestBody();
+        var port = new RecordingImageGenerationPort(SuccessfulPortResult());
+        using var factory = CreateFactory(port, new Dictionary<string, string?>
+        {
+            ["RateLimit:PermitLimit"] = "5",
+            ["RateLimit:Window"] = "00:01:00",
+            ["RateLimit:QueueLimit"] = "0",
+        });
+        using var withinLimitClient = factory.CreateClient();
+
+        using var response = await withinLimitClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(1, port.CallCount);
     }
 
     [Fact(Skip = "TODO: Implement Glyph Forge endpoint routing for type=standard through the full production wiring.")]
@@ -445,10 +469,18 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
     private static ImageGenerationPortResult SuccessfulPortResult() =>
         ImageGenerationPortResult.Success(new GeneratedImageData([0x89, 0x50, 0x4E, 0x47], "image/png"));
 
-    private static WebApplicationFactory<Program> CreateFactory(ImageGenerationPort? port = null)
+    private static WebApplicationFactory<Program> CreateFactory(
+        ImageGenerationPort? port = null,
+        IDictionary<string, string?>? configOverrides = null)
     {
         return new ImageGenerationEndpointFactory().WithWebHostBuilder(builder =>
         {
+            if (configOverrides is not null)
+            {
+                builder.ConfigureAppConfiguration((_, configuration) =>
+                    configuration.AddInMemoryCollection(configOverrides));
+            }
+
             if (port is not null)
             {
                 builder.ConfigureTestServices(services => services.AddSingleton(port));
