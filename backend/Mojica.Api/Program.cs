@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 using System.Threading.RateLimiting;
+using Mojica.Api.Contracts;
 using Mojica.Api.Infrastructure;
+using Mojica.Api.Localization;
+using Mojica.Api.Mapping;
 using Mojica.Api.Ports;
+using Mojica.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +25,7 @@ builder.Services.AddHttpClient("GlyphForge", (serviceProvider, client) =>
     client.Timeout = options.Timeout;
 });
 builder.Services.AddSingleton<ImageGenerationPort, GlyphForgeImageGenerationAdapter>();
+builder.Services.AddSingleton<IImageGenerationService, ImageGenerationService>();
 
 var rateLimitOptions = builder.Services
     .AddOptions<RateLimitOptions>()
@@ -51,6 +57,27 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
     .WithName("GetHealth")
+    .WithOpenApi();
+
+app.MapPost("/images", async (HttpContext context) =>
+{
+    var language = ApiLanguageSelector.Select(context.Request.Headers.AcceptLanguage.ToString());
+
+    ImageGenerationRequestDto? dto;
+    try
+    {
+        dto = await context.Request.ReadFromJsonAsync<ImageGenerationRequestDto>(context.RequestAborted);
+    }
+    catch (JsonException)
+    {
+        var malformed = ApiErrorMapper.MapMalformedRequest(language);
+        return Results.Json(malformed.Response, statusCode: malformed.StatusCode);
+    }
+
+    throw new NotImplementedException(
+        "POST /images validation, generation, and response mapping are not yet implemented.");
+})
+    .WithName("PostImages")
     .WithOpenApi();
 
 app.Run();
