@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Mojica.Api.Models;
 using Mojica.Api.Ports;
+using Mojica.Api.Services;
 
 namespace Mojica.Api.Tests.Endpoints;
 
@@ -380,63 +382,65 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         Assert.Equal(1, port.CallCount);
     }
 
-    [Fact(Skip = "TODO: Implement Glyph Forge endpoint routing for type=standard through the full production wiring.")]
-    public void PostImages_WhenTypeIsStandard_RoutesToGlyphForgeStandardEndpoint()
+    public static TheoryData<string, string> TypeRoutingCases => new()
     {
-        // ID: REQUEST-ENDPOINT-22
-        // Source: docs/v1/api/api.md §7 (Endpoint Routing table, standard -> POST /images); docs/v1/api/implementation-plan.md Branch 11 ("wire all production dependencies").
-        // Given: a valid POST /images request with type=standard, the real ImageGenerationService and GlyphForgeImageGenerationAdapter wired through DI, and a fake Glyph Forge HTTP handler that records the requested path and returns a minimal successful PNG response
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the fake Glyph Forge handler recorded a request to POST /images (not /images/background or /images/x-icon)
-        // Priority: Medium
+        { "standard", "/images" },
+        { "x-background", "/images/background" },
+        { "x-icon", "/images/x-icon" },
+    };
 
-        // Theory candidate: REQUEST-ENDPOINT-22..24 share the same shape (type -> expected Glyph Forge path) and can be consolidated into one [Theory] once fixtures exist.
+    [Theory]
+    [MemberData(nameof(TypeRoutingCases))]
+    public async Task PostImages_WhenTypeIsGiven_RoutesToMatchingGlyphForgeEndpoint(
+        string type,
+        string expectedPath)
+    {
+        // ID: REQUEST-ENDPOINT-22..24
+        // Source: docs/v1/api/api.md §7 (Endpoint Routing table); docs/v1/api/implementation-plan.md Branch 11 ("wire all production dependencies").
+        var body = ValidRequestBody();
+        body["type"] = type;
+        var handler = new RecordingHttpMessageHandler(SuccessfulGlyphForgeResponse());
+        using var factory = CreateGlyphForgeFactory(handler);
+        using var routingClient = factory.CreateClient();
+
+        using var response = await routingClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(handler.LastRequest);
+        Assert.Equal(expectedPath, handler.LastRequest!.RequestUri!.AbsolutePath);
     }
 
-    [Fact(Skip = "TODO: Implement Glyph Forge endpoint routing for type=x-background through the full production wiring.")]
-    public void PostImages_WhenTypeIsXBackground_RoutesToGlyphForgeBackgroundEndpoint()
-    {
-        // ID: REQUEST-ENDPOINT-23
-        // Source: docs/v1/api/api.md §7 (Endpoint Routing table, x-background -> POST /images/background).
-        // Given: a valid POST /images request with type=x-background, the real ImageGenerationService and GlyphForgeImageGenerationAdapter wired through DI, and a fake Glyph Forge HTTP handler that records the requested path and returns a minimal successful PNG response
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the fake Glyph Forge handler recorded a request to POST /images/background
-        // Priority: Medium
-    }
-
-    [Fact(Skip = "TODO: Implement Glyph Forge endpoint routing for type=x-icon through the full production wiring.")]
-    public void PostImages_WhenTypeIsXIcon_RoutesToGlyphForgeXIconEndpoint()
-    {
-        // ID: REQUEST-ENDPOINT-24
-        // Source: docs/v1/api/api.md §7 (Endpoint Routing table, x-icon -> POST /images/x-icon).
-        // Given: a valid POST /images request with type=x-icon, the real ImageGenerationService and GlyphForgeImageGenerationAdapter wired through DI, and a fake Glyph Forge HTTP handler that records the requested path and returns a minimal successful PNG response
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the fake Glyph Forge handler recorded a request to POST /images/x-icon
-        // Priority: Medium
-    }
-
-    [Fact(Skip = "TODO: Implement HEX-to-RGB conversion visibility through the full production wiring.")]
-    public void PostImages_WhenRequestIsValid_ConvertsHexColorsToRgbBeforeCallingGlyphForge()
+    [Fact]
+    public async Task PostImages_WhenRequestIsValid_ConvertsHexColorsToRgbBeforeCallingGlyphForge()
     {
         // ID: REQUEST-ENDPOINT-25
         // Source: docs/v1/api/api.md §8 (Color Conversion), §14 step 6; docs/v1/api/controllers.md dependency direction (Controller -> Service -> Port <- Adapter).
-        // Given: a valid POST /images request with known foregroundColor/backgroundColor HEX values, the real production chain wired through DI, and a fake Glyph Forge HTTP handler that captures the request body it received
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the captured Glyph Forge request body contains RGB values matching the known HEX-to-RGB conversion, not the original HEX strings
-        // Priority: Medium
-
         // Note: unit-level HEX-to-RGB conversion is already covered by GlyphForgeRequestMapperSmallTests; this case only proves the endpoint wires the real conversion path end to end, and should not re-assert every HEX/RGB pair.
+        var body = ValidRequestBody();
+        body["foregroundColor"] = "#FF69B4";
+        body["backgroundColor"] = "#000000";
+        var handler = new RecordingHttpMessageHandler(SuccessfulGlyphForgeResponse());
+        using var factory = CreateGlyphForgeFactory(handler);
+        using var conversionClient = factory.CreateClient();
+
+        using var response = await conversionClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(handler.LastRequestBody);
+        Assert.Contains("\"inner_color\":[255,105,180]", handler.LastRequestBody);
+        Assert.Contains("\"outer_color\":[0,0,0]", handler.LastRequestBody);
     }
 
-    [Fact(Skip = "TODO: Implement full production dependency wiring for POST /images.")]
+    [Fact]
     public void PostImages_WhenApplicationStarts_ResolvesFullDependencyChainWithoutThrowing()
     {
         // ID: REQUEST-ENDPOINT-26
         // Source: docs/v1/api/implementation-plan.md Branch 11 ("wire all production dependencies"); docs/v1/api/controllers.md §2 (Dependency Direction).
-        // Given: a WebApplicationFactory configured with valid GlyphForge and RateLimit options and no test-only service overrides
-        // When: the factory's Services are first accessed (or a request is sent) through WebApplicationFactory
-        // Then: IImageGenerationService, ImageGenerationPort, and the POST /images endpoint all resolve without throwing
-        // Priority: Medium
+        using var factory = CreateFactory();
+
+        using var scope = factory.Services.CreateScope();
+        Assert.NotNull(scope.ServiceProvider.GetRequiredService<IImageGenerationService>());
+        Assert.NotNull(scope.ServiceProvider.GetRequiredService<ImageGenerationPort>());
     }
 
     private static async Task<HttpResponseMessage> PostImagesAsync(
@@ -468,6 +472,23 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
 
     private static ImageGenerationPortResult SuccessfulPortResult() =>
         ImageGenerationPortResult.Success(new GeneratedImageData([0x89, 0x50, 0x4E, 0x47], "image/png"));
+
+    private static HttpResponseMessage SuccessfulGlyphForgeResponse() => new(HttpStatusCode.OK)
+    {
+        Content = new ByteArrayContent([0x89, 0x50, 0x4E, 0x47])
+        {
+            Headers = { ContentType = new MediaTypeHeaderValue("image/png") },
+        },
+    };
+
+    private static WebApplicationFactory<Program> CreateGlyphForgeFactory(RecordingHttpMessageHandler handler)
+    {
+        return new ImageGenerationEndpointFactory().WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureTestServices(services =>
+                services.AddHttpClient("GlyphForge").ConfigurePrimaryHttpMessageHandler(() => handler));
+        });
+    }
 
     private static WebApplicationFactory<Program> CreateFactory(
         ImageGenerationPort? port = null,
@@ -514,6 +535,26 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
             CallCount++;
             ReceivedRequest = request;
             return handler(request, cancellationToken);
+        }
+    }
+
+    private sealed class RecordingHttpMessageHandler(HttpResponseMessage response) : HttpMessageHandler
+    {
+        public HttpRequestMessage? LastRequest { get; private set; }
+
+        public string? LastRequestBody { get; private set; }
+
+        protected override async Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            LastRequest = request;
+            if (request.Content is not null)
+            {
+                LastRequestBody = await request.Content.ReadAsStringAsync(cancellationToken);
+            }
+
+            return response;
         }
     }
 }
