@@ -311,16 +311,26 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         Assert.False(document.RootElement.TryGetProperty("errors", out _));
     }
 
-    [Fact(Skip = "TODO: Implement the unexpected-exception boundary for POST /images.")]
-    public void PostImages_WhenServiceThrowsUnexpectedException_ReturnsInternalServerErrorWithoutInternalDetails()
+    [Fact]
+    public async Task PostImages_WhenServiceThrowsUnexpectedException_ReturnsInternalServerErrorWithoutInternalDetails()
     {
         // ID: REQUEST-ENDPOINT-19
         // Source: docs/v1/api/controllers.md §9 (Unexpected Exceptions); docs/v1/api/api.md §11 (500 Internal Server Error).
-        // Given: a valid POST /images request and a controlled Service fake that throws an unexpected exception (for example InvalidOperationException)
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the response is 500 with code INTERNAL_SERVER_ERROR, and the response body does not contain the exception message or a stack trace
-        // Error: 500 Internal Server Error; code INTERNAL_SERVER_ERROR
-        // Priority: High
+        var body = ValidRequestBody();
+        var port = new RecordingImageGenerationPort(
+            (ImageGenerationRequest request, CancellationToken cancellationToken) =>
+                throw new InvalidOperationException("secret internal detail that must not leak"));
+        using var factory = CreateFactory(port);
+        using var exceptionClient = factory.CreateClient();
+
+        using var response = await exceptionClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Assert.DoesNotContain("secret internal detail", responseBody);
+        Assert.DoesNotContain("InvalidOperationException", responseBody);
+        using var document = JsonDocument.Parse(responseBody);
+        Assert.Equal("INTERNAL_SERVER_ERROR", document.RootElement.GetProperty("code").GetString());
     }
 
     [Fact(Skip = "TODO: Implement local rate-limit policy attachment for POST /images.")]
@@ -446,9 +456,21 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         });
     }
 
-    private sealed class RecordingImageGenerationPort(
-        ImageGenerationPortResult result) : ImageGenerationPort
+    private sealed class RecordingImageGenerationPort : ImageGenerationPort
     {
+        private readonly Func<ImageGenerationRequest, CancellationToken, Task<ImageGenerationPortResult>> handler;
+
+        public RecordingImageGenerationPort(ImageGenerationPortResult result)
+            : this((_, _) => Task.FromResult(result))
+        {
+        }
+
+        public RecordingImageGenerationPort(
+            Func<ImageGenerationRequest, CancellationToken, Task<ImageGenerationPortResult>> handler)
+        {
+            this.handler = handler;
+        }
+
         public int CallCount { get; private set; }
 
         public ImageGenerationRequest? ReceivedRequest { get; private set; }
@@ -459,7 +481,7 @@ public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGene
         {
             CallCount++;
             ReceivedRequest = request;
-            return Task.FromResult(result);
+            return handler(request, cancellationToken);
         }
     }
 }
