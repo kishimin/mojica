@@ -1,7 +1,21 @@
+using System.Net;
+using System.Text;
+using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
+
 namespace Mojica.Api.Tests.Endpoints;
 
-public sealed class ImageGenerationEndpointMediumTests
+public sealed class ImageGenerationEndpointMediumTests : IClassFixture<ImageGenerationEndpointFactory>
 {
+    private readonly HttpClient client;
+
+    public ImageGenerationEndpointMediumTests(ImageGenerationEndpointFactory factory)
+    {
+        client = factory.CreateClient();
+    }
+
     [Fact(Skip = "TODO: Implement after the image generation Service and POST /images endpoint exist.")]
     public void PostImages_WhenRequestValueIsInvalid_ReturnsUnprocessableEntityWithoutCallingService()
     {
@@ -15,16 +29,19 @@ public sealed class ImageGenerationEndpointMediumTests
         // Priority: High
     }
 
-    [Fact(Skip = "TODO: Implement the POST /images malformed-JSON boundary.")]
-    public void PostImages_WhenBodyIsNotValidJson_ReturnsBadRequestWithoutInvokingService()
+    [Fact]
+    public async Task PostImages_WhenBodyIsNotValidJson_ReturnsBadRequestWithoutInvokingService()
     {
         // ID: REQUEST-ENDPOINT-02
         // Source: docs/v1/api/controllers.md §5; docs/v1/api/api.md §11 (400 Bad Request), §14 step 1.
-        // Given: a POST /images request whose body is not valid JSON (syntax error) and a controlled Service fake
-        // When: the client sends the request through WebApplicationFactory
-        // Then: the API returns 400 with code BAD_REQUEST and does not invoke the image generation Service
-        // Error: 400 Bad Request; code BAD_REQUEST; body does not match ImageGenerationRequestDto shape
-        // Priority: High
+        using var content = new StringContent("{ this is not valid json", Encoding.UTF8, "application/json");
+
+        using var response = await client.PostAsync("/images", content);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        Assert.Equal("BAD_REQUEST", document.RootElement.GetProperty("code").GetString());
     }
 
     [Fact(Skip = "TODO: Implement the POST /images unsupported Content-Type boundary.")]
@@ -308,5 +325,21 @@ public sealed class ImageGenerationEndpointMediumTests
         // When: the factory's Services are first accessed (or a request is sent) through WebApplicationFactory
         // Then: IImageGenerationService, ImageGenerationPort, and the POST /images endpoint all resolve without throwing
         // Priority: Medium
+    }
+}
+
+public sealed class ImageGenerationEndpointFactory : WebApplicationFactory<Program>
+{
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["GlyphForge:BaseUrl"] = "https://glyph-forge.example/",
+                ["GlyphForge:Timeout"] = "00:00:35",
+                ["RateLimit:PermitLimit"] = "1000",
+                ["RateLimit:Window"] = "00:01:00",
+                ["RateLimit:QueueLimit"] = "0"
+            }));
     }
 }
