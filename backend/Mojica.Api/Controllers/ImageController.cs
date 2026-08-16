@@ -22,6 +22,10 @@ public sealed class ImageController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest, "application/json")]
     [ProducesResponseType(typeof(ApiValidationErrorResponse), StatusCodes.Status422UnprocessableEntity, "application/json")]
+    [SwaggerResponseOneOf(
+        StatusCodes.Status422UnprocessableEntity,
+        typeof(ApiValidationErrorResponse),
+        typeof(ApiErrorResponse))]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status429TooManyRequests, "application/json")]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError, "application/json")]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status502BadGateway, "application/json")]

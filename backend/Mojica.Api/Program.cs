@@ -10,7 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => options.OperationFilter<RequestBodyTypeOperationFilter>());
+builder.Services.AddSwaggerGen(options =>
+{
+    options.OperationFilter<RequestBodyTypeOperationFilter>();
+    options.OperationFilter<ResponseOneOfOperationFilter>();
+});
 var glyphForgeOptions = builder.Services
     .AddOptions<GlyphForgeClientOptions>()
     .BindConfiguration(GlyphForgeClientOptions.SectionName);
