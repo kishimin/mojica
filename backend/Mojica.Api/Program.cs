@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using Mojica.Api.Contracts;
@@ -84,8 +85,13 @@ app.MapPost("/images", async (HttpContext context, IImageGenerationService servi
     var serviceResult = await service.GenerateAsync(mapping.Request!, context.RequestAborted);
     if (!serviceResult.IsSuccess)
     {
-        throw new NotImplementedException(
-            "POST /images Service-failure response mapping is not yet implemented.");
+        var portFailure = ApiErrorMapper.MapPortFailure(serviceResult.Error!, language);
+        if (portFailure.RetryAfter is { } retryAfterSeconds)
+        {
+            context.Response.Headers.RetryAfter = retryAfterSeconds.ToString(CultureInfo.InvariantCulture);
+        }
+
+        return Results.Json(portFailure.Response, statusCode: portFailure.StatusCode);
     }
 
     var image = serviceResult.Image!;
