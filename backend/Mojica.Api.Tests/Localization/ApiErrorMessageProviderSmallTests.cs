@@ -135,8 +135,10 @@ public sealed class ApiErrorMessageProviderSmallTests
     public void ApiErrorMessageProvider_GetPublicMessage_WhenCodeIsUnsupported_ThrowsArgumentOutOfRangeException(
         ApiLanguage language)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             ApiErrorMessageProvider.GetPublicMessage(language, "UNSUPPORTED"));
+
+        Assert.StartsWith("Unsupported public API error code.", exception.Message);
     }
 
     [Theory]
@@ -145,11 +147,13 @@ public sealed class ApiErrorMessageProviderSmallTests
     public void ApiErrorMessageProvider_GetValidationMessage_WhenReasonAndTargetCombinationIsUnsupported_ThrowsArgumentException(
         ApiLanguage language)
     {
-        Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.Throws<ArgumentException>(() =>
             ApiErrorMessageProvider.GetValidationMessage(
                 language,
                 ModelValidationReason.ValueOutOfRange,
                 "red"));
+
+        Assert.StartsWith("Unsupported validation reason and target combination.", exception.Message);
     }
 
     [Fact]

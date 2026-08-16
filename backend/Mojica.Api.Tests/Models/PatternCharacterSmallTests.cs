@@ -120,6 +120,27 @@ public sealed class PatternCharacterSmallTests
     }
 
     [Fact]
+    public void PatternCharacter_Create_WhenLengthEqualsDefensiveCeilingWithinGraphemeLimit_Succeeds()
+    {
+        // TextValueValidation rejects input whose UTF-16 length exceeds
+        // maximumGraphemes(128) * 1024 code units as a defensive ceiling, before ever
+        // counting graphemes. This value sits exactly on that ceiling (127 single-unit
+        // graphemes plus one grapheme built from a base character and enough combining
+        // marks to reach the boundary) while still totalling only 128 graphemes, so it
+        // must be accepted rather than rejected by the length-based fast path alone.
+        var value = new string('A', 127) + "A" + new string('́', 131072 - 128);
+
+        var succeeded = PatternCharacter.TryCreate(
+            value,
+            out var patternCharacter,
+            out var reason);
+
+        Assert.True(succeeded);
+        Assert.NotNull(patternCharacter);
+        Assert.Null(reason);
+    }
+
+    [Fact]
     public void PatternCharacter_Create_WhenInputContainsControlCharacter_ReturnsControlCharacterError()
     {
         const string value = "A\u0000";

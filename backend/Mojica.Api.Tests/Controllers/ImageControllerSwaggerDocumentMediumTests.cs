@@ -13,13 +13,14 @@ public sealed class ImageControllerSwaggerDocumentMediumTests : IClassFixture<Im
     }
 
     [Fact]
-    public void SwaggerDocument_ForPostImages_DeclaresARequestBody()
+    public void SwaggerDocument_ForPostImages_DeclaresARequiredRequestBody()
     {
         Assert.True(operation.TryGetProperty("requestBody", out var requestBody));
         Assert.True(requestBody
             .GetProperty("content")
             .TryGetProperty("application/json", out var jsonContent));
         Assert.True(jsonContent.TryGetProperty("schema", out _));
+        Assert.True(requestBody.GetProperty("required").GetBoolean());
     }
 
     public static TheoryData<string> DocumentedStatusCodes => new()

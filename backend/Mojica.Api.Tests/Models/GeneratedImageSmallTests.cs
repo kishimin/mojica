@@ -69,4 +69,19 @@ public sealed class GeneratedImageSmallTests
 
         Assert.NotEqual(first, second);
     }
+
+    [Fact]
+    public void GeneratedImage_GetHashCode_WhenFileNameDiffers_ReturnsDifferentStableHashCode()
+    {
+        var first = new GeneratedImage(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/png",
+            "generated-1.png");
+        var second = new GeneratedImage(
+            [0x89, 0x50, 0x4E, 0x47],
+            "image/png",
+            "generated-2.png");
+
+        Assert.NotEqual(first.GetHashCode(), second.GetHashCode());
+    }
 }

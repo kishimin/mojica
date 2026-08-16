@@ -94,6 +94,8 @@ public sealed class ImageGenerationRequestSmallTests
     [Theory]
     [InlineData("@", " ")]
     [InlineData(" ", "@")]
+    [InlineData(" @", " ")]
+    [InlineData(" ", "@ ")]
     public void ImageGenerationRequest_Create_WhenEitherPatternIsVisible_Succeeds(
         string foregroundValue,
         string backgroundValue)

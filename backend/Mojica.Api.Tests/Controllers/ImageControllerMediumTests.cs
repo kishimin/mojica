@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Mojica.Api.Controllers;
 using Mojica.Api.Models;
 using Mojica.Api.Ports;
 using Mojica.Api.Services;
@@ -307,6 +309,25 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
     }
 
     [Fact]
+    public async Task PostImages_WhenServiceThrowsUnexpectedException_LogsErrorWithExceptionForOperators()
+    {
+        var body = ValidRequestBody();
+        var port = new RecordingImageGenerationPort(
+            (ImageGenerationRequest request, CancellationToken cancellationToken) =>
+                throw new InvalidOperationException("secret internal detail that must not leak"));
+        var recordingLogger = new RecordingLogger<ImageController>();
+        using var factory = CreateFactory(port, recordingLogger: recordingLogger);
+        using var exceptionClient = factory.CreateClient();
+
+        using var response = await exceptionClient.PostAsJsonAsync("/images", body);
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        var errorEntry = Assert.Single(recordingLogger.Entries, entry => entry.Level == LogLevel.Error);
+        Assert.Equal("Unexpected error while generating an image.", errorEntry.Message);
+        Assert.IsType<InvalidOperationException>(errorEntry.Exception);
+    }
+
+    [Fact]
     public async Task PostImages_WhenLocalRateLimitIsExceeded_ReturnsTooManyRequestsWithoutCallingGlyphForge()
     {
         var body = ValidRequestBody();
@@ -453,7 +474,8 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
 
     private static WebApplicationFactory<Program> CreateFactory(
         ImageGenerationPort? port = null,
-        IDictionary<string, string?>? configOverrides = null)
+        IDictionary<string, string?>? configOverrides = null,
+        RecordingLogger<ImageController>? recordingLogger = null)
     {
         return new ImageControllerFactory().WithWebHostBuilder(builder =>
         {
@@ -467,7 +489,33 @@ public sealed class ImageControllerMediumTests : IClassFixture<ImageControllerFa
             {
                 builder.ConfigureTestServices(services => services.AddSingleton(port));
             }
+
+            if (recordingLogger is not null)
+            {
+                builder.ConfigureTestServices(services =>
+                    services.AddSingleton<ILogger<ImageController>>(recordingLogger));
+            }
         });
+    }
+
+    private sealed class RecordingLogger<T> : ILogger<T>
+    {
+        public List<(LogLevel Level, string Message, Exception? Exception)> Entries { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
+        {
+            Entries.Add((logLevel, formatter(state, exception), exception));
+        }
     }
 
     private sealed class RecordingImageGenerationPort : ImageGenerationPort

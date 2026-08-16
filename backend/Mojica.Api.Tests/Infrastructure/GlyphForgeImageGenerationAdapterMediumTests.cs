@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mojica.Api.Infrastructure;
 using Mojica.Api.Models;
@@ -11,6 +12,153 @@ namespace Mojica.Api.Tests.Infrastructure;
 
 public sealed class GlyphForgeImageGenerationAdapterMediumTests
 {
+    [Fact]
+    public async Task Send_WhenRequestIsNull_ThrowsArgumentNullException()
+    {
+        var adapter = CreateAdapter(_ => PngResponse());
+
+        await Assert.ThrowsAsync<ArgumentNullException>(
+            () => adapter.GenerateAsync(null!, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Send_WhenRequestTimesOut_LogsWarningForOperators()
+    {
+        var client = new HttpClient(new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new BlockingHttpContent(),
+        }))
+        {
+            BaseAddress = new Uri("https://glyph-forge.example/"),
+            Timeout = TimeSpan.FromMilliseconds(50),
+        };
+        var recordingLogger = new RecordingLogger<GlyphForgeImageGenerationAdapter>();
+        var adapter = new GlyphForgeImageGenerationAdapter(new StubHttpClientFactory(client), recordingLogger);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.Timeout, result.Error?.ErrorCode);
+        var warning = Assert.Single(recordingLogger.Entries, entry => entry.Level == LogLevel.Warning);
+        Assert.Equal("Glyph Forge request timed out.", warning.Message);
+    }
+
+    [Fact]
+    public async Task Send_WhenClientConfigurationIsInvalid_LogsCommunicationFailureWithExceptionType()
+    {
+        var recordingLogger = new RecordingLogger<GlyphForgeImageGenerationAdapter>();
+        var adapter = new GlyphForgeImageGenerationAdapter(
+            new ThrowingHttpClientFactory(new OptionsValidationException(
+                "GlyphForge",
+                typeof(GlyphForgeClientOptions),
+                [])),
+            recordingLogger);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.Unavailable, result.Error?.ErrorCode);
+        var warning = Assert.Single(recordingLogger.Entries, entry => entry.Level == LogLevel.Warning);
+        Assert.Equal(
+            "Glyph Forge communication failed with OptionsValidationException.",
+            warning.Message);
+    }
+
+    [Fact]
+    public async Task Send_WhenSuccessfulResponseEqualsMaximumImageSize_ReturnsSuccessWithFullContent()
+    {
+        var content = new byte[10 * 1024 * 1024];
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(content),
+        };
+        response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(content.Length, result.Data?.Content.Length);
+    }
+
+    [Fact]
+    public async Task Send_WhenDeclaredContentLengthExceedsMaximum_RejectsWithoutReadingActualBody()
+    {
+        var body = new TrackingHttpContent();
+        body.Headers.ContentLength = 10 * 1024 * 1024 + 1;
+        body.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = body,
+        };
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.InvalidResponse, result.Error?.ErrorCode);
+        Assert.False(body.WasRead);
+    }
+
+    [Fact]
+    public async Task Send_WhenActualBodyExceedsMaximumWithoutDeclaredContentLength_ReturnsInvalidResponse()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new OversizedHttpContent(10 * 1024 * 1024 + 1),
+        };
+        response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+        response.Content.Headers.ContentLength = null;
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.InvalidResponse, result.Error?.ErrorCode);
+    }
+
+    [Fact]
+    public async Task Send_WhenByteArrayBodyExceedsMaximumWithoutDeclaredContentLength_ReturnsInvalidResponse()
+    {
+        // Uses the built-in ByteArrayContent (as real GlyphForge PNG responses do) with its
+        // Content-Length header suppressed, so the adapter can only detect the oversized body
+        // while writing through BoundedMemoryStream's byte[]-based Write/WriteAsync overrides
+        // rather than the declared-length fast path or the Memory<byte>-based override.
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(new byte[10 * 1024 * 1024 + 1]),
+        };
+        response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+        response.Content.Headers.ContentLength = null;
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.InvalidResponse, result.Error?.ErrorCode);
+    }
+
+    [Fact]
+    public async Task Send_WhenHttpClientHasNoBaseAddress_ReturnsUnavailableWithoutThrowing()
+    {
+        var client = new HttpClient(new StubHttpMessageHandler(_ => PngResponse()));
+        var adapter = new GlyphForgeImageGenerationAdapter(new StubHttpClientFactory(client));
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(ImageGenerationPortErrorCode.Unavailable, result.Error?.ErrorCode);
+    }
+
+    [Fact]
+    public async Task Send_WhenRetryAfterDeltaEqualsMaximumSupportedSeconds_ParsesFullValue()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+        {
+            Content = new StringContent("provider secret"),
+        };
+        response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(int.MaxValue));
+        var adapter = CreateAdapter(_ => response);
+
+        var result = await adapter.GenerateAsync(ValidRequest(), CancellationToken.None);
+
+        Assert.Equal(int.MaxValue, result.Error?.RetryAfter);
+    }
+
     [Fact]
     public async Task Send_WhenCreatingGlyphForgeRequest_UsesApplicationJsonContentType()
     {
@@ -338,6 +486,26 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
     }
 
     [Fact]
+    public async Task Send_WhenCallerCancellationIsRequestedWhileDrainingErrorBody_PropagatesCancellation()
+    {
+        // The internal timeout token and the caller's token are linked, so cancelling
+        // either one cancels the drain's Task. This proves the filter correctly tells
+        // them apart: caller-initiated cancellation while discarding an error body must
+        // propagate, not be swallowed as if it were our own internal timeout.
+        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
+        {
+            Content = new BlockingHttpContent(),
+        };
+        var adapter = CreateAdapter(_ => response);
+        using var cancellation = new CancellationTokenSource();
+
+        var operation = adapter.GenerateAsync(ValidRequest(), cancellation.Token);
+        cancellation.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => operation);
+    }
+
+    [Fact]
     public async Task Send_WhenCallerCancellationIsRequested_PropagatesCancellationToHttpCommunication()
     {
         var handlerStarted = new TaskCompletionSource(
@@ -449,6 +617,51 @@ public sealed class GlyphForgeImageGenerationAdapterMediumTests
         {
             length = 0;
             return true;
+        }
+    }
+
+    /// <summary>
+    /// Streams more bytes than the adapter's maximum image size without declaring a
+    /// Content-Length, so the adapter can only detect the overflow while writing.
+    /// </summary>
+    private sealed class OversizedHttpContent(int totalBytes) : HttpContent
+    {
+        protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+        {
+            var chunk = new byte[64 * 1024];
+            var remaining = totalBytes;
+            while (remaining > 0)
+            {
+                var writeSize = Math.Min(chunk.Length, remaining);
+                await stream.WriteAsync(chunk.AsMemory(0, writeSize));
+                remaining -= writeSize;
+            }
+        }
+
+        protected override bool TryComputeLength(out long length)
+        {
+            length = 0;
+            return false;
+        }
+    }
+
+    private sealed class RecordingLogger<T> : ILogger<T>
+    {
+        public List<(LogLevel Level, string Message, Exception? Exception)> Entries { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
+        {
+            Entries.Add((logLevel, formatter(state, exception), exception));
         }
     }
 }

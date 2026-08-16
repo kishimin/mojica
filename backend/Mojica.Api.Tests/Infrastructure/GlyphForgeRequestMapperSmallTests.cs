@@ -7,6 +7,12 @@ namespace Mojica.Api.Tests.Infrastructure;
 public sealed class GlyphForgeRequestMapperSmallTests
 {
     [Fact]
+    public void Map_WhenRequestIsNull_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => GlyphForgeRequestMapper.Map(null!));
+    }
+
+    [Fact]
     public void Map_WhenImageTypeIsStandard_SelectsImagesEndpoint()
     {
         var request = ValidRequest(ImageType.Standard);
