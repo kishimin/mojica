@@ -3,20 +3,18 @@ using System.Text.Json;
 
 namespace Mojica.Api.Tests.Controllers;
 
-public sealed class ImageControllerSwaggerDocumentMediumTests : IClassFixture<ImageControllerFactory>
+public sealed class ImageControllerSwaggerDocumentMediumTests : IClassFixture<ImageControllerSwaggerDocumentFixture>
 {
-    private readonly HttpClient client;
+    private readonly JsonElement operation;
 
-    public ImageControllerSwaggerDocumentMediumTests(ImageControllerFactory factory)
+    public ImageControllerSwaggerDocumentMediumTests(ImageControllerSwaggerDocumentFixture fixture)
     {
-        client = factory.CreateClient();
+        operation = fixture.PostImagesOperation;
     }
 
     [Fact]
-    public async Task SwaggerDocument_ForPostImages_DeclaresARequestBody()
+    public void SwaggerDocument_ForPostImages_DeclaresARequestBody()
     {
-        var operation = await GetPostImagesOperationAsync();
-
         Assert.True(operation.TryGetProperty("requestBody", out var requestBody));
         Assert.True(requestBody
             .GetProperty("content")
@@ -31,10 +29,8 @@ public sealed class ImageControllerSwaggerDocumentMediumTests : IClassFixture<Im
 
     [Theory]
     [MemberData(nameof(DocumentedStatusCodes))]
-    public async Task SwaggerDocument_ForPostImages_DeclaresStatusCode(string statusCode)
+    public void SwaggerDocument_ForPostImages_DeclaresStatusCode(string statusCode)
     {
-        var operation = await GetPostImagesOperationAsync();
-
         var responses = operation.GetProperty("responses");
 
         Assert.True(
@@ -43,14 +39,12 @@ public sealed class ImageControllerSwaggerDocumentMediumTests : IClassFixture<Im
     }
 
     [Fact]
-    public async Task SwaggerDocument_ForPostImages_Declares422AsEitherValidationOrPlainError()
+    public void SwaggerDocument_ForPostImages_Declares422AsEitherValidationOrPlainError()
     {
         // ApiErrorMapper returns ApiValidationErrorResponse for field validation
         // failures but a plain ApiErrorResponse (no "errors" array) for the
         // IMAGE_SIZE_LIMIT_EXCEEDED case (docs/v1/api/api.md, Generated Image
         // Size Error). Both share status 422, so the schema must document both.
-        var operation = await GetPostImagesOperationAsync();
-
         var schema = operation
             .GetProperty("responses")
             .GetProperty("422")
@@ -67,15 +61,31 @@ public sealed class ImageControllerSwaggerDocumentMediumTests : IClassFixture<Im
         Assert.Contains("#/components/schemas/ApiValidationErrorResponse", referencedSchemas);
         Assert.Contains("#/components/schemas/ApiErrorResponse", referencedSchemas);
     }
+}
 
-    private async Task<JsonElement> GetPostImagesOperationAsync()
+public sealed class ImageControllerSwaggerDocumentFixture : IAsyncLifetime
+{
+    private readonly ImageControllerFactory factory = new();
+    private JsonDocument? document;
+
+    public JsonElement PostImagesOperation { get; private set; }
+
+    public async Task InitializeAsync()
     {
-        using var document = await client.GetFromJsonAsync<JsonDocument>("/swagger/v1/swagger.json");
+        using var client = factory.CreateClient();
+        document = await client.GetFromJsonAsync<JsonDocument>("/swagger/v1/swagger.json");
 
-        return document!.RootElement
+        PostImagesOperation = document!.RootElement
             .GetProperty("paths")
             .GetProperty("/images")
             .GetProperty("post")
             .Clone();
+    }
+
+    public Task DisposeAsync()
+    {
+        document?.Dispose();
+        factory.Dispose();
+        return Task.CompletedTask;
     }
 }
