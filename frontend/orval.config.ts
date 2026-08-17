@@ -1,25 +1,37 @@
-import { defineConfig } from 'orval'
+import { defineConfig } from "orval";
 
-// Input is a snapshot of the mojica API's OpenAPI document
-// (`GET /swagger/v1/swagger.json` from backend/Mojica.Api). Regenerate it
-// by running the backend locally and re-fetching that endpoint, then rerun
-// `bunx orval` to refresh the generated client below.
 export default defineConfig({
-  mojicaApi: {
-    input: './openapi.json',
+  petstore: {
     output: {
-      mode: 'tags-split',
-      target: './src/api/generated',
-      schemas: './src/api/generated/model',
-      client: 'fetch',
+      mode: "tags-split",
+      target: "src/api/endpoints/petstore.ts",
+      schemas: "src/models",
+      client: "react-query",
+      httpClient: "axios",
+      mock: true,
+      clean: true,
+      formatter: "prettier",
+      override: {
+        mutator: {
+          path: "src/api/mutator/custom-instance.ts",
+          name: "customInstance",
+        },
+      },
+    },
+    input: {
+      target: "http://localhost:5063/openapi/v1.json",
     },
   },
-  mojicaApiZod: {
-    input: './openapi.json',
+  petstoreZod: {
     output: {
-      mode: 'tags-split',
-      target: './src/api/generated/zod',
-      client: 'zod',
+      mode: "tags-split",
+      client: "zod",
+      target: "src/gen/endpoints",
+      fileExtension: ".zod.ts",
+      formatter: "prettier",
+    },
+    input: {
+      target: "http://localhost:5063/openapi/v1.json",
     },
   },
-})
+});
