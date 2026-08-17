@@ -8,8 +8,21 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   plugins: [react()],
   test: {
-    // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
     projects: [
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          include: ['src/**/*.test.{ts,tsx}'],
+          setupFiles: ['./vitest.setup.ts'],
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright({}),
+            instances: [{ browser: 'chromium' }],
+          },
+        },
+      },
       {
         extends: true,
         plugins: [
@@ -20,6 +33,7 @@ export default defineConfig({
         ],
         test: {
           name: 'storybook',
+          // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
           browser: {
             enabled: true,
             headless: true,
