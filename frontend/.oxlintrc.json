@@ -5,5 +5,11 @@
     "react/rules-of-hooks": "error",
     "react/only-export-components": ["warn", { "allowConstantExport": true }]
   },
-  "ignorePatterns": ["src/api/generated/**", ".stryker-tmp/**", "reports/**"]
+  "ignorePatterns": [
+    "src/api/endpoints/**",
+    "src/models/**",
+    "src/gen/**",
+    ".stryker-tmp/**",
+    "reports/**"
+  ]
 }

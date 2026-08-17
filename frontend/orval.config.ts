@@ -19,7 +19,7 @@ export default defineConfig({
       },
     },
     input: {
-      target: "http://localhost:5063/openapi/v1.json",
+      target: "http://localhost:18080/swagger/v1/swagger.json",
     },
   },
   petstoreZod: {
@@ -31,7 +31,7 @@ export default defineConfig({
       formatter: "prettier",
     },
     input: {
-      target: "http://localhost:5063/openapi/v1.json",
+      target: "http://localhost:18080/swagger/v1/swagger.json",
     },
   },
 });
