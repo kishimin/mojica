@@ -5,7 +5,6 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import prettier from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
 import jsdocPlugin from "eslint-plugin-jsdoc";
-import eslintPluginJsxA11y from "eslint-plugin-jsx-a11y";
 import oxlint from "eslint-plugin-oxlint";
 import react from "eslint-plugin-react";
 import testingLibrary from "eslint-plugin-testing-library";
@@ -49,7 +48,6 @@ export default defineConfig([
       react.configs.flat.recommended,
       importPlugin.flatConfigs.recommended,
       importPlugin.flatConfigs.typescript,
-      eslintPluginJsxA11y.flatConfigs.recommended,
     ],
     settings: {
       react: {
