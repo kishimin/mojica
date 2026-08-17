@@ -7,6 +7,7 @@ import importPlugin from "eslint-plugin-import";
 import jsdocPlugin from "eslint-plugin-jsdoc";
 import oxlint from "eslint-plugin-oxlint";
 import react from "eslint-plugin-react";
+import storybook from "eslint-plugin-storybook";
 import testingLibrary from "eslint-plugin-testing-library";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
@@ -14,7 +15,7 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig([
   // Global ignores
-  globalIgnores(["dist", "coverage/**"]),
+  globalIgnores(["dist", "coverage/**", "storybook-static/**"]),
 
   // Unused imports (applies broadly)
   {
@@ -113,6 +114,9 @@ export default defineConfig([
     languageOptions: { globals: { ...vitest.environments.env.globals } },
   },
 
+  // Storybook story files
+  ...storybook.configs["flat/recommended"],
+
   // JSDoc rules
   jsdocPlugin.configs["flat/recommended"],
   {
@@ -150,7 +154,7 @@ export default defineConfig([
 
   // Disable type-checked rules for config/tooling files
   {
-    files: ["*.config.{js,mjs,ts,mts}", "vitest.setup.ts"],
+    files: ["*.config.{js,mjs,ts,mts}", ".storybook/main.ts", "vitest.setup.ts"],
     extends: [tseslint.configs.disableTypeChecked],
     languageOptions: {
       globals: globals.node,
