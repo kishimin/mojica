@@ -1,13 +1,13 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll } from "vitest";
-import { server } from "../api/mocks/server";
+import { worker } from "../api/mocks/browser";
 
-beforeAll(() => server.listen());
+beforeAll(() => worker.start({ onUnhandledRequest: "bypass" }));
 
 afterEach(() => {
-  server.resetHandlers();
+  worker.resetHandlers();
   cleanup();
 });
 
-afterAll(() => server.close());
+afterAll(() => worker.stop());
