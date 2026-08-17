@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom/vitest'
 import { beforeAll, afterAll, afterEach } from 'vitest'
 import { worker } from './src/mocks/browser'
 
