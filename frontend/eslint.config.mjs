@@ -15,7 +15,15 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig([
   // Global ignores
-  globalIgnores(["dist", "coverage/**", "storybook-static/**"]),
+  globalIgnores([
+    "dist",
+    "coverage/**",
+    "storybook-static/**",
+    "public/mockServiceWorker.js",
+    "src/api/generated/**",
+    ".stryker-tmp/**",
+    "reports/**",
+  ]),
 
   // Unused imports (applies broadly)
   {
@@ -88,11 +96,11 @@ export default defineConfig([
   // Test files: Testing Library + Vitest
   {
     files: [
-      "**/*.{small,medium,large}.test.{ts,tsx}",
-      "**/*.test.{ts,tsx}",
-      "**/*.spec.{ts,tsx}",
-      "**/__tests__/**/*.{ts,tsx}",
-      "**/tests/**/**/*.{ts,tsx}",
+      "src/**/*.{small,medium,large}.test.{ts,tsx}",
+      "src/**/*.test.{ts,tsx}",
+      "src/**/*.spec.{ts,tsx}",
+      "src/**/__tests__/**/*.{ts,tsx}",
+      "src/**/tests/**/**/*.{ts,tsx}",
     ],
     ...testingLibrary.configs["flat/react"],
     plugins: {
