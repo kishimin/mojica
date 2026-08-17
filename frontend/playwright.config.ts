@@ -11,7 +11,11 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'Google Chrome', use: { ...devices['Desktop Chrome'], channel: 'chrome' } },
+    { name: 'Microsoft Edge', use: { ...devices['Desktop Edge'], channel: 'msedge' } },
+    { name: 'Safari', use: { ...devices['Desktop Safari'] } },
+    { name: 'Android (Chrome)', use: { ...devices['Pixel 7'] } },
+    { name: 'iPhone (Safari)', use: { ...devices['iPhone 15'] } },
   ],
   webServer: {
     command: 'bun run preview',
