@@ -1,6 +1,8 @@
 import type { Preview } from '@storybook/react-vite'
 
 const preview: Preview = {
+  // Generates a docs page for every story unless a story opts out with `tags: ['!autodocs']`.
+  tags: ['autodocs'],
   parameters: {
     controls: {
       matchers: {
