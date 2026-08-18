@@ -1,0 +1,133 @@
+name: API CI (Push)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/**
+      - .github/workflows/ci-push.yml
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: api-ci-push-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  small-tests:
+    name: Test API (Small)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore Mojica.Backend.sln
+
+      - name: Build API
+        run: dotnet build Mojica.Backend.sln --configuration Release --no-restore
+
+      - name: Run Small API tests
+        run: >-
+          dotnet test Mojica.Backend.sln
+          --configuration Release
+          --no-build
+          --filter "FullyQualifiedName~SmallTests"
+          --logger "trx;LogFileName=Small-test-results.trx"
+          --results-directory TestResults/Small
+
+      - name: Publish test results
+        if: ${{ !cancelled() }}
+        uses: EnricoMi/publish-unit-test-result-action@v2.23.0
+        with:
+          files: backend/TestResults/Small/**/*.trx
+
+      - name: Upload test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-small-test-reports
+          path: backend/TestResults/Small
+          if-no-files-found: error
+          retention-days: 14
+
+  coverage:
+    name: API coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore Mojica.Backend.sln
+
+      - name: Build API
+        run: dotnet build Mojica.Backend.sln --configuration Release --no-restore
+
+      - name: Collect API coverage
+        run: >-
+          dotnet test Mojica.Backend.sln
+          --configuration Release
+          --no-build
+          --filter "FullyQualifiedName~SmallTests"
+          --collect "XPlat Code Coverage"
+          --results-directory TestResults
+
+      - name: Create coverage summary
+        if: ${{ !cancelled() && hashFiles('backend/TestResults/**/coverage.cobertura.xml') != '' }}
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: backend/TestResults/**/coverage.cobertura.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          output: both
+          thresholds: 80 90
+
+      - name: Add coverage for every file
+        if: ${{ !cancelled() && hashFiles('backend/TestResults/**/coverage.cobertura.xml') != '' }}
+        shell: pwsh
+        run: >-
+          ./scripts/append-file-coverage.ps1
+          -CoverageFiles (Get-ChildItem TestResults -Recurse -Filter coverage.cobertura.xml).FullName
+          -PackageSummaryFile ../code-coverage-results.md
+          -SummaryFile ../code-coverage-comment.md
+
+      - name: Upload test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-coverage-reports
+          path: backend/TestResults
+          if-no-files-found: error
+          retention-days: 14
