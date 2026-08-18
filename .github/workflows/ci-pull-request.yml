@@ -4,10 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - backend/**
-      - frontend/**
-      - .github/workflows/ci-pull-request.yml
 
 permissions:
   checks: write
