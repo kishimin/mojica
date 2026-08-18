@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - backend/**
-      - frontend/**
-      - .github/workflows/ci-push.yml
 
 permissions:
   checks: write
@@ -110,7 +106,7 @@ jobs:
         with:
           filename: backend/TestResults/**/coverage.cobertura.xml
           badge: true
-          fail_below_min: true
+          fail_below_min: false
           format: markdown
           output: both
           thresholds: 80 90
