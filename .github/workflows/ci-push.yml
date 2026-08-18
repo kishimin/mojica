@@ -15,7 +15,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: api-ci-push-${{ github.ref }}
+  group: ci-push-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

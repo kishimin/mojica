@@ -1,4 +1,4 @@
-name: API CI (Pull Request)
+name: CI (Pull Request)
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: api-ci-pull-request-${{ github.ref }}
+  group: ci-pull-request-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
