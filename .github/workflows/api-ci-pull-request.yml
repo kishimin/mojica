@@ -1,0 +1,77 @@
+name: API CI (Pull Request)
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - backend/**
+      - .github/workflows/api-ci-pull-request.yml
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: api-ci-pull-request-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sized-tests:
+    name: Test API (${{ matrix.size }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - size: Small
+            filter: FullyQualifiedName~SmallTests
+          - size: Medium
+            filter: FullyQualifiedName~MediumTests
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore Mojica.Backend.sln
+
+      - name: Build API
+        run: dotnet build Mojica.Backend.sln --configuration Release --no-restore
+
+      - name: Run ${{ matrix.size }} API tests
+        run: >-
+          dotnet test Mojica.Backend.sln
+          --configuration Release
+          --no-build
+          --filter "${{ matrix.filter }}"
+          --logger "trx;LogFileName=${{ matrix.size }}-test-results.trx"
+          --results-directory TestResults/${{ matrix.size }}
+
+      - name: Publish test results
+        if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: EnricoMi/publish-unit-test-result-action@v2.23.0
+        with:
+          files: backend/TestResults/${{ matrix.size }}/**/*.trx
+
+      - name: Upload test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: api-${{ matrix.size }}-test-reports
+          path: backend/TestResults/${{ matrix.size }}
+          if-no-files-found: error
+          retention-days: 14
