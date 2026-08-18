@@ -1,4 +1,4 @@
-name: API CI (Push)
+name: CI (Push)
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - backend/**
+      - frontend/**
       - .github/workflows/ci-push.yml
 
 permissions:
@@ -14,7 +15,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: api-ci-push-${{ github.ref }}
+  group: ci-push-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -129,5 +130,121 @@ jobs:
         with:
           name: api-coverage-reports
           path: backend/TestResults
+          if-no-files-found: error
+          retention-days: 14
+
+  frontend-small-tests:
+    name: Frontend Test (Small)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: node_modules_cache
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('frontend/bun.lock') }}
+
+      - name: Install dependencies
+        if: steps.node_modules_cache.outputs.cache-hit != 'true'
+        run: bun install --frozen-lockfile
+
+      - name: Cache Playwright's Chromium browser
+        uses: actions/cache@v3
+        id: playwright_cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('frontend/bun.lock') }}
+
+      - name: Install Playwright's Chromium browser
+        if: steps.playwright_cache.outputs.cache-hit != 'true'
+        run: bunx playwright install chromium
+
+      - name: Vitest Small tests
+        run: bun run test:small
+
+      - name: Report Vitest Result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+
+            const TEST_RESULT_PATH = "frontend/test-result.json";
+
+            if (!fs.existsSync(TEST_RESULT_PATH)) {
+              console.log(`Test result file not found at ${TEST_RESULT_PATH}.`);
+              process.exit(1);
+            }
+
+            const result = JSON.parse(fs.readFileSync(TEST_RESULT_PATH, "utf8"));
+
+            if (result.numTotalTests === 0) {
+              console.log("No test case.");
+              process.exit(1);
+            }
+
+            const COVERAGE_SUMMARY_PATH = "frontend/coverage/coverage-summary.json";
+
+            let coverageSection = "";
+            if (fs.existsSync(COVERAGE_SUMMARY_PATH)) {
+              const { total } = JSON.parse(fs.readFileSync(COVERAGE_SUMMARY_PATH, "utf8"));
+              coverageSection = `
+            ## Coverage\n
+            - Lines: ${total.lines.pct}% (${total.lines.covered}/${total.lines.total})
+            - Statements: ${total.statements.pct}% (${total.statements.covered}/${total.statements.total})
+            - Functions: ${total.functions.pct}% (${total.functions.covered}/${total.functions.total})
+            - Branches: ${total.branches.pct}% (${total.branches.covered}/${total.branches.total})
+            \n`;
+            } else {
+              console.log(`Coverage summary not found at ${COVERAGE_SUMMARY_PATH}.`);
+            }
+
+            const body = `
+            # Test Results\n
+            **${result.success ? "All tests passed" : "Some tests failed"}**\n
+            \n
+            ## Test Suites\n
+            - Total: ${result.numTotalTestSuites}
+              - Passed: ${result.numPassedTestSuites}
+              - Failed: ${result.numFailedTestSuites}
+              - Pending: ${result.numPendingTestSuites}
+            \n
+            ## Test Cases\n
+            - Total: ${result.numTotalTests}
+              - Passed: ${result.numPassedTests}
+              - Failed: ${result.numFailedTests}
+              - Pending: ${result.numPendingTests}
+            \n
+            ${coverageSection}
+            `;
+
+            await core.summary.addRaw(body).write();
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-small-test-results
+          path: frontend/test-result.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-small-coverage-report
+          path: frontend/coverage
           if-no-files-found: error
           retention-days: 14

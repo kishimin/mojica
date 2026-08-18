@@ -1,0 +1,82 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --noEmit",
+    "lint": "oxlint && eslint .",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:small": "vitest run --coverage --passWithNoTests small.test",
+    "test:medium": "vitest run --coverage --passWithNoTests medium.test",
+    "test:large": "vitest run --coverage --passWithNoTests large.test",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "e2e": "playwright test",
+    "mutation-test": "stryker run",
+    "generate-api": "orval"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.101.4",
+    "axios": "^1.19.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "latest",
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.7.2",
+    "@eslint/js": "9.39.5",
+    "@playwright/test": "^1.62.1",
+    "@storybook/addon-a11y": "^10.5.8",
+    "@storybook/addon-docs": "^10.5.8",
+    "@storybook/addon-mcp": "latest",
+    "@storybook/addon-vitest": "^10.5.8",
+    "@storybook/react-vite": "^10.5.8",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.4",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "@vitest/browser-playwright": "4.1.10",
+    "@vitest/coverage-v8": "4.1.10",
+    "@vitest/eslint-plugin": "^1.6.27",
+    "eslint": "9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsdoc": "^64.2.0",
+    "eslint-plugin-oxlint": "^1.78.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-storybook": "^10.5.8",
+    "eslint-plugin-testing-library": "^7.16.2",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "globals": "^17.11.0",
+    "msw": "^2.15.0",
+    "orval": "^8.24.0",
+    "oxlint": "^1.75.0",
+    "playwright": "latest",
+    "storybook": "^10.5.8",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.67.0",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  },
+  "trustedDependencies": [
+    "esbuild",
+    "msw",
+    "unrs-resolver"
+  ],
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
+}
