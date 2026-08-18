@@ -1,4 +1,4 @@
-name: API CI (Push)
+name: CI (Push)
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - backend/**
+      - frontend/**
       - .github/workflows/ci-push.yml
 
 permissions:
@@ -131,3 +132,43 @@ jobs:
           path: backend/TestResults
           if-no-files-found: error
           retention-days: 14
+
+  frontend-small-tests:
+    name: Frontend Test (Small)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: node_modules_cache
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('frontend/bun.lock') }}
+
+      - name: Install dependencies
+        if: steps.node_modules_cache.outputs.cache-hit != 'true'
+        run: bun install --frozen-lockfile
+
+      - name: Cache Playwright's Chromium browser
+        uses: actions/cache@v3
+        id: playwright_cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('frontend/bun.lock') }}
+
+      - name: Install Playwright's Chromium browser #Vitestのブラウザモードが起動するChromiumバイナリをCIランナーへ用意する
+        if: steps.playwright_cache.outputs.cache-hit != 'true'
+        run: bunx playwright install chromium
+
+      - name: Vitest Small tests #ファイル名(.small.test.*)でSmallサイズだけを選択する
+        run: bunx vitest run small.test
