@@ -1,21 +1,12 @@
-name: API CI
+name: API CI (Pull Request)
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 18 * * *'
-  push:
-    branches:
-      - main
-    paths:
-      - backend/**
-      - .github/workflows/api-ci.yml
   pull_request:
     branches:
       - main
     paths:
       - backend/**
-      - .github/workflows/api-ci.yml
+      - .github/workflows/ci-pull-request.yml
 
 permissions:
   checks: write
@@ -23,7 +14,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: api-ci-${{ github.ref }}
+  group: api-ci-pull-request-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -34,7 +25,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON((github.event_name == 'pull_request' || github.event_name == 'push') && '[{"size":"Small","filter":"FullyQualifiedName~SmallTests"},{"size":"Medium","filter":"FullyQualifiedName~MediumTests"}]' || '[{"size":"Large","filter":"FullyQualifiedName~LargeTests"}]') }}
+        include:
+          - size: Small
+            filter: FullyQualifiedName~SmallTests
+          - size: Medium
+            filter: FullyQualifiedName~MediumTests
     defaults:
       run:
         working-directory: backend
@@ -67,7 +62,7 @@ jobs:
           --results-directory TestResults/${{ matrix.size }}
 
       - name: Publish test results
-        if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+        if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository }}
         uses: EnricoMi/publish-unit-test-result-action@v2.23.0
         with:
           files: backend/TestResults/${{ matrix.size }}/**/*.trx
@@ -83,7 +78,6 @@ jobs:
 
   coverage:
     name: API coverage
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -107,12 +101,6 @@ jobs:
 
       - name: Build API
         run: dotnet build Mojica.Backend.sln --configuration Release --no-restore
-
-      - name: Verify API CI test scheduling
-        shell: pwsh
-        run: |
-          ./scripts/test-api-ci-timing.ps1
-          ./scripts/verify-api-ci-coverage-selection.ps1
 
       - name: Collect API coverage
         run: >-
@@ -144,7 +132,7 @@ jobs:
           -SummaryFile ../code-coverage-comment.md
 
       - name: Publish coverage summary
-        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && hashFiles('backend/TestResults/**/coverage.cobertura.xml') != '' }}
+        if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository && hashFiles('backend/TestResults/**/coverage.cobertura.xml') != '' }}
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: api-coverage
