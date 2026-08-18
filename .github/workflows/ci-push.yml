@@ -171,7 +171,7 @@ jobs:
         run: bunx playwright install chromium
 
       - name: Vitest Small tests
-        run: bunx vitest run --coverage small.test
+        run: bun run test:small
 
       - name: Report Vitest Result
         if: always()
