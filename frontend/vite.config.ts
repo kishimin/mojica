@@ -4,7 +4,7 @@ import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite";
-import { configDefaults } from "vitest/config";
+import { configDefaults, coverageConfigDefaults } from "vitest/config";
 const dirname =
   typeof __dirname !== "undefined"
     ? __dirname
@@ -18,6 +18,20 @@ export default defineConfig({
       ? ["dot", "github-actions", "json"]
       : ["dot"],
     outputFile: "test-result.json",
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "lcov", "json-summary"],
+      reportsDirectory: "./coverage",
+      exclude: [
+        ...coverageConfigDefaults.exclude,
+        "src/api/endpoints/**",
+        "src/gen/**",
+        "src/models/**",
+        "**/*.stories.{ts,tsx}",
+        ".storybook/**",
+        "src/tests/**",
+      ],
+    },
     projects: [
       {
         extends: true,
