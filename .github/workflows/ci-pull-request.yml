@@ -149,8 +149,16 @@ jobs:
           retention-days: 14
 
   frontend-tests:
-    name: Frontend Test (Small+Medium)
+    name: Frontend Test (${{ matrix.size }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - size: Small
+            filter: small.test
+          - size: Medium
+            filter: medium.test
     defaults:
       run:
         working-directory: frontend
@@ -185,8 +193,8 @@ jobs:
         if: steps.playwright_cache.outputs.cache-hit != 'true'
         run: bunx playwright install chromium
 
-      - name: Vitest Small+Medium tests
-        run: bunx vitest run --coverage small.test medium.test
+      - name: Vitest ${{ matrix.size }} tests
+        run: bunx vitest run --coverage ${{ matrix.filter }}
 
       - name: Report Vitest Result
         if: always()
@@ -260,7 +268,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: frontend-test-results
+          name: frontend-${{ matrix.size }}-test-results
           path: frontend/test-result.json
           if-no-files-found: error
           retention-days: 14
@@ -269,7 +277,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: frontend-coverage-report
+          name: frontend-${{ matrix.size }}-coverage-report
           path: frontend/coverage
           if-no-files-found: error
           retention-days: 14
