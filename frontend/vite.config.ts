@@ -20,8 +20,17 @@ export default defineConfig({
     outputFile: "test-result.json",
     coverage: {
       provider: "v8",
+      include: ["src/**/*.{ts,tsx}"],
       reporter: ["text", "html", "lcov", "json-summary"],
       reportsDirectory: "./coverage",
+      thresholds: process.env.COVERAGE_THRESHOLD
+        ? {
+            lines: Number(process.env.COVERAGE_THRESHOLD),
+            statements: Number(process.env.COVERAGE_THRESHOLD),
+            functions: Number(process.env.COVERAGE_THRESHOLD),
+            branches: Number(process.env.COVERAGE_THRESHOLD),
+          }
+        : undefined,
       exclude: [
         ...coverageConfigDefaults.exclude,
         "src/api/endpoints/**",
