@@ -166,9 +166,27 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('frontend/bun.lock') }}
 
-      - name: Install Playwright's Chromium browser #Vitestのブラウザモードが起動するChromiumバイナリをCIランナーへ用意する
+      - name: Install Playwright's Chromium browser
         if: steps.playwright_cache.outputs.cache-hit != 'true'
         run: bunx playwright install chromium
 
-      - name: Vitest Small tests #ファイル名(.small.test.*)でSmallサイズだけを選択する
-        run: bunx vitest run small.test
+      - name: Vitest Small tests
+        run: bunx vitest run --coverage small.test
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-small-test-results
+          path: frontend/test-result.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-small-coverage-report
+          path: frontend/coverage
+          if-no-files-found: error
+          retention-days: 14
