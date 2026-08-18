@@ -1,12 +1,12 @@
-name: API CI (Pull Request)
+name: API CI (Push)
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths:
       - backend/**
-      - .github/workflows/api-ci-pull-request.yml
+      - .github/workflows/ci-push.yml
 
 permissions:
   checks: write
@@ -14,22 +14,14 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: api-ci-pull-request-${{ github.ref }}
+  group: api-ci-push-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  sized-tests:
-    name: Test API (${{ matrix.size }})
+  small-tests:
+    name: Test API (Small)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - size: Small
-            filter: FullyQualifiedName~SmallTests
-          - size: Medium
-            filter: FullyQualifiedName~MediumTests
     defaults:
       run:
         working-directory: backend
@@ -52,27 +44,27 @@ jobs:
       - name: Build API
         run: dotnet build Mojica.Backend.sln --configuration Release --no-restore
 
-      - name: Run ${{ matrix.size }} API tests
+      - name: Run Small API tests
         run: >-
           dotnet test Mojica.Backend.sln
           --configuration Release
           --no-build
-          --filter "${{ matrix.filter }}"
-          --logger "trx;LogFileName=${{ matrix.size }}-test-results.trx"
-          --results-directory TestResults/${{ matrix.size }}
+          --filter "FullyQualifiedName~SmallTests"
+          --logger "trx;LogFileName=Small-test-results.trx"
+          --results-directory TestResults/Small
 
       - name: Publish test results
-        if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository }}
+        if: ${{ !cancelled() }}
         uses: EnricoMi/publish-unit-test-result-action@v2.23.0
         with:
-          files: backend/TestResults/${{ matrix.size }}/**/*.trx
+          files: backend/TestResults/Small/**/*.trx
 
       - name: Upload test reports
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: api-${{ matrix.size }}-test-reports
-          path: backend/TestResults/${{ matrix.size }}
+          name: api-small-test-reports
+          path: backend/TestResults/Small
           if-no-files-found: error
           retention-days: 14
 
@@ -107,7 +99,7 @@ jobs:
           dotnet test Mojica.Backend.sln
           --configuration Release
           --no-build
-          --filter "FullyQualifiedName~SmallTests|FullyQualifiedName~MediumTests"
+          --filter "FullyQualifiedName~SmallTests"
           --collect "XPlat Code Coverage"
           --results-directory TestResults
 
@@ -130,13 +122,6 @@ jobs:
           -CoverageFiles (Get-ChildItem TestResults -Recurse -Filter coverage.cobertura.xml).FullName
           -PackageSummaryFile ../code-coverage-results.md
           -SummaryFile ../code-coverage-comment.md
-
-      - name: Publish coverage summary
-        if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository && hashFiles('backend/TestResults/**/coverage.cobertura.xml') != '' }}
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: api-coverage
-          path: code-coverage-comment.md
 
       - name: Upload test reports
         if: ${{ !cancelled() }}
