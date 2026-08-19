@@ -114,7 +114,7 @@ export default defineConfig([
         {
           type: "shared",
           pattern:
-            "src/{api,components,hooks,images,lib,models,providers,schemas,theme,types,utils,tests}/**",
+            "src/{api,assets,components,hooks,lib,models,providers,schemas,styles,types,utils,tests}/**",
         },
       ],
     },
