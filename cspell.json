@@ -9,10 +9,12 @@
     "NOLOGO",
     "OPTOUT",
     "overengineering",
+    "oxlint",
     "RENDERTEXT",
     "RRGGBB",
     "Sakura",
     "Swashbuckle",
+    "unrs",
     "unvalidated",
     "weatherforecast",
     "xunit"
