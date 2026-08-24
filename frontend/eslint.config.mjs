@@ -77,6 +77,13 @@ export default defineConfig([
     },
     rules: {
       "no-console": "warn",
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "FunctionDeclaration, FunctionExpression",
+          message: "Use an arrow function instead.",
+        },
+      ],
       camelcase: ["warn", { properties: "never" }],
       "@typescript-eslint/switch-exhaustiveness-check": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
@@ -180,6 +187,10 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
       "vitest/max-nested-describe": ["error", { max: 3 }],
+      "vitest/consistent-test-it": [
+        "error",
+        { fn: "test", withinDescribe: "test" },
+      ],
       "vitest/no-focused-tests": "error",
       "vitest/no-disabled-tests": "warn",
     },

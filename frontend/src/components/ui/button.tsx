@@ -44,7 +44,7 @@ const buttonVariants = cva(
 /**
  * A styled button, or (with `asChild`) the styling applied to a single child element.
  */
-function Button({
+const Button = ({
   className,
   variant = "default",
   size = "default",
@@ -53,7 +53,7 @@ function Button({
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
-  }) {
+}) => {
   const Comp = asChild ? Slot.Root : "button"
 
   return (
