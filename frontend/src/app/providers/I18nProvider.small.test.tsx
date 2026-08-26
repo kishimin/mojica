@@ -1,6 +1,19 @@
-import { describe, test } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, test } from "vitest";
+
+import { I18nProvider, useI18n } from "./I18nProvider";
+
+const LocaleConsumer = () => {
+  const { locale } = useI18n();
+
+  return <output>{locale}</output>;
+};
 
 describe("I18nProvider locale contract", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   // ID: FOUNDATION-I18N-S-001
   // Source: docs/v1/ui/component-design.md §1 and ui.md §13
   // Given: no locale value has been persisted
@@ -8,7 +21,15 @@ describe("I18nProvider locale contract", () => {
   // Then: Japanese is exposed as the default UI locale
   // Blocked by: I18nProvider implementation
   // Priority: P0
-  test.todo("uses Japanese when no locale has been persisted");
+  test("uses Japanese when no locale has been persisted", () => {
+    render(
+      <I18nProvider>
+        <LocaleConsumer />
+      </I18nProvider>,
+    );
+
+    expect(screen.getByText("ja")).toBeInTheDocument();
+  });
 
   // ID: FOUNDATION-I18N-S-002
   // Source: docs/v1/ui/component-design.md §1 and frontend-architecture.md §Routing
