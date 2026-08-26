@@ -1,4 +1,5 @@
-import { describe, test } from "vitest";
+import { describe, expect, test } from "vitest";
+import { queryClient } from "./react-query";
 
 describe("TanStack Query default contract", () => {
   // ID: FOUNDATION-QUERY-S-001
@@ -6,9 +7,23 @@ describe("TanStack Query default contract", () => {
   // Given: a query using the shared TanStack Query configuration has failed
   // When: TanStack Query applies its default failure policy
   // Then: it does not retry the request automatically
-  // Blocked by: QueryClient wiring that consumes the shared defaults
   // Priority: P1
-  test.todo("does not retry failed queries automatically");
+  test("does not retry failed queries automatically", async () => {
+    let attempts = 0;
+
+    await expect(
+      queryClient.fetchQuery({
+        queryKey: ["failed-query"],
+        queryFn: () => {
+          attempts += 1;
+          throw new Error("query failed");
+        },
+      }),
+    ).rejects.toThrow("query failed");
+
+    expect(attempts).toBe(1);
+    queryClient.clear();
+  });
 
   // ID: FOUNDATION-QUERY-S-002
   // Source: docs/v1/ui/implementation-plan.md §1 feat/mojica-ui-foundation
