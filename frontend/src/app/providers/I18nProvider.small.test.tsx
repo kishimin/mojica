@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test } from "vitest";
 
 import { I18nProvider, useI18n } from "./I18nProvider";
@@ -7,6 +8,12 @@ const LocaleConsumer = () => {
   const { locale } = useI18n();
 
   return <output>{locale}</output>;
+};
+
+const LocaleControlConsumer = () => {
+  const { locale, setLocale } = useI18n();
+
+  return <button onClick={() => setLocale("en")}>{locale}</button>;
 };
 
 describe("I18nProvider locale contract", () => {
@@ -76,5 +83,17 @@ describe("I18nProvider locale contract", () => {
   // Then: English is exposed and persisted under the locale key
   // Blocked by: I18nProvider implementation
   // Priority: P0
-  test.todo("updates and persists a supported locale selected by a consumer");
+  test("updates and persists a supported locale selected by a consumer", async () => {
+    const user = userEvent.setup();
+    render(
+      <I18nProvider>
+        <LocaleControlConsumer />
+      </I18nProvider>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "ja" }));
+
+    expect(screen.getByRole("button", { name: "en" })).toBeInTheDocument();
+    expect(localStorage.getItem("locale")).toBe("en");
+  });
 });
