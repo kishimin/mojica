@@ -76,6 +76,7 @@
     "orval": "^8.24.0",
     "oxlint": "^1.75.0",
     "playwright": "latest",
+    "shadcn": "^4.19.0",
     "storybook": "^10.5.8",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.67.0",
