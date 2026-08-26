@@ -1,4 +1,6 @@
-# mojica MVP UI Specification
+This document integrates the complete latest specification. The header displays the logo image and the “mojica” wordmark, and the footer displays `© kishimin 2026`.
+
+# mojica MVP UI Design Specification
 
 ## 1. Overview
 
@@ -14,11 +16,12 @@ The UI is responsive and supports desktop, tablet, and smartphone devices.
 
 # 2. Screen List
 
-The MVP provides only the image generation screen.
+The MVP provides an image generation screen and a 404 Not Found screen.
 
 | Screen                  | Description                                                        |
 | ----------------------- | ------------------------------------------------------------------ |
 | Image Generation Screen | Generates an image based on specified text, colors, and image type |
+| 404 Not Found Screen     | Appears when the user accesses a path that does not exist          |
 
 ---
 
@@ -26,9 +29,9 @@ The MVP provides only the image generation screen.
 
 A header is displayed at the top of the screen.
 
-The mojica logo image is placed on the left side of the header.
+The mojica logo image and “mojica” wordmark text are placed next to one another on the left side of the header (see §15, “Accessibility”).
 
-The language switcher is placed on the right side of the header.
+The language switcher is placed on the right side of the header. It is a dropdown that displays the selected language name and an expand icon.
 
 Supported languages:
 
@@ -51,7 +54,35 @@ Accept-Language: en
 
 ---
 
-# 4. Input Fields
+# 4. Heading and Description
+
+Place the service heading and description below the header and above the input form.
+
+Heading:
+
+```text
+文字で、文字を描く。
+```
+
+Description:
+
+```text
+好きな文字と2つの色を組み合わせて、文字アート画像を生成します。
+```
+
+English localized copy:
+
+```text
+Draw letters with letters.
+```
+
+```text
+Combine your favorite characters and two colors to generate text art.
+```
+
+---
+
+# 5. Input Fields
 
 ## Text to Render
 
@@ -163,7 +194,7 @@ The value is sent to the mojica API in HEX format.
 
 ---
 
-# 5. Image Type
+# 6. Image Type
 
 The image type is selected using a select box.
 
@@ -179,7 +210,7 @@ The default value is `standard`.
 
 ---
 
-# 6. Generate Image Button
+# 7. Generate Image Button
 
 A large image generation button is placed in the center below the input form.
 
@@ -191,9 +222,11 @@ Generate Image
 
 When the button is pressed, `POST /images` is called.
 
+If the preceding generation attempt failed with an API error, use the Retryable variant defined in §12, “API Error Display.”
+
 ---
 
-# 7. Image Generation Flow
+# 8. Image Generation Flow
 
 The user generates an image through the following steps:
 
@@ -212,7 +245,7 @@ The MVP does not provide an image preview after generation.
 
 ---
 
-# 8. Generating State
+# 9. Generating State
 
 While a request is being sent to the image generation API, the Generate Image button is disabled.
 
@@ -228,7 +261,7 @@ The button is enabled again after the request completes or an error occurs.
 
 ---
 
-# 9. Download
+# 10. Download
 
 When image generation succeeds, the received PNG image is automatically downloaded.
 
@@ -243,7 +276,7 @@ The MVP does not provide:
 
 ---
 
-# 10. Validation
+# 11. Validation
 
 The frontend performs validation before sending a request to the API.
 
@@ -332,9 +365,9 @@ Even if frontend validation succeeds, API-side validation is treated as the fina
 
 ---
 
-# 11. API Error Display
+# 12. API Error Display
 
-Errors that are not associated with a specific field are displayed in a location where they can be clearly seen in the overall form.
+Errors that are not associated with a specific field are displayed at the top of the input-form card, above every input field.
 
 | Status | Display                        |
 | ------ | ------------------------------ |
@@ -348,9 +381,29 @@ The localized `message` returned by the API is displayed to the user.
 
 Internal error information must not be displayed.
 
+After an API error, change the generate button to the Retryable color variant to encourage another attempt. Its copy and behavior—calling `POST /images` again—remain the same as normal.
+
+## `Retry-After` for 429
+
+If the API response includes a `Retry-After` header containing the number of seconds before another attempt is allowed, disable the generate button for that duration and show a countdown updated once per second.
+
+```text
+{秒数}秒後に再試行できます
+```
+
+At zero, enable the button and restore the normal `画像を生成する` (Generate image) label with the Retryable variant. Do not change the banner's localized API `message`. The countdown uses a client-side timer and makes no additional API requests.
+
+If `Retry-After` is absent, do not disable the button; retry is available immediately.
+
+English localized example:
+
+```text
+You can try again in {seconds} seconds
+```
+
 ---
 
-# 12. Internationalization (i18n)
+# 13. Internationalization (i18n)
 
 The UI supports switching between Japanese and English.
 
@@ -381,7 +434,7 @@ The corresponding value is sent to the mojica API.
 
 ---
 
-# 13. Responsive Design
+# 14. Responsive Design
 
 The UI supports desktop, tablet, and smartphone devices.
 
@@ -397,7 +450,7 @@ The logo image and language switcher in the header must remain appropriately dis
 
 ---
 
-# 14. Accessibility
+# 15. Accessibility
 
 Each form input has an associated label.
 
@@ -415,11 +468,11 @@ While an image is being generated, the button label and state are changed to com
 
 When an input error occurs, the corresponding field and error message must be programmatically associated for accessibility.
 
-The logo image must have appropriate alternative text.
+The logo consists of its image and the “mojica” wordmark. Assign `alt=""` to the image to prevent duplicate announcement; the visible “mojica” text supplies the accessible name.
 
 ---
 
-# 15. Footer
+# 16. Footer
 
 A footer is displayed at the bottom of the screen.
 
@@ -431,7 +484,7 @@ The following text is displayed:
 
 ---
 
-# 16. Out of Scope for the MVP
+# 17. Out of Scope for the MVP
 
 The following features are not implemented in the MVP:
 
@@ -446,8 +499,98 @@ The following features are not implemented in the MVP:
 
 ---
 
-# 17. MVP UI Goal
+# 18. MVP UI Goal
 
 The UI enables users to generate and obtain a PNG text art image through the minimum required sequence of operations:
 
 "Enter text → Select colors → Select an image type → Generate the image"
+
+---
+
+# 19. 404 Not Found Screen
+
+Display this screen for a path that does not exist. It shares the same header and footer as the image generation screen.
+
+Heading:
+
+```text
+404
+```
+
+```text
+ページが見つかりません
+```
+
+Description:
+
+```text
+URLが正しいか確認するか、トップページへ戻ってください。
+```
+
+Button:
+
+```text
+トップページへ戻る
+```
+
+The button navigates to the image generation screen (`/`) without making a mojica API request.
+
+English localized examples:
+
+```text
+404
+```
+
+```text
+Page not found
+```
+
+```text
+Please check the URL or return to the homepage.
+```
+
+```text
+Back to Home
+```
+
+---
+
+# 20. Unexpected Error Screen
+
+This is the ErrorBoundary fallback displayed when an unexpected exception occurs during rendering.
+
+Unlike the 404 screen, it does not display the header or footer. Place ErrorBoundary at the application root outside `I18nProvider`, so it remains usable even if i18n itself causes the exception (see component-design.md). Its copy therefore does not depend on the `I18nProvider` React context; select it from a minimal embedded dictionary. Derive supported locales from the dictionary keys and resolve the locale in this order: the value stored in `localStorage`, the browser language, and the default locale `ja`.
+
+Heading:
+
+```text
+エラーが発生しました
+```
+
+Description:
+
+```text
+予期しない問題が発生しました。しばらくしてからページを再読み込みしてください。
+```
+
+Button:
+
+```text
+ページを再読み込み
+```
+
+The button performs a normal browser reload equivalent to `window.location.reload()`, not client-side routing. The root ErrorBoundary may be handling a corrupted provider-inclusive React tree, so navigation within the application cannot guarantee recovery from a clean initial state. The click handler does not call the mojica API directly; any communication after the reload follows the normal initial-render process.
+
+English localized examples:
+
+```text
+An error occurred
+```
+
+```text
+Something unexpected happened. Please reload the page and try again.
+```
+
+```text
+Reload page
+```

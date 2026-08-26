@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import App from './App'
 
 describe('App', () => {
-  it('increments the counter each time the button is clicked', async () => {
+  test('increments the counter each time the button is clicked', async () => {
     const user = userEvent.setup()
     render(<App />)
 
