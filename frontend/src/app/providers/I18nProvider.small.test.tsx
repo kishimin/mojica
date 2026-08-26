@@ -38,7 +38,17 @@ describe("I18nProvider locale contract", () => {
   // Then: English is exposed to consumers
   // Blocked by: I18nProvider implementation
   // Priority: P0
-  test.todo("restores persisted English as the active locale");
+  test("restores persisted English as the active locale", () => {
+    localStorage.setItem("locale", "en");
+
+    render(
+      <I18nProvider>
+        <LocaleConsumer />
+      </I18nProvider>,
+    );
+
+    expect(screen.getByText("en")).toBeInTheDocument();
+  });
 
   // ID: FOUNDATION-I18N-S-003
   // Source: docs/v1/ui/component-design.md §1 and frontend-architecture.md §Routing
