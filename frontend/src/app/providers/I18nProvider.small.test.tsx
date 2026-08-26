@@ -3,21 +3,21 @@ import { describe, test } from "vitest";
 describe("I18nProvider locale contract", () => {
   // ID: FOUNDATION-I18N-S-001
   // Source: docs/v1/ui/component-design.md §1 and ui.md §13
-  // Given: no supported locale has been persisted
+  // Given: no locale value has been persisted
   // When: the internationalization provider initializes
   // Then: Japanese is exposed as the default UI locale
   // Blocked by: I18nProvider implementation
   // Priority: P0
-  test.todo("uses Japanese when no supported locale has been persisted");
+  test.todo("uses Japanese when no locale has been persisted");
 
   // ID: FOUNDATION-I18N-S-002
   // Source: docs/v1/ui/component-design.md §1 and frontend-architecture.md §Routing
-  // Given: a supported locale is stored under the locale key
+  // Given: English is stored under the locale key
   // When: the internationalization provider initializes
-  // Then: the stored locale is exposed to consumers
+  // Then: English is exposed to consumers
   // Blocked by: I18nProvider implementation
   // Priority: P0
-  test.todo("restores a supported persisted locale");
+  test.todo("restores persisted English as the active locale");
 
   // ID: FOUNDATION-I18N-S-003
   // Source: docs/v1/ui/component-design.md §1 and frontend-architecture.md §Routing
