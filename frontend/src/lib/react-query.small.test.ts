@@ -1,3 +1,4 @@
+import { focusManager, QueryObserver } from "@tanstack/react-query";
 import { describe, expect, test } from "vitest";
 import { queryClient } from "./react-query";
 
@@ -30,7 +31,36 @@ describe("TanStack Query default contract", () => {
   // Given: a successful query is cached by the shared QueryClient
   // When: the browser window regains focus
   // Then: it does not refetch solely because focus returned
-  // Blocked by: QueryClient wiring that consumes the shared defaults
   // Priority: P1
-  test.todo("does not refetch cached queries when window focus returns");
+  test("does not refetch cached queries when window focus returns", async () => {
+    let requests = 0;
+    let stopObserving = () => {};
+    const observer = new QueryObserver(queryClient, {
+      queryKey: ["cached-query"],
+      queryFn: () => {
+        requests += 1;
+        return Promise.resolve("cached value");
+      },
+    });
+
+    focusManager.setFocused(false);
+    queryClient.mount();
+
+    try {
+      await new Promise<void>((resolve) => {
+        stopObserving = observer.subscribe((result) => {
+          if (result.isSuccess) resolve();
+        });
+      });
+
+      focusManager.setFocused(true);
+
+      expect(requests).toBe(1);
+    } finally {
+      stopObserving();
+      queryClient.unmount();
+      queryClient.clear();
+      focusManager.setFocused(undefined);
+    }
+  });
 });
