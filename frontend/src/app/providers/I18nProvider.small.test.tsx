@@ -57,7 +57,17 @@ describe("I18nProvider locale contract", () => {
   // Then: Japanese is exposed instead of the unsupported value
   // Error: unsupported persisted locale
   // Priority: P1
-  test.todo("falls back to Japanese for an unsupported persisted locale");
+  test("falls back to Japanese for an unsupported persisted locale", () => {
+    localStorage.setItem("locale", "fr");
+
+    render(
+      <I18nProvider>
+        <LocaleConsumer />
+      </I18nProvider>,
+    );
+
+    expect(screen.getByText("ja")).toBeInTheDocument();
+  });
 
   // ID: FOUNDATION-I18N-S-004
   // Source: docs/v1/ui/ui.md §13 Internationalization
