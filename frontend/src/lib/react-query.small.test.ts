@@ -1,6 +1,12 @@
 import { focusManager, QueryObserver } from "@tanstack/react-query";
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test } from "vitest";
 import { queryClient } from "./react-query";
+
+afterEach(() => {
+  queryClient.unmount();
+  queryClient.clear();
+  focusManager.setFocused(undefined);
+});
 
 describe("TanStack Query default contract", () => {
   // ID: FOUNDATION-QUERY-S-001
@@ -23,7 +29,6 @@ describe("TanStack Query default contract", () => {
     ).rejects.toThrow("query failed");
 
     expect(attempts).toBe(1);
-    queryClient.clear();
   });
 
   // ID: FOUNDATION-QUERY-S-002
@@ -58,9 +63,6 @@ describe("TanStack Query default contract", () => {
       expect(requests).toBe(1);
     } finally {
       stopObserving();
-      queryClient.unmount();
-      queryClient.clear();
-      focusManager.setFocused(undefined);
     }
   });
 });
