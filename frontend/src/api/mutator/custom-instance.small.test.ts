@@ -1,4 +1,7 @@
-import { describe, test } from "vitest";
+import { HttpResponse, http } from "msw";
+import { describe, expect, test } from "vitest";
+import { worker } from "../mocks/browser";
+import { customInstance } from "./custom-instance";
 
 describe("customInstance HTTP contract", () => {
   // ID: CUSTOM-INSTANCE-S-001
@@ -7,7 +10,20 @@ describe("customInstance HTTP contract", () => {
   // When: A request is executed through customInstance
   // Then: The resolved value is the response body
   // Priority: P0
-  test.todo("returns the response body for a successful request");
+  test("returns the response body for a successful request", async () => {
+    worker.use(
+      http.get("*/custom-instance/success", () =>
+        HttpResponse.json({ message: "ok" }),
+      ),
+    );
+
+    const result = await customInstance<{ message: string }>({
+      method: "GET",
+      url: "/custom-instance/success",
+    });
+
+    expect(result).toEqual({ message: "ok" });
+  });
 
   // ID: CUSTOM-INSTANCE-S-002
   // Source: ADR-0032; customInstance public transport contract
