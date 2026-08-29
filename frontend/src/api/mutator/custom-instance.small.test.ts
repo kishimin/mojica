@@ -71,7 +71,22 @@ describe("customInstance HTTP contract", () => {
   // Then: The returned promise rejects with the transport error
   // Error: non-2xx response
   // Priority: P0
-  test.todo("rejects when the API returns a non-success response");
+  test("rejects when the API returns a non-success response", async () => {
+    worker.use(
+      http.get("*/custom-instance/error", () =>
+        HttpResponse.json({ error: "invalid request" }, { status: 400 }),
+      ),
+    );
+
+    await expect(
+      customInstance({
+        method: "GET",
+        url: "/custom-instance/error",
+      }),
+    ).rejects.toMatchObject({
+      response: { status: 400 },
+    });
+  });
 
   // ID: CUSTOM-INSTANCE-S-004
   // Source: frontend runtime API boundary
