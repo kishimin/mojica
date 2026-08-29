@@ -19,6 +19,9 @@ export default defineConfig({
       "@": path.resolve(dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ["@tanstack/react-query", "axios"],
+  },
   test: {
     env: {
       VITE_API_URL: "http://localhost:5063",
