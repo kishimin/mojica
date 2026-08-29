@@ -19,23 +19,14 @@ describe("customInstance HTTP contract", () => {
 
   // ID: CUSTOM-INSTANCE-S-003
   // Source: ADR-0032; customInstance public transport contract
-  // Given: The API returns a client error response
+  // Given: The API returns a non-success HTTP response
   // When: The request is executed through customInstance
   // Then: The returned promise rejects with the transport error
-  // Error: 4xx response
+  // Error: non-2xx response
   // Priority: P0
-  test.todo("rejects when the API returns a client error");
+  test.todo("rejects when the API returns a non-success response");
 
   // ID: CUSTOM-INSTANCE-S-004
-  // Source: ADR-0032; customInstance public transport contract
-  // Given: The API returns a server error response
-  // When: The request is executed through customInstance
-  // Then: The returned promise rejects with the transport error
-  // Error: 5xx response
-  // Priority: P0
-  test.todo("rejects when the API returns a server error");
-
-  // ID: CUSTOM-INSTANCE-S-005
   // Source: frontend runtime API boundary
   // Given: The API cannot be reached
   // When: The request is executed through customInstance
