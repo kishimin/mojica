@@ -1,20 +1,7 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, test } from "vitest";
 import { useI18n } from "../../hooks/use-i18n";
 import { I18nProvider } from "./I18nProvider";
-
-const LocaleConsumer = () => {
-  const { locale } = useI18n();
-
-  return <output>{locale}</output>;
-};
-
-const LocaleControlConsumer = () => {
-  const { locale, setLocale } = useI18n();
-
-  return <button onClick={() => setLocale("en")}>{locale}</button>;
-};
 
 describe("I18nProvider locale contract", () => {
   beforeEach(() => {
@@ -22,56 +9,47 @@ describe("I18nProvider locale contract", () => {
   });
 
   test("rejects consumers outside I18nProvider", () => {
-    expect(() => render(<LocaleConsumer />)).toThrow(
+    expect(() => renderHook(() => useI18n())).toThrow(
       "useI18n must be used within I18nProvider",
     );
   });
 
   test("uses Japanese when no locale has been persisted", () => {
-    render(
-      <I18nProvider>
-        <LocaleConsumer />
-      </I18nProvider>,
-    );
+    const { result } = renderHook(() => useI18n(), {
+      wrapper: I18nProvider,
+    });
 
-    expect(screen.getByText("ja")).toBeInTheDocument();
+    expect(result.current.locale).toBe("ja");
   });
 
   test("restores persisted English as the active locale", () => {
     localStorage.setItem("locale", "en");
 
-    render(
-      <I18nProvider>
-        <LocaleConsumer />
-      </I18nProvider>,
-    );
+    const { result } = renderHook(() => useI18n(), {
+      wrapper: I18nProvider,
+    });
 
-    expect(screen.getByText("en")).toBeInTheDocument();
+    expect(result.current.locale).toBe("en");
   });
 
   test("falls back to Japanese for an unsupported persisted locale", () => {
     localStorage.setItem("locale", "fr");
 
-    render(
-      <I18nProvider>
-        <LocaleConsumer />
-      </I18nProvider>,
-    );
+    const { result } = renderHook(() => useI18n(), {
+      wrapper: I18nProvider,
+    });
 
-    expect(screen.getByText("ja")).toBeInTheDocument();
+    expect(result.current.locale).toBe("ja");
   });
 
-  test("updates and persists a supported locale selected by a consumer", async () => {
-    const user = userEvent.setup();
-    render(
-      <I18nProvider>
-        <LocaleControlConsumer />
-      </I18nProvider>,
-    );
+  test("updates and persists a supported locale selected by a consumer", () => {
+    const { result } = renderHook(() => useI18n(), {
+      wrapper: I18nProvider,
+    });
 
-    await user.click(screen.getByRole("button", { name: "ja" }));
+    act(() => result.current.setLocale("en"));
 
-    expect(screen.getByRole("button", { name: "en" })).toBeInTheDocument();
+    expect(result.current.locale).toBe("en");
     expect(localStorage.getItem("locale")).toBe("en");
   });
 });
