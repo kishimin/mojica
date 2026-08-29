@@ -32,6 +32,10 @@ storybook-static
 /blob-report/
 /playwright/.cache/
 
+# Vitest browser artifacts
+/.vitest-attachments/
+**/__screenshots__/
+
 # Stryker mutation testing
 .stryker-tmp
 reports
