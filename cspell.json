@@ -1,20 +1,33 @@
 {
   "version": "0.2",
+  "ignorePaths": ["frontend/public/mockServiceWorker.js"],
   "words": [
     "ASPNETCORE",
+    "aspnet",
     "IMGTYPE",
     "kishimin",
     "moji",
     "Mojica",
     "NOLOGO",
+    "oklch",
     "OPTOUT",
     "overengineering",
+    "oxlint",
+    "pscustomobject",
     "RENDERTEXT",
+    "rgba",
     "RRGGBB",
     "Sakura",
+    "shadcn",
+    "subtag",
     "Swashbuckle",
+    "tsgolint",
+    "TTFB",
+    "unrs",
     "unvalidated",
+    "viewports",
     "weatherforecast",
+    "wordmark",
     "xunit"
   ]
 }

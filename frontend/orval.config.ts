@@ -1,10 +1,10 @@
 import { defineConfig } from "orval";
 
 export default defineConfig({
-  petstore: {
+  mojicaApi: {
     output: {
       mode: "tags-split",
-      target: "src/api/endpoints/petstore.ts",
+      target: "src/api/endpoints/mojica-api.ts",
       schemas: "src/models",
       client: "react-query",
       httpClient: "axios",
@@ -22,7 +22,7 @@ export default defineConfig({
       target: "http://localhost:18080/swagger/v1/swagger.json",
     },
   },
-  petstoreZod: {
+  mojicaApiZod: {
     output: {
       mode: "tags-split",
       client: "zod",

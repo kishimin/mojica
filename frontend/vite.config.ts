@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite";
@@ -12,7 +13,12 @@ const dirname =
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": path.resolve(dirname, "./src"),
+    },
+  },
   test: {
     reporters: process.env.GITHUB_ACTIONS
       ? ["dot", "github-actions", "json"]
@@ -36,6 +42,7 @@ export default defineConfig({
         "src/api/endpoints/**",
         "src/gen/**",
         "src/models/**",
+        "src/main.tsx",
         "**/*.stories.{ts,tsx}",
         ".storybook/**",
         "src/tests/**",

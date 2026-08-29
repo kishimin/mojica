@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@theme inline {
+    --color-background: var(--background);
+    --color-surface: var(--surface);
+    --color-foreground: var(--foreground);
+    --color-card: var(--surface);
+    --color-card-foreground: var(--foreground);
+    --color-popover: var(--surface);
+    --color-popover-foreground: var(--foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--surface);
+    --color-secondary-foreground: var(--foreground);
+    --color-muted: var(--surface);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-helper-foreground: var(--helper-foreground);
+    --color-accent: var(--background);
+    --color-accent-foreground: var(--foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--inverse-foreground);
+    --color-destructive-background: var(--destructive-background);
+    --color-destructive-border: var(--destructive-border);
+    --color-border: var(--border);
+    --color-border-accent: var(--border-accent);
+    --color-input: var(--border-accent);
+    --color-ring: var(--primary);
+    --color-inverse: var(--inverse);
+    --color-inverse-foreground: var(--inverse-foreground);
+
+    --radius-sm: 0.5rem;
+    --radius-md: 0.625rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1.125rem;
+
+    --text-xs: 0.75rem;
+    --text-xs-medium: 0.8125rem;
+    --text-sm: 0.875rem;
+    --text-base: 0.9375rem;
+    --text-md: 1rem;
+    --text-lg: 1.125rem;
+    --text-2xl: 1.375rem;
+    --text-3xl: 1.5rem;
+    --text-4xl: 1.625rem;
+    --text-5xl: 1.875rem;
+    --text-7xl: 4.5rem;
+
+    --breakpoint-mobile: 24.375rem;
+    --breakpoint-tablet: 48rem;
+    --breakpoint-desktop: 90rem;
+}
+
+:root {
+    color-scheme: light;
+
+    --background: oklch(0.978 0.008 225.1);
+    --surface: oklch(1 0 0);
+    --foreground: oklch(0.229 0.006 56.1);
+    --muted-foreground: oklch(0.505 0.015 63.7);
+    --helper-foreground: oklch(0.502 0.044 228.7);
+    --border: oklch(0.872 0.017 79.3);
+    --border-accent: oklch(0.881 0.038 224.3);
+    --primary: oklch(0.793 0.088 227.9);
+    --primary-foreground: oklch(0.33 0.046 228.2);
+    --inverse: oklch(0.24 0.006 78.2);
+    --inverse-foreground: oklch(1 0 0);
+    --destructive: oklch(0.541 0.194 26.7);
+    --destructive-background: oklch(0.971 0.014 17.4);
+    --destructive-border: oklch(0.74 0.116 20.2);
+
+    --shadow-card: 0 0.5rem 1.5rem rgb(0 0 0 / 8%);
+
+    --layout-header-height: 4.5rem;
+    --layout-header-inline-padding: 1.25rem;
+    --layout-main-padding-top: 2rem;
+    --layout-main-gap: 1.5rem;
+    --layout-intro-gap: 0.75rem;
+    --layout-form-card-padding-block: 1.5rem;
+    --layout-form-card-padding-inline: 1.25rem;
+    --layout-form-card-gap: 1.5rem;
+    --layout-footer-height: 5rem;
+}
+
+@media (min-width: 48rem) {
+    :root {
+        --layout-header-height: 5.5rem;
+        --layout-header-inline-padding: 2rem;
+        --layout-main-padding-top: 3rem;
+        --layout-main-gap: 1.75rem;
+        --layout-form-card-padding-block: 2rem;
+        --layout-form-card-padding-inline: 2rem;
+    }
+}
+
+@media (min-width: 90rem) {
+    :root {
+        --layout-header-inline-padding: 3.5rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        min-width: 20rem;
+        margin: 0;
+        @apply bg-background text-foreground;
+    }
+}

@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import vitest from "@vitest/eslint-plugin";
 import eslintComments from "@eslint-community/eslint-plugin-eslint-comments";
 import { defineConfig, globalIgnores } from "eslint/config";
+import boundaries from "eslint-plugin-boundaries";
 import prettier from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
 import jsdocPlugin from "eslint-plugin-jsdoc";
@@ -76,6 +77,13 @@ export default defineConfig([
     },
     rules: {
       "no-console": "warn",
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "FunctionDeclaration, FunctionExpression",
+          message: "Use an arrow function instead.",
+        },
+      ],
       camelcase: ["warn", { properties: "never" }],
       "@typescript-eslint/switch-exhaustiveness-check": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
@@ -92,6 +100,70 @@ export default defineConfig([
       "react/jsx-key": ["error", { checkFragmentShorthand: true }],
       "react/react-in-jsx-scope": 0,
       "react/jsx-uses-react": 0,
+    },
+  },
+
+  // bulletproof-react style architectural boundaries: shared/ never depends on
+  // features/ or app/, features/<feature> never imports another feature, and
+  // nothing depends on app/. gen/, models/, and external packages are left
+  // unclassified on purpose, so they stay unrestricted.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: { boundaries },
+    settings: {
+      "boundaries/elements": [
+        { type: "app", pattern: "src/app/**" },
+        {
+          type: "feature",
+          pattern: "src/features/(*)/**",
+          capture: ["featureName"],
+        },
+        {
+          type: "shared",
+          pattern:
+            "src/{api,assets,components,hooks,lib,models,providers,schemas,styles,types,utils,tests}/**",
+        },
+      ],
+    },
+    rules: {
+      "boundaries/dependencies": [
+        "error",
+        {
+          default: "disallow",
+          policies: [
+            {
+              from: { element: { type: "shared" } },
+              allow: { to: { element: { type: "shared" } } },
+              message:
+                "shared/ code must not depend on features/ or app/ (unidirectional architecture).",
+            },
+            {
+              from: { element: { type: "feature" } },
+              allow: {
+                to: {
+                  element: [
+                    { type: "shared" },
+                    {
+                      type: "feature",
+                      captured: { featureName: "{{from.featureName}}" },
+                    },
+                  ],
+                },
+              },
+              message:
+                "features/<feature> must not import from another feature; only from shared/ or the same feature.",
+            },
+            {
+              from: { element: { type: "app" } },
+              allow: {
+                to: { element: { types: { anyOf: ["shared", "feature"] } } },
+              },
+              message:
+                "app/ may import shared/ and features/, but nothing may import app/.",
+            },
+          ],
+        },
+      ],
     },
   },
 
@@ -115,6 +187,10 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
       "vitest/max-nested-describe": ["error", { max: 3 }],
+      "vitest/consistent-test-it": [
+        "error",
+        { fn: "test", withinDescribe: "test" },
+      ],
       "vitest/no-focused-tests": "error",
       "vitest/no-disabled-tests": "warn",
     },
