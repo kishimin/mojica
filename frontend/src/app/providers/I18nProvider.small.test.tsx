@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { useI18n } from "../../hooks/use-i18n";
 import { I18nProvider } from "./I18nProvider";
 
@@ -53,5 +53,20 @@ describe("I18nProvider locale contract", () => {
 
     expect(result.current.locale).toBe("en");
     expect(localStorage.getItem("locale")).toBe("en");
+  });
+
+  test("falls back to Japanese when locale storage cannot be read", () => {
+    const getItemSpy = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new DOMException("blocked", "SecurityError");
+      });
+
+    const { result } = renderHook(() => useI18n(), {
+      wrapper: I18nProvider,
+    });
+
+    expect(result.current.locale).toBe("ja");
+    getItemSpy.mockRestore();
   });
 });

@@ -13,11 +13,15 @@ const isLocale = (value: string): value is Locale =>
   Object.hasOwn(localeDefinitions, value);
 
 const getInitialLocale = (): Locale => {
-  const persistedLocale = localStorage.getItem("locale");
+  try {
+    const persistedLocale = localStorage.getItem("locale");
 
-  return persistedLocale !== null && isLocale(persistedLocale)
-    ? persistedLocale
-    : "ja";
+    return persistedLocale !== null && isLocale(persistedLocale)
+      ? persistedLocale
+      : "ja";
+  } catch {
+    return "ja";
+  }
 };
 
 export const I18nProvider = ({ children }: I18nProviderProps) => {
