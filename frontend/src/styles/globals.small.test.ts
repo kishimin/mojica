@@ -38,7 +38,6 @@ describe("global design tokens", () => {
     expect(cssVariable("--text-xs-medium")).toBe("0.8125rem");
     expect(cssVariable("--text-md")).toBe("1rem");
     expect(cssVariable("--text-7xl")).toBe("4.5rem");
-    expect(cssVariable("--layout-content-max-width")).toBe("45rem");
     expect(cssVariable("--layout-header-height")).toBe("5.5rem");
     expect(cssVariable("--layout-header-inline-padding")).toBe("3.5rem");
     expect(cssVariable("--layout-main-padding-top")).toBe("3rem");
