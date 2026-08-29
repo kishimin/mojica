@@ -38,8 +38,18 @@ describe("global design tokens", () => {
     expect(cssVariable("--text-xs-medium")).toBe("0.8125rem");
     expect(cssVariable("--text-md")).toBe("1rem");
     expect(cssVariable("--text-7xl")).toBe("4.5rem");
-    expect(cssVariable("--layout-header-height")).toBe("5.5rem");
-    expect(cssVariable("--layout-header-inline-padding")).toBe("3.5rem");
-    expect(cssVariable("--layout-main-padding-top")).toBe("3rem");
+    expect(cssVariable("--layout-header-height")).toBe(
+      window.innerWidth >= 768 ? "5.5rem" : "4.5rem",
+    );
+    expect(cssVariable("--layout-header-inline-padding")).toBe(
+      window.innerWidth >= 1440
+        ? "3.5rem"
+        : window.innerWidth >= 768
+          ? "2rem"
+          : "1.25rem",
+    );
+    expect(cssVariable("--layout-main-padding-top")).toBe(
+      window.innerWidth >= 768 ? "3rem" : "2rem",
+    );
   });
 });
