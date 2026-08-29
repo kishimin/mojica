@@ -9,6 +9,7 @@ type Locale = keyof typeof localeDefinitions;
 
 type I18nContextValue = {
   locale: Locale;
+  setLocale: (locale: Locale) => void;
 };
 
 type I18nProviderProps = {
@@ -29,10 +30,17 @@ const getInitialLocale = (): Locale => {
 };
 
 export const I18nProvider = ({ children }: I18nProviderProps) => {
-  const [locale] = useState(getInitialLocale);
+  const [locale, setLocaleState] = useState(getInitialLocale);
+
+  const setLocale = (nextLocale: Locale) => {
+    localStorage.setItem("locale", nextLocale);
+    setLocaleState(nextLocale);
+  };
 
   return (
-    <I18nContext.Provider value={{ locale }}>{children}</I18nContext.Provider>
+    <I18nContext.Provider value={{ locale, setLocale }}>
+      {children}
+    </I18nContext.Provider>
   );
 };
 
