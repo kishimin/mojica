@@ -46,6 +46,7 @@ export default defineConfig({
       exclude: [
         ...coverageConfigDefaults.exclude,
         "src/api/endpoints/**",
+        "src/components/ui/**",
         "src/gen/**",
         "src/models/**",
         "src/main.tsx",

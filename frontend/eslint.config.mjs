@@ -22,6 +22,7 @@ export default defineConfig([
     "storybook-static/**",
     "public/mockServiceWorker.js",
     "src/api/endpoints/**",
+    "src/components/ui/**",
     "src/models/**",
     "src/gen/**",
     ".stryker-tmp/**",
