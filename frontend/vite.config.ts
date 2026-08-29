@@ -19,7 +19,13 @@ export default defineConfig({
       "@": path.resolve(dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ["@tanstack/react-query", "axios"],
+  },
   test: {
+    env: {
+      VITE_API_URL: "http://localhost:5063",
+    },
     reporters: process.env.GITHUB_ACTIONS
       ? ["dot", "github-actions", "json"]
       : ["dot"],
@@ -42,6 +48,7 @@ export default defineConfig({
         "src/api/endpoints/**",
         "src/gen/**",
         "src/models/**",
+        "src/main.tsx",
         "**/*.stories.{ts,tsx}",
         ".storybook/**",
         "src/tests/**",
