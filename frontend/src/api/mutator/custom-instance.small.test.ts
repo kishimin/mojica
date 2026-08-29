@@ -95,5 +95,16 @@ describe("customInstance HTTP contract", () => {
   // Then: The returned promise rejects with a network error
   // Error: network failure
   // Priority: P1
-  test.todo("rejects when the API cannot be reached");
+  test("rejects when the API cannot be reached", async () => {
+    worker.use(
+      http.get("*/custom-instance/network-error", () => HttpResponse.error()),
+    );
+
+    await expect(
+      customInstance({
+        method: "GET",
+        url: "/custom-instance/network-error",
+      }),
+    ).rejects.toBeTruthy();
+  });
 });
