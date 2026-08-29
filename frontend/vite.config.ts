@@ -42,6 +42,7 @@ export default defineConfig({
         "src/api/endpoints/**",
         "src/gen/**",
         "src/models/**",
+        "src/main.tsx",
         "**/*.stories.{ts,tsx}",
         ".storybook/**",
         "src/tests/**",
