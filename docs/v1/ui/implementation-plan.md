@@ -8,31 +8,24 @@ Design documents in scope:
 
 ## 1. Branch structure
 
-Do not implement directly on a shared branch. Use one parent branch for the entire MVP UI and child branches for each work unit.
+Do not implement directly on a shared branch. Branch each work unit directly from `main` and merge it back into `main` when complete.
 
 ```text
 main
-└── feat/mojica-mvp-ui
-    ├── feat/mojica-ui-foundation
-    ├── feat/mojica-ui-components
-    ├── feat/mojica-ui-image-generation
-    ├── feat/mojica-ui-error-pages
-    └── test/mojica-ui-e2e
+├── feat/mojica-ui-foundation (merged)
+├── feat/mojica-ui-components
+├── feat/mojica-ui-image-generation
+├── feat/mojica-ui-error-pages
+└── test/mojica-ui-e2e
 ```
 
-### Parent branch
-
-`feat/mojica-mvp-ui`
-
-- Create from `main`.
-- Merge child branches into it.
-- Merge children in order and keep it buildable throughout.
+`feat/mojica-ui-foundation` originally merged into a `feat/mojica-mvp-ui` parent branch, which was then merged into `main`. That parent branch is retired: every remaining child branch creates from `main` and opens its PR directly against `main`.
 
 ### Child branch order
 
-#### 1. `feat/mojica-ui-foundation`
+#### 1. `feat/mojica-ui-foundation` (complete)
 
-Owns the foundation and design tokens:
+Owned the foundation and design tokens:
 
 - Material Design 3 CSS custom properties
 - shared CSS and responsive foundation
@@ -40,7 +33,7 @@ Owns the foundation and design tokens:
 - shared Zod schema placement
 - minimal i18n and provider setup
 
-Merge into `feat/mojica-mvp-ui` when complete.
+Merged into `main`.
 
 #### 2. `feat/mojica-ui-components`
 
@@ -50,7 +43,7 @@ Owns shared UI components:
 - `LanguageSwitcher`, `ImageTypeSelect`, `GenerateButton`
 - `AppHeader`, `AppFooter`, and `Layout`
 
-Merge into the parent when complete.
+Create from `main`. Merge into `main` when complete.
 
 #### 3. `feat/mojica-ui-image-generation`
 
@@ -62,7 +55,7 @@ Owns the image generation screen:
 - `Retry-After` countdown
 - automatic PNG download
 
-Depends on the foundation and component branches. Merge into the parent when complete.
+Depends on the foundation and component branches. Create from `main` after the components branch merges. Merge into `main` when complete.
 
 #### 4. `feat/mojica-ui-error-pages`
 
@@ -72,7 +65,7 @@ Owns error screens and route wiring:
 - route wiring and navigation from 404 to home
 - normal browser reload from the error screen
 
-Depends on the foundation and component branches. Merge into the parent when complete.
+Depends on the foundation and component branches. Create from `main` after the components branch merges. Merge into `main` when complete.
 
 #### 5. `test/mojica-ui-e2e`
 
@@ -83,28 +76,26 @@ Owns E2E tests classified individually by actual dependency scope. Do not classi
 - PNG download, responsive display, 404 and error screens
 - keyboard interaction and VRT
 
-Depends on the image-generation and error-page branches. Merge after verification.
+Depends on the image-generation and error-page branches. Create from `main` after both merge. Merge into `main` when complete.
 
 ## 2. Merge order
 
 ```text
-feat/mojica-ui-foundation
-  ↓
-feat/mojica-ui-components
-  ↓
-feat/mojica-ui-image-generation ─┐
-                                 ├─→ feat/mojica-mvp-ui → main
-feat/mojica-ui-error-pages ──────┘
-                                 ↑
-test/mojica-ui-e2e ──────────────┘
+feat/mojica-ui-foundation ──────────→ main (complete)
+                                        │
+                    feat/mojica-ui-components → main
+                                        │
+        ┌── feat/mojica-ui-image-generation → main
+        └── feat/mojica-ui-error-pages ──────→ main
+                                        │
+                     test/mojica-ui-e2e → main
 ```
 
-1. `feat/mojica-ui-foundation`
-2. `feat/mojica-ui-components`
-3. `feat/mojica-ui-image-generation`
-4. `feat/mojica-ui-error-pages`
-5. `test/mojica-ui-e2e`
-6. Open a PR from `feat/mojica-mvp-ui` to `main`
+1. `feat/mojica-ui-foundation` → merged into `main` (complete).
+2. `feat/mojica-ui-components` → merge into `main`.
+3. `feat/mojica-ui-image-generation` → merge into `main`.
+4. `feat/mojica-ui-error-pages` → merge into `main`.
+5. `test/mojica-ui-e2e` → merge into `main`.
 
 ## 3. Commit units
 
@@ -121,6 +112,6 @@ Do not mix responsibilities from multiple child branches in one commit. Update g
 - Design and implementation agree within the owned scope.
 - Available formatting, tests, type checks, lint, and build pass.
 - Every metric in the overall coverage summary is at least 80%.
-- Classify each `test/mojica-ui-e2e` test as Small, Medium, or Large by actual dependencies and include the size in its filename. Before merging to the parent, confirm every size currently runnable.
+- Classify each `test/mojica-ui-e2e` test as Small, Medium, or Large by actual dependencies and include the size in its filename. Before merging to `main`, confirm every size currently runnable.
 - Each child PR records scope, verification, and unfinished work.
-- Run all verification on the integrated parent before merging to `main`.
+- Run all verification on the branch before opening its PR to `main`.
