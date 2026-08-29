@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { useI18n } from "../../hooks/use-i18n";
 import { I18nProvider } from "./I18nProvider";
 
@@ -68,5 +68,27 @@ describe("I18nProvider locale contract", () => {
 
     expect(result.current.locale).toBe("ja");
     getItemSpy.mockRestore();
+  });
+
+  describe("document language synchronization", () => {
+    afterEach(() => {
+      document.documentElement.lang = "";
+    });
+
+    test("sets the document language to the active locale on initial render", () => {
+      renderHook(() => useI18n(), { wrapper: I18nProvider });
+
+      expect(document.documentElement.lang).toBe("ja");
+    });
+
+    test("updates the document language when a consumer changes locale", () => {
+      const { result } = renderHook(() => useI18n(), {
+        wrapper: I18nProvider,
+      });
+
+      act(() => result.current.setLocale("en"));
+
+      expect(document.documentElement.lang).toBe("en");
+    });
   });
 });
