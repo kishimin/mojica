@@ -9,7 +9,9 @@ describe("I18nProvider locale contract", () => {
   });
 
   test("rejects consumers outside I18nProvider", () => {
-    expect(() => renderHook(() => useI18n())).toThrow(
+    const renderWithoutProvider = () => renderHook(useI18n);
+
+    expect(renderWithoutProvider).toThrow(
       "useI18n must be used within I18nProvider",
     );
   });
