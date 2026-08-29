@@ -1,7 +1,7 @@
 import { describe, test } from "vitest";
 
 describe("customInstance HTTP contract", () => {
-  // ID: CUSTOM-INSTANCE-M-001
+  // ID: CUSTOM-INSTANCE-S-001
   // Source: ADR-0032; customInstance public transport contract
   // Given: The API returns a successful JSON response
   // When: A request is executed through customInstance
@@ -9,7 +9,7 @@ describe("customInstance HTTP contract", () => {
   // Priority: P0
   test.todo("returns the response body for a successful request");
 
-  // ID: CUSTOM-INSTANCE-M-002
+  // ID: CUSTOM-INSTANCE-S-002
   // Source: ADR-0032; customInstance public transport contract
   // Given: A request has a method, URL, query, and JSON body
   // When: The request is executed through customInstance
@@ -17,7 +17,7 @@ describe("customInstance HTTP contract", () => {
   // Priority: P0
   test.todo("sends the request method, URL parameters, and body");
 
-  // ID: CUSTOM-INSTANCE-M-003
+  // ID: CUSTOM-INSTANCE-S-003
   // Source: ADR-0032; customInstance public transport contract
   // Given: The API returns a client error response
   // When: The request is executed through customInstance
@@ -26,7 +26,7 @@ describe("customInstance HTTP contract", () => {
   // Priority: P0
   test.todo("rejects when the API returns a client error");
 
-  // ID: CUSTOM-INSTANCE-M-004
+  // ID: CUSTOM-INSTANCE-S-004
   // Source: ADR-0032; customInstance public transport contract
   // Given: The API returns a server error response
   // When: The request is executed through customInstance
@@ -35,7 +35,7 @@ describe("customInstance HTTP contract", () => {
   // Priority: P0
   test.todo("rejects when the API returns a server error");
 
-  // ID: CUSTOM-INSTANCE-M-005
+  // ID: CUSTOM-INSTANCE-S-005
   // Source: frontend runtime API boundary
   // Given: The API cannot be reached
   // When: The request is executed through customInstance
