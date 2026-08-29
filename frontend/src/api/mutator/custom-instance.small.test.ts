@@ -4,12 +4,6 @@ import { worker } from "../mocks/browser";
 import { customInstance } from "./custom-instance";
 
 describe("customInstance HTTP contract", () => {
-  // ID: CUSTOM-INSTANCE-S-001
-  // Source: ADR-0032; customInstance public transport contract
-  // Given: The API returns a successful JSON response
-  // When: A request is executed through customInstance
-  // Then: The resolved value is the response body
-  // Priority: P0
   test("returns the response body for a successful request", async () => {
     worker.use(
       http.get("*/custom-instance/success", () =>
@@ -25,12 +19,6 @@ describe("customInstance HTTP contract", () => {
     expect(result).toEqual({ message: "ok" });
   });
 
-  // ID: CUSTOM-INSTANCE-S-002
-  // Source: ADR-0032; customInstance public transport contract
-  // Given: A request has a method, URL, query, and JSON body
-  // When: The request is executed through customInstance
-  // Then: The API receives those request values
-  // Priority: P0
   test("sends the request method, URL parameters, and body", async () => {
     const receivedRequests: Array<{
       method: string;
@@ -66,13 +54,6 @@ describe("customInstance HTTP contract", () => {
     ]);
   });
 
-  // ID: CUSTOM-INSTANCE-S-003
-  // Source: ADR-0032; customInstance public transport contract
-  // Given: The API returns a non-success HTTP response
-  // When: The request is executed through customInstance
-  // Then: The returned promise rejects with the transport error
-  // Error: non-2xx response
-  // Priority: P0
   test("rejects when the API returns a non-success response", async () => {
     worker.use(
       http.get("*/custom-instance/error", () =>
@@ -90,13 +71,6 @@ describe("customInstance HTTP contract", () => {
     });
   });
 
-  // ID: CUSTOM-INSTANCE-S-004
-  // Source: frontend runtime API boundary
-  // Given: The API cannot be reached
-  // When: The request is executed through customInstance
-  // Then: The returned promise rejects with a network error
-  // Error: network failure
-  // Priority: P1
   test("rejects when the API cannot be reached", async () => {
     worker.use(
       http.get("*/custom-instance/network-error", () => HttpResponse.error()),
