@@ -31,7 +31,38 @@ describe("customInstance HTTP contract", () => {
   // When: The request is executed through customInstance
   // Then: The API receives those request values
   // Priority: P0
-  test.todo("sends the request method, URL parameters, and body");
+  test("sends the request method, URL parameters, and body", async () => {
+    let receivedRequest: {
+      method: string;
+      url: string;
+      body: unknown;
+    } | null = null;
+
+    worker.use(
+      http.post("*/custom-instance/echo", async ({ request }) => {
+        receivedRequest = {
+          method: request.method,
+          url: request.url,
+          body: await request.json(),
+        };
+
+        return HttpResponse.json({ accepted: true });
+      }),
+    );
+
+    await customInstance({
+      method: "POST",
+      url: "/custom-instance/echo",
+      params: { locale: "ja" },
+      data: { name: "mojica" },
+    });
+
+    expect(receivedRequest).toEqual({
+      method: "POST",
+      url: "http://localhost:5063/custom-instance/echo?locale=ja",
+      body: { name: "mojica" },
+    });
+  });
 
   // ID: CUSTOM-INSTANCE-S-003
   // Source: ADR-0032; customInstance public transport contract
