@@ -20,6 +20,9 @@ export default defineConfig({
     },
   },
   test: {
+    env: {
+      VITE_API_URL: "http://localhost:5063",
+    },
     reporters: process.env.GITHUB_ACTIONS
       ? ["dot", "github-actions", "json"]
       : ["dot"],
