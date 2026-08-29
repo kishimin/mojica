@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test } from "vitest";
-
 import { I18nProvider, useI18n } from "./I18nProvider";
 
 const LocaleConsumer = () => {
