@@ -32,19 +32,19 @@ describe("customInstance HTTP contract", () => {
   // Then: The API receives those request values
   // Priority: P0
   test("sends the request method, URL parameters, and body", async () => {
-    let receivedRequest: {
+    const receivedRequests: Array<{
       method: string;
       url: string;
       body: unknown;
-    } | null = null;
+    }> = [];
 
     worker.use(
       http.post("*/custom-instance/echo", async ({ request }) => {
-        receivedRequest = {
+        receivedRequests.push({
           method: request.method,
           url: request.url,
           body: await request.json(),
-        };
+        });
 
         return HttpResponse.json({ accepted: true });
       }),
@@ -57,11 +57,13 @@ describe("customInstance HTTP contract", () => {
       data: { name: "mojica" },
     });
 
-    expect(receivedRequest).toEqual({
-      method: "POST",
-      url: "http://localhost:5063/custom-instance/echo?locale=ja",
-      body: { name: "mojica" },
-    });
+    expect(receivedRequests).toEqual([
+      {
+        method: "POST",
+        url: "http://localhost:5063/custom-instance/echo?locale=ja",
+        body: { name: "mojica" },
+      },
+    ]);
   });
 
   // ID: CUSTOM-INSTANCE-S-003
