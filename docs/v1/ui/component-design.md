@@ -27,11 +27,17 @@ src/
 │   │   └── views/ImageGenerationScreen.tsx
 │   ├── not-found/views/NotFoundView.tsx
 │   └── error/views/ErrorFallback.tsx
-├── gen/api/                        # Orval generated; do not edit
+├── api/
+│   ├── endpoints/                  # Orval-generated React Query clients and MSW handlers; do not edit
+│   └── mutator/                    # Hand-written Axios boundary used by Orval
+├── gen/endpoints/                  # Orval-generated Zod schemas; do not edit
+├── models/                         # Orval-generated TypeScript models; do not edit
 ├── lib/{queryClient,router}.ts
 ├── routes/{__root,index}.tsx
 └── routeTree.gen.ts                # generated; do not edit
 ```
+
+Orval output is split by responsibility: React Query clients and their mocks are generated under `api/endpoints/`, Zod schemas under `gen/endpoints/`, and shared TypeScript models under `models/`. The `orval.config.ts` definitions are the source of truth for these paths; generated files must be regenerated from OpenAPI rather than edited manually.
 
 Each component's contract is defined under [components](./components/). Colocate its implementation, story, and Small test. Keep generated shadcn primitives under `components/ui/` and follow [ShadcnUiWrappers.md](./components/ShadcnUiWrappers.md).
 
