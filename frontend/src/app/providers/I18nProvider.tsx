@@ -1,22 +1,13 @@
-import { createContext, type ReactNode, useContext, useState } from "react";
-
-const localeDefinitions = {
-  en: null,
-  ja: null,
-};
-
-type Locale = keyof typeof localeDefinitions;
-
-type I18nContextValue = {
-  locale: Locale;
-  setLocale: (locale: Locale) => void;
-};
+import { type ReactNode, useState } from "react";
+import { I18nContext } from "../../hooks/i18n-context";
+import {
+  localeDefinitions,
+  type Locale,
+} from "../../types/i18n";
 
 type I18nProviderProps = {
   children: ReactNode;
 };
-
-const I18nContext = createContext<I18nContextValue | undefined>(undefined);
 
 const isLocale = (value: string): value is Locale =>
   Object.hasOwn(localeDefinitions, value);
@@ -42,14 +33,4 @@ export const I18nProvider = ({ children }: I18nProviderProps) => {
       {children}
     </I18nContext.Provider>
   );
-};
-
-export const useI18n = () => {
-  const context = useContext(I18nContext);
-
-  if (context === undefined) {
-    throw new Error("useI18n must be used within I18nProvider");
-  }
-
-  return context;
 };

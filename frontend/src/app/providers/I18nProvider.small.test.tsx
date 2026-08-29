@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test } from "vitest";
-import { I18nProvider, useI18n } from "./I18nProvider";
+import { useI18n } from "../../hooks/use-i18n";
+import { I18nProvider } from "./I18nProvider";
 
 const LocaleConsumer = () => {
   const { locale } = useI18n();
@@ -18,6 +19,12 @@ const LocaleControlConsumer = () => {
 describe("I18nProvider locale contract", () => {
   beforeEach(() => {
     localStorage.clear();
+  });
+
+  test("rejects consumers outside I18nProvider", () => {
+    expect(() => render(<LocaleConsumer />)).toThrow(
+      "useI18n must be used within I18nProvider",
+    );
   });
 
   // ID: FOUNDATION-I18N-S-001
