@@ -28,7 +28,7 @@ describe("LanguageSwitcher", () => {
       <LanguageSwitcher
         locale={"ja"}
         options={languageOptions}
-        onChange={vi.fn()}
+        onChange={vi.fn<(locale: Locale) => void>()}
       />,
     );
 
@@ -42,7 +42,7 @@ describe("LanguageSwitcher", () => {
       <LanguageSwitcher
         locale={"ja"}
         options={languageOptions}
-        onChange={vi.fn()}
+        onChange={vi.fn<(locale: Locale) => void>()}
       />,
     );
 
