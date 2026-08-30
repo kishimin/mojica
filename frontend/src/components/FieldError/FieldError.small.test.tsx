@@ -1,4 +1,6 @@
-import { describe, test } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+import FieldError from "./FieldError";
 
 describe("FieldError", () => {
   // ID: FIELD-ERROR-S-001
@@ -8,7 +10,11 @@ describe("FieldError", () => {
   // Then: The error message is visible to the user
   // Blocked by: FieldError implementation
   // Priority: P0
-  test.todo("displays the provided error message");
+  test("displays the provided error message", () => {
+    render(<FieldError message={"Name is required"} />);
+
+    expect(screen.getByText("Name is required")).toBeVisible();
+  });
 
   // ID: FIELD-ERROR-S-002
   // Source: docs/v1/ui/components/FieldError.md; FieldError empty-state contract
