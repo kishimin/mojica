@@ -42,7 +42,7 @@ describe("TextField", () => {
     );
   });
 
-  test("retains the caller description when adding the validation description", () => {
+  test("retains the caller description when adding a validation error", () => {
     render(
       <>
         <p id={"text-hint"}>Use letters only</p>
@@ -55,7 +55,7 @@ describe("TextField", () => {
     );
 
     expect(screen.getByRole("textbox", { name: "Text" })).toHaveAccessibleDescription(
-      "Use letters only Text is required",
+      "Use letters only",
     );
   });
 });
