@@ -1,14 +1,24 @@
-import { describe, test } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, test, vi } from "vitest";
+import LanguageSwitcher from "./LanguageSwitcher";
+
+const languageOptions = [
+  { locale: "ja" as const, label: "日本語" },
+  { locale: "en" as const, label: "English" },
+];
 
 describe("LanguageSwitcher", () => {
-  // ID: LANGUAGE-SWITCHER-S-001
-  // Source: docs/v1/ui/components/LanguageSwitcher.md § Storybook, § Tests
-  // Given: The controlled locale is Japanese
-  // When: The language switcher is rendered closed
-  // Then: The selected Japanese language name is displayed
-  // Blocked by: LanguageSwitcher implementation
-  // Priority: P0
-  test.todo("displays the controlled locale while closed");
+  test("displays the controlled locale while closed", () => {
+    render(
+      <LanguageSwitcher
+        locale={"ja"}
+        options={languageOptions}
+        onChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "日本語" })).toBeVisible();
+  });
 
   // ID: LANGUAGE-SWITCHER-S-002
   // Source: docs/v1/ui/components/LanguageSwitcher.md § Storybook, § Tests
