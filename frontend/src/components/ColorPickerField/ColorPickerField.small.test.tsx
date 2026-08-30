@@ -72,6 +72,7 @@ describe("ColorPickerField", () => {
     const textbox = screen.getByRole("textbox", { name: "Color" });
     const colorPicker = screen.getByLabelText("Choose color");
 
+    expect(textbox).toBeDisabled();
     expect(colorPicker).toBeDisabled();
   });
 
