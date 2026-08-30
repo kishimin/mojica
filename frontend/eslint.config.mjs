@@ -89,6 +89,10 @@ export default defineConfig([
           selector: "MemberExpression[object.name='React']",
           message: "Import React APIs directly instead of using the React namespace.",
         },
+        {
+          selector: "JSXAttribute[value.type='Literal']",
+          message: "Wrap JSX string attributes in braces.",
+        },
       ],
       camelcase: ["warn", { properties: "never" }],
       "@typescript-eslint/switch-exhaustiveness-check": "warn",

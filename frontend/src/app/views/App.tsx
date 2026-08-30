@@ -8,8 +8,8 @@ const App = () => {
   return (
     <AppProviders>
       <button
-        type="button"
-        className="counter"
+        type={"button"}
+        className={"counter"}
         onClick={() => setCount((count) => count + 1)}
       >
         Count is {count}
