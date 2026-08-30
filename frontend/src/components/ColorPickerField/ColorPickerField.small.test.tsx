@@ -1,14 +1,22 @@
-import { describe, test } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+import ColorPickerField from "./ColorPickerField";
 
 describe("ColorPickerField", () => {
-  // ID: COLOR-PICKER-FIELD-S-001
-  // Source: docs/v1/ui/components/ColorPickerField.md § Storybook, § Tests
-  // Given: A color-picker field has an initial HEX value
-  // When: The field is rendered
-  // Then: The color control and HEX textbox display the same initial value
-  // Blocked by: ColorPickerField implementation
-  // Priority: P0
-  test.todo("displays the initial HEX value in both color controls");
+  test("displays the initial HEX value in both color controls", () => {
+    render(
+      <ColorPickerField
+        label={"Color"}
+        value={"#FFD400"}
+        onChange={() => undefined}
+      />,
+    );
+
+    expect(screen.getByRole("textbox", { name: "Color" })).toHaveValue(
+      "#FFD400",
+    );
+    expect(screen.getByLabelText("Color picker")).toHaveValue("#FFD400");
+  });
 
   // ID: COLOR-PICKER-FIELD-S-002
   // Source: docs/v1/ui/components/ColorPickerField.md § Storybook, § Tests
