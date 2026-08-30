@@ -44,5 +44,5 @@ describe("TextField", () => {
   // Then: The textbox exposes both the caller description and validation message as accessible descriptions
   // Blocked by: TextField implementation
   // Priority: P0
-  test.todo("preserves the caller description when associating a validation message");
+  test.todo("exposes both the caller and validation descriptions");
 });
