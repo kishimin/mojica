@@ -93,6 +93,10 @@ export default defineConfig([
           selector: "JSXAttribute[value.type='Literal']",
           message: "Wrap JSX string attributes in braces.",
         },
+        {
+          selector: "JSXText[value=/\\S/]",
+          message: "Wrap JSX text in braces.",
+        },
       ],
       camelcase: ["warn", { properties: "never" }],
       "@typescript-eslint/switch-exhaustiveness-check": "warn",

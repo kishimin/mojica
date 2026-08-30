@@ -45,7 +45,7 @@ describe("TextField", () => {
   test("retains the caller description when adding a validation error", () => {
     render(
       <>
-        <p id={"text-hint"}>Use letters only</p>
+        <p id={"text-hint"}>{"Use letters only"}</p>
         <TextField
           label={"Text"}
           aria-describedby={"text-hint"}

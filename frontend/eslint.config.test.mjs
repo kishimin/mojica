@@ -9,7 +9,7 @@ const eslint = new ESLint({
 
 const lintJsx = async (jsx) => {
   const [result] = await eslint.lintText(jsx, {
-    filePath: "src/lint-fixture.tsx",
+    filePath: "src/components/Logo/Logo.tsx",
   });
 
   return result.messages.filter(({ ruleId }) => ruleId === "no-restricted-syntax");
