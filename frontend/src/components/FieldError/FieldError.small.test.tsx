@@ -14,4 +14,12 @@ describe("FieldError", () => {
 
     expect(container).toBeEmptyDOMElement();
   });
+
+  test("removes the displayed error when the message becomes empty", () => {
+    const { rerender } = render(<FieldError message={"Name is required"} />);
+
+    rerender(<FieldError message={""} />);
+
+    expect(screen.queryByText("Name is required")).not.toBeInTheDocument();
+  });
 });
