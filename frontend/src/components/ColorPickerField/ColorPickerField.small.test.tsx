@@ -15,7 +15,7 @@ describe("ColorPickerField", () => {
     expect(screen.getByRole("textbox", { name: "Color" })).toHaveValue(
       "#FFD400",
     );
-    expect(screen.getByLabelText("Color picker")).toHaveValue("#FFD400");
+    expect(screen.getByLabelText("Color picker")).toHaveValue("#ffd400");
   });
 
   // ID: COLOR-PICKER-FIELD-S-002
