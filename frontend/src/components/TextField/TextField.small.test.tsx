@@ -22,14 +22,16 @@ describe("TextField", () => {
     );
   });
 
-  // ID: TEXT-FIELD-S-003
-  // Source: docs/v1/ui/components/TextField.md § Props, § Storybook
-  // Given: A text field is disabled and displays an existing value
-  // When: The user attempts to type into the field
-  // Then: The textbox remains disabled and its displayed value does not change
-  // Blocked by: TextField implementation
-  // Priority: P1
-  test.todo("prevents editing when the textbox is disabled");
+  test("prevents editing when the textbox is disabled", async () => {
+    const user = userEvent.setup();
+    render(<TextField label="Text" defaultValue="Existing" disabled />);
+
+    const textbox = screen.getByRole("textbox", { name: "Text" });
+    await user.type(textbox, " changed");
+
+    expect(textbox).toBeDisabled();
+    expect(textbox).toHaveValue("Existing");
+  });
 
   // ID: TEXT-FIELD-S-004
   // Source: docs/v1/ui/components/TextField.md § Props
