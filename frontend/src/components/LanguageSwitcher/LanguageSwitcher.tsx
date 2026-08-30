@@ -20,11 +20,9 @@ const LanguageSwitcher = ({ locale, onChange }: LanguageSwitcherProps) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button type={"button"}>
-          {selectedLanguage?.label}
-          <ChevronDown aria-hidden={"true"} />
-        </button>
+      <DropdownMenuTrigger>
+        {selectedLanguage?.label}
+        <ChevronDown aria-hidden={"true"} />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {languageOptions.map((option) => (
