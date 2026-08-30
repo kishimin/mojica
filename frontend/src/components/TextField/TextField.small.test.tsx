@@ -17,9 +17,9 @@ describe("TextField", () => {
   test("associates the validation message with the textbox", () => {
     render(<TextField label={"Text"} errorMessage={"Text is required"} />);
 
-    expect(screen.getByRole("textbox", { name: "Text" })).toHaveAccessibleErrorMessage(
-      "Text is required",
-    );
+    expect(
+      screen.getByRole("textbox", { name: "Text" }),
+    ).toHaveAccessibleErrorMessage("Text is required");
   });
 
   test("prevents editing when the textbox is disabled", async () => {
@@ -54,8 +54,8 @@ describe("TextField", () => {
       </>,
     );
 
-    expect(screen.getByRole("textbox", { name: "Text" })).toHaveAccessibleDescription(
-      "Use letters only",
-    );
+    expect(
+      screen.getByRole("textbox", { name: "Text" }),
+    ).toHaveAccessibleDescription("Use letters only");
   });
 });
