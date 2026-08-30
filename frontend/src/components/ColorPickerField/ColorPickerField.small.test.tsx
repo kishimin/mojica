@@ -50,6 +50,8 @@ describe("ColorPickerField", () => {
     render(<ControlledColorPickerField />);
 
     const colorPicker = screen.getByLabelText("Choose color");
+    // The browser-native color dialog cannot be driven by userEvent in JSDOM;
+    // dispatch the change event to verify the component's synchronization boundary.
     fireEvent.change(colorPicker, { target: { value: "#00ff00" } });
 
     expect(screen.getByRole("textbox", { name: "Color" })).toHaveValue(
