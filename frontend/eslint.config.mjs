@@ -87,7 +87,8 @@ export default defineConfig([
         },
         {
           selector: "MemberExpression[object.name='React']",
-          message: "Import React APIs directly instead of using the React namespace.",
+          message:
+            "Import React APIs directly instead of using the React namespace.",
         },
         {
           selector: "JSXAttribute[value.type='Literal']",
@@ -255,7 +256,11 @@ export default defineConfig([
 
   // Disable type-checked rules for config/tooling files
   {
-    files: ["*.config.{js,mjs,ts,mts}", ".storybook/main.ts", "vitest.setup.ts"],
+    files: [
+      "*.config.{js,mjs,ts,mts}",
+      ".storybook/main.ts",
+      "vitest.setup.ts",
+    ],
     extends: [tseslint.configs.disableTypeChecked],
     languageOptions: {
       globals: globals.node,

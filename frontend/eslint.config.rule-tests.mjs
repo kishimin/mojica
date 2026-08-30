@@ -4,7 +4,9 @@ import { fileURLToPath } from "node:url";
 import { ESLint } from "eslint";
 
 const eslint = new ESLint({
-  overrideConfigFile: fileURLToPath(new URL("./eslint.config.mjs", import.meta.url)),
+  overrideConfigFile: fileURLToPath(
+    new URL("./eslint.config.mjs", import.meta.url),
+  ),
 });
 
 const lintJsx = async (jsx) => {
@@ -12,11 +14,15 @@ const lintJsx = async (jsx) => {
     filePath: "src/components/Logo/Logo.tsx",
   });
 
-  return result.messages.filter(({ ruleId }) => ruleId === "no-restricted-syntax");
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "no-restricted-syntax",
+  );
 };
 
 test("rejects text written directly inside a JSX tag", async () => {
-  const messages = await lintJsx("const Example = () => <p>Use letters only</p>;");
+  const messages = await lintJsx(
+    "const Example = () => <p>Use letters only</p>;",
+  );
 
   assert.deepEqual(
     messages.map(({ message }) => message),
