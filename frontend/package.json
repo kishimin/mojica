@@ -11,6 +11,7 @@
     "lint:markup": "markuplint \"src/**/*.tsx\"",
     "preview": "vite preview",
     "test": "vitest run --project=unit",
+    "test:eslint": "node --test eslint.config.test.mjs",
     "test:small": "vitest run --project=unit --coverage --passWithNoTests small.test",
     "test:medium": "vitest run --project=unit --coverage --passWithNoTests medium.test",
     "test:large": "vitest run --project=unit --coverage --passWithNoTests large.test",
