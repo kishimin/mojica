@@ -1,14 +1,13 @@
 type FieldErrorProps = {
   message?: string;
-  id?: string;
 };
 
-const FieldError = ({ id, message }: FieldErrorProps) => {
+const FieldError = ({ message }: FieldErrorProps) => {
   if (!message) {
     return null;
   }
 
-  return <p id={id}>{message}</p>;
+  return <p>{message}</p>;
 };
 
 export default FieldError;
