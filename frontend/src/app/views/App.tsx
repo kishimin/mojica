@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AppProviders } from "./providers/AppProviders";
+import { AppProviders } from "../providers/AppProviders";
 
 /**
  * Placeholder screen until the image generation UI (docs/v1/ui/ui.md) replaces it.
