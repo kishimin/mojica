@@ -1,4 +1,5 @@
 import { ChevronDown } from "lucide-react";
+import { languageOptions } from "./language-options";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,20 +8,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Locale } from "@/types/i18n";
 
-type LanguageOption = {
-  locale: Locale;
-  label: string;
-};
-
 type LanguageSwitcherProps = {
   locale: Locale;
   onChange: (locale: Locale) => void;
 };
-
-const languageOptions = [
-  { locale: "ja", label: "日本語" },
-  { locale: "en", label: "English" },
-] as const satisfies readonly LanguageOption[];
 
 const LanguageSwitcher = ({ locale, onChange }: LanguageSwitcherProps) => {
   const selectedLanguage = languageOptions.find(
