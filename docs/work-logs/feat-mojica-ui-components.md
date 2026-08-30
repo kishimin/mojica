@@ -29,11 +29,11 @@ AGENTS.mdで必ず読み出すスキルに指定
 
 ## Verification
 
-- Skill structure validation: pending.
+- Skill structure validation: `quick_validate.py`: passed.
 
 ## Resume checkpoint
 
-- Next action: Validate the new skill, then append future user prompts and work checkpoints to this file.
+- Next action: Append future user prompts and work checkpoints to this file before ending each session.
 - Target files: `C:/Users/Kazum/.agents/skills/work-session-log/SKILL.md`, `AGENTS.md`, `docs/work-logs/feat-mojica-ui-components.md`.
 - Expected result: The logging workflow is discoverable and resumable from a later session.
 
