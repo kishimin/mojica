@@ -5,7 +5,7 @@
 - Implementation: shadcn/ui `DropdownMenu` (Radix UI Dropdown Menu) + Lucide `ChevronDown`
 - Responsibility: A controlled dropdown showing the selected language name and an expand icon
 
-This controlled component receives `locale` and `onChange`. It derives the available languages, their display order, and their labels from `localeDefinitions`; adding a language does not require changing `LanguageSwitcher` or its callers. [AppHeader](./AppHeader.md) connects it to the actual i18n hooks.
+This controlled component receives `locale` and `onChange`. `localeDefinitions` owns the supported locale keys, while an ordered `languageOptions` array inside `LanguageSwitcher` owns each locale's display label and menu position. Adding a language requires adding its key to `localeDefinitions` and its typed option to `languageOptions`; callers do not change. [AppHeader](./AppHeader.md) connects it to the actual i18n hooks.
 
 ## Storybook
 

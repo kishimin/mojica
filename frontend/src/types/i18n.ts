@@ -1,7 +1,7 @@
 export const localeDefinitions = {
-  ja: { locale: "ja", label: "日本語" },
-  en: { locale: "en", label: "English" },
-} as const;
+  ja: null,
+  en: null,
+};
 
 export type Locale = keyof typeof localeDefinitions;
 
