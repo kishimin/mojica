@@ -4,7 +4,11 @@ import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
-import { configDefaults, coverageConfigDefaults, defineConfig } from "vitest/config";
+import {
+  configDefaults,
+  coverageConfigDefaults,
+  defineConfig,
+} from "vitest/config";
 const dirname =
   typeof __dirname !== "undefined"
     ? __dirname
@@ -23,6 +27,7 @@ export default defineConfig({
       "@tanstack/react-query",
       "aria-query",
       "axios",
+      "lucide-react",
       "lz-string",
       "pretty-format",
     ],
