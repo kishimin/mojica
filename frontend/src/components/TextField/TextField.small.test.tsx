@@ -33,14 +33,14 @@ describe("TextField", () => {
     expect(textbox).toHaveValue("Existing");
   });
 
-  // ID: TEXT-FIELD-S-004
-  // Source: docs/v1/ui/components/TextField.md § Props
-  // Given: The caller supplies a native placeholder attribute
-  // When: The text field is rendered
-  // Then: The textbox displays the supplied placeholder
-  // Blocked by: TextField implementation
-  // Priority: P1
-  test.todo("displays the placeholder supplied by the caller");
+  test("displays the placeholder supplied by the caller", () => {
+    render(<TextField label="Text" placeholder="Enter text" />);
+
+    expect(screen.getByRole("textbox", { name: "Text" })).toHaveAttribute(
+      "placeholder",
+      "Enter text",
+    );
+  });
 
   // ID: TEXT-FIELD-S-005
   // Source: docs/v1/ui/components/TextField.md § Props; docs/v1/ui/component-design.md § 4
