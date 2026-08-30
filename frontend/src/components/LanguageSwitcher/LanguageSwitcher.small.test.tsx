@@ -1,12 +1,26 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
 import LanguageSwitcher from "./LanguageSwitcher";
+import type { Locale } from "@/types/i18n";
 
 const languageOptions = [
   { locale: "ja" as const, label: "日本語" },
   { locale: "en" as const, label: "English" },
 ];
+
+const ControlledLanguageSwitcher = () => {
+  const [locale, setLocale] = useState<Locale>("ja");
+
+  return (
+    <LanguageSwitcher
+      locale={locale}
+      options={languageOptions}
+      onChange={setLocale}
+    />
+  );
+};
 
 describe("LanguageSwitcher", () => {
   test("displays the controlled locale while closed", () => {
@@ -43,14 +57,15 @@ describe("LanguageSwitcher", () => {
     });
   });
 
-  // ID: LANGUAGE-SWITCHER-S-003
-  // Source: docs/v1/ui/components/LanguageSwitcher.md § Storybook, § Tests
-  // Given: The language menu is open with Japanese selected
-  // When: The user moves to English and confirms the option with the keyboard
-  // Then: The component reports English as the requested locale
-  // Blocked by: LanguageSwitcher implementation
-  // Priority: P0
-  test.todo("reports the language selected with the keyboard");
+  test("updates the displayed language after keyboard selection", async () => {
+    const user = userEvent.setup();
+    render(<ControlledLanguageSwitcher />);
+
+    await user.tab();
+    await user.keyboard("{Enter}{ArrowDown}{Enter}");
+
+    expect(screen.getByRole("button", { name: "English" })).toBeVisible();
+  });
 
   // ID: LANGUAGE-SWITCHER-S-004
   // Source: docs/v1/ui/components/LanguageSwitcher.md § Storybook, § Tests
