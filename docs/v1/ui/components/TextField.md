@@ -21,7 +21,7 @@ Do not redefine native props such as `onClick`, `disabled`, `type`, or `aria-*` 
 
 | Main story state | Verification |
 | ---------------- | ------------ |
-| Default / Filled / Error (with validation message) / Disabled | It can be queried as a textbox with the label using `getByRole("textbox", { name: label })`, and the error message is associated as an accessible description |
+| Default / Filled / Error (with validation message) / Disabled | It can be queried as a textbox with the label using `getByRole("textbox", { name: label })`. Caller-provided guidance remains an accessible description. A validation error sets `aria-invalid="true"` and is associated through `aria-errormessage`. |
 
 ## Tests
 
