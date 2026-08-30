@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { AppProviders } from "../providers/AppProviders";
 
-/**
- * Placeholder screen until the image generation UI (docs/v1/ui/ui.md) replaces it.
- */
+/** Placeholder screen for the application root. */
 const App = () => {
   const [count, setCount] = useState(0);
 
