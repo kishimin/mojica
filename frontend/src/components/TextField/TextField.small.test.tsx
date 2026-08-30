@@ -6,7 +6,7 @@ import TextField from "./TextField";
 describe("TextField", () => {
   test("accepts text through the labeled textbox", async () => {
     const user = userEvent.setup();
-    render(<TextField label="Text" />);
+    render(<TextField label={"Text"} />);
 
     const textbox = screen.getByRole("textbox", { name: "Text" });
     await user.type(textbox, "Hello");
@@ -15,7 +15,7 @@ describe("TextField", () => {
   });
 
   test("associates the validation message with the textbox", () => {
-    render(<TextField label="Text" errorMessage="Text is required" />);
+    render(<TextField label={"Text"} errorMessage={"Text is required"} />);
 
     expect(screen.getByRole("textbox", { name: "Text" })).toHaveAccessibleDescription(
       "Text is required",
@@ -24,7 +24,7 @@ describe("TextField", () => {
 
   test("prevents editing when the textbox is disabled", async () => {
     const user = userEvent.setup();
-    render(<TextField label="Text" defaultValue="Existing" disabled />);
+    render(<TextField label={"Text"} defaultValue={"Existing"} disabled />);
 
     const textbox = screen.getByRole("textbox", { name: "Text" });
     await user.type(textbox, " changed");
@@ -34,7 +34,7 @@ describe("TextField", () => {
   });
 
   test("displays the placeholder supplied by the caller", () => {
-    render(<TextField label="Text" placeholder="Enter text" />);
+    render(<TextField label={"Text"} placeholder={"Enter text"} />);
 
     expect(screen.getByRole("textbox", { name: "Text" })).toHaveAttribute(
       "placeholder",
@@ -45,11 +45,11 @@ describe("TextField", () => {
   test("retains the caller description when adding the validation description", () => {
     render(
       <>
-        <p id="text-hint">Use letters only</p>
+        <p id={"text-hint"}>Use letters only</p>
         <TextField
-          label="Text"
-          aria-describedby="text-hint"
-          errorMessage="Text is required"
+          label={"Text"}
+          aria-describedby={"text-hint"}
+          errorMessage={"Text is required"}
         />
       </>,
     );
