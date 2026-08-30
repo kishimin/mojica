@@ -9,6 +9,7 @@ type ColorPickerFieldProps = Omit<
   "type" | "value" | "onChange"
 > & {
   label: string;
+  colorPickerLabel: string;
   value: string;
   onChange: (hex: string) => void;
   errorMessage?: string;
@@ -16,6 +17,7 @@ type ColorPickerFieldProps = Omit<
 
 const ColorPickerField = ({
   label,
+  colorPickerLabel,
   value,
   onChange,
   errorMessage,
@@ -48,7 +50,7 @@ const ColorPickerField = ({
       <input
         id={colorPickerId}
         type={"color"}
-        aria-label={`${label} picker`}
+        aria-label={colorPickerLabel}
         aria-describedby={describedBy}
         aria-errormessage={errorMessage ? `${inputId}-error` : externalErrorId}
         aria-invalid={errorMessage ? true : isExternallyInvalid}

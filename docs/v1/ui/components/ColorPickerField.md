@@ -14,6 +14,7 @@ type ColorPickerFieldProps = Omit<
   "type" | "value" | "onChange"
 > & {
   label: string;
+  colorPickerLabel: string; // Accessible label for the native color picker
   value: string; // HEX format (for example, "#FFD400")
   onChange: (hex: string) => void;
   errorMessage?: string;
