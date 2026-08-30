@@ -68,6 +68,7 @@ export default defineConfig({
             provider: playwright(),
             instances: [{ browser: "chromium" }],
           },
+          exclude: ["**/*.stories.{ts,tsx}"],
         },
       },
       {
@@ -92,7 +93,6 @@ export default defineConfig({
       ...configDefaults.exclude,
       "**/e2e/**",
       "src/**/*.spec.ts",
-      "**/*.stories.{ts,tsx}",
       "**/.storybook/**",
     ],
   },
