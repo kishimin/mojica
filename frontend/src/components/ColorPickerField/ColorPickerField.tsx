@@ -1,5 +1,6 @@
 import { useId } from "react";
 import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
+import FieldError from "@/components/FieldError/FieldError";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -17,7 +18,10 @@ const ColorPickerField = ({
   label,
   value,
   onChange,
-  errorMessage: _errorMessage,
+  errorMessage,
+  "aria-describedby": describedBy,
+  "aria-errormessage": externalErrorId,
+  "aria-invalid": isExternallyInvalid,
   id,
   ...inputProps
 }: ColorPickerFieldProps) => {
@@ -35,6 +39,9 @@ const ColorPickerField = ({
       <Input
         {...inputProps}
         id={inputId}
+        aria-describedby={describedBy}
+        aria-errormessage={errorMessage ? `${inputId}-error` : externalErrorId}
+        aria-invalid={errorMessage ? true : isExternallyInvalid}
         value={value}
         onChange={handleChange}
       />
@@ -42,10 +49,14 @@ const ColorPickerField = ({
         id={colorPickerId}
         type={"color"}
         aria-label={`${label} picker`}
+        aria-describedby={describedBy}
+        aria-errormessage={errorMessage ? `${inputId}-error` : externalErrorId}
+        aria-invalid={errorMessage ? true : isExternallyInvalid}
         disabled={inputProps.disabled}
         value={value}
         onChange={handleChange}
       />
+      <FieldError id={`${inputId}-error`} message={errorMessage} />
     </div>
   );
 };

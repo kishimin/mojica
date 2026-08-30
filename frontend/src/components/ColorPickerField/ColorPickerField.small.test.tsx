@@ -1,6 +1,14 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, test } from "vitest";
 import ColorPickerField from "./ColorPickerField";
+
+const ControlledColorPickerField = () => {
+  const [value, setValue] = useState("#FFD400");
+
+  return <ColorPickerField label={"Color"} value={value} onChange={setValue} />;
+};
 
 describe("ColorPickerField", () => {
   test("displays the initial HEX value in both color controls", () => {
@@ -18,39 +26,66 @@ describe("ColorPickerField", () => {
     expect(screen.getByLabelText("Color picker")).toHaveValue("#ffd400");
   });
 
-  // ID: COLOR-PICKER-FIELD-S-002
-  // Source: docs/v1/ui/components/ColorPickerField.md § Storybook, § Tests
-  // Given: An enabled color-picker field is displayed
-  // When: The user edits the HEX textbox
-  // Then: Both controls display the edited HEX value
-  // Blocked by: ColorPickerField implementation
-  // Priority: P0
-  test.todo("synchronizes the color control after editing the HEX textbox");
+  test("synchronizes the color control after editing the HEX textbox", async () => {
+    const user = userEvent.setup();
+    render(<ControlledColorPickerField />);
 
-  // ID: COLOR-PICKER-FIELD-S-003
-  // Source: docs/v1/ui/components/ColorPickerField.md § Storybook, § Tests
-  // Given: An enabled color-picker field is displayed
-  // When: The user chooses a value with the color control
-  // Then: Both controls display the chosen HEX value
-  // Blocked by: ColorPickerField implementation
-  // Priority: P0
-  test.todo("synchronizes the HEX textbox after choosing a color");
+    const textbox = screen.getByRole("textbox", { name: "Color" });
+    await user.clear(textbox);
+    await user.type(textbox, "#00ff00");
 
-  // ID: COLOR-PICKER-FIELD-S-004
-  // Source: docs/v1/ui/components/ColorPickerField.md § Storybook, § Tests
-  // Given: A disabled color-picker field has an existing HEX value
-  // When: The user attempts to edit either control
-  // Then: Both controls remain disabled and their displayed value does not change
-  // Blocked by: ColorPickerField implementation
-  // Priority: P1
-  test.todo("prevents value changes while disabled");
+    expect(textbox).toHaveValue("#00ff00");
+    expect(screen.getByLabelText("Color picker")).toHaveValue("#00ff00");
+  });
 
-  // ID: COLOR-PICKER-FIELD-S-005
-  // Source: docs/v1/ui/components/ColorPickerField.md § Props, § Tests; docs/v1/ui/component-design.md § 4
-  // Given: A color-picker field has a validation error message
-  // When: The user encounters the invalid field
-  // Then: The error copy is displayed and exposed as an accessible description
-  // Blocked by: ColorPickerField implementation
-  // Priority: P0
-  test.todo("associates the validation message with the field");
+  test("synchronizes the HEX textbox after choosing a color", () => {
+    render(<ControlledColorPickerField />);
+
+    const colorPicker = screen.getByLabelText("Color picker");
+    fireEvent.change(colorPicker, { target: { value: "#00ff00" } });
+
+    expect(screen.getByRole("textbox", { name: "Color" })).toHaveValue(
+      "#00ff00",
+    );
+  });
+
+  test("prevents value changes while disabled", async () => {
+    const user = userEvent.setup();
+    render(
+      <ColorPickerField
+        label={"Color"}
+        value={"#FFD400"}
+        onChange={() => undefined}
+        disabled={true}
+      />,
+    );
+
+    const textbox = screen.getByRole("textbox", { name: "Color" });
+    const colorPicker = screen.getByLabelText("Color picker");
+
+    expect(textbox).toBeDisabled();
+    expect(colorPicker).toBeDisabled();
+
+    await user.click(textbox);
+    await user.type(textbox, "#00ff00");
+
+    expect(textbox).toHaveValue("#FFD400");
+    expect(colorPicker).toHaveValue("#ffd400");
+  });
+
+  test("associates the validation message with the HEX textbox", () => {
+    render(
+      <ColorPickerField
+        label={"Color"}
+        value={"not-a-color"}
+        onChange={() => undefined}
+        errorMessage={"Enter a valid HEX color"}
+      />,
+    );
+
+    expect(screen.getByText("Enter a valid HEX color")).toBeVisible();
+    expect(
+      screen.getByRole("textbox", { name: "Color" }),
+    ).toHaveAccessibleErrorMessage("Enter a valid HEX color");
+  });
 });
