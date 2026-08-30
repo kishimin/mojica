@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, test, vi } from "vitest";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -20,14 +21,27 @@ describe("LanguageSwitcher", () => {
     expect(screen.getByRole("button", { name: "日本語" })).toBeVisible();
   });
 
-  // ID: LANGUAGE-SWITCHER-S-002
-  // Source: docs/v1/ui/components/LanguageSwitcher.md § Storybook, § Tests
-  // Given: The language switcher is closed and has Japanese and English options
-  // When: The user opens it from the keyboard
-  // Then: A menu exposes both language options
-  // Blocked by: LanguageSwitcher implementation
-  // Priority: P0
-  test.todo("opens an accessible language menu from the keyboard");
+  test("exposes all language options in order when opened from the keyboard", async () => {
+    const user = userEvent.setup();
+    const languageNames = languageOptions.map(({ label }) => label);
+    render(
+      <LanguageSwitcher
+        locale={"ja"}
+        options={languageOptions}
+        onChange={vi.fn()}
+      />,
+    );
+
+    await user.tab();
+    await user.keyboard("{Enter}");
+
+    const menuItems = screen.getAllByRole("menuitem");
+
+    expect(menuItems).toHaveLength(languageNames.length);
+    languageNames.forEach((languageName, index) => {
+      expect(menuItems[index]).toHaveAccessibleName(languageName);
+    });
+  });
 
   // ID: LANGUAGE-SWITCHER-S-003
   // Source: docs/v1/ui/components/LanguageSwitcher.md § Storybook, § Tests
