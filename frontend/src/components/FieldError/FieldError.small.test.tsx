@@ -23,5 +23,9 @@ describe("FieldError", () => {
   // Then: No error content is rendered
   // Blocked by: FieldError implementation
   // Priority: P0
-  test.todo("renders no error content for an empty message");
+  test("renders no error content for an empty message", () => {
+    const { container } = render(<FieldError message={""} />);
+
+    expect(container).toBeEmptyDOMElement();
+  });
 });
