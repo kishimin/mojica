@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import ColorPickerField from "./ColorPickerField";
 
 const ControlledColorPickerField = () => {
@@ -16,7 +16,7 @@ describe("ColorPickerField", () => {
       <ColorPickerField
         label={"Color"}
         value={"#FFD400"}
-        onChange={() => undefined}
+        onChange={vi.fn<(hex: string) => void>()}
       />,
     );
 
@@ -55,7 +55,7 @@ describe("ColorPickerField", () => {
       <ColorPickerField
         label={"Color"}
         value={"#FFD400"}
-        onChange={() => undefined}
+        onChange={vi.fn<(hex: string) => void>()}
         disabled={true}
       />,
     );
@@ -78,7 +78,7 @@ describe("ColorPickerField", () => {
       <ColorPickerField
         label={"Color"}
         value={"not-a-color"}
-        onChange={() => undefined}
+        onChange={vi.fn<(hex: string) => void>()}
         errorMessage={"Enter a valid HEX color"}
       />,
     );
