@@ -5,25 +5,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Locale } from "@/types/i18n";
-
-type LanguageOption = {
-  locale: Locale;
-  label: string;
-};
+import { localeDefinitions, type Locale } from "@/types/i18n";
 
 type LanguageSwitcherProps = {
   locale: Locale;
-  options: readonly LanguageOption[];
   onChange: (locale: Locale) => void;
 };
 
-const LanguageSwitcher = ({
-  locale,
-  options,
-  onChange,
-}: LanguageSwitcherProps) => {
-  const selectedLanguage = options.find((option) => option.locale === locale);
+const languageOptions = Object.values(localeDefinitions);
+
+const LanguageSwitcher = ({ locale, onChange }: LanguageSwitcherProps) => {
+  const selectedLanguage = localeDefinitions[locale];
 
   return (
     <DropdownMenu>
@@ -34,7 +26,7 @@ const LanguageSwitcher = ({
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {options.map((option) => (
+        {languageOptions.map((option) => (
           <DropdownMenuItem
             key={option.locale}
             onSelect={() => onChange(option.locale)}
