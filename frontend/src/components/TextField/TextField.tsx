@@ -14,19 +14,24 @@ const TextField = ({
   id,
   errorMessage,
   "aria-describedby": callerDescriptionIds,
+  "aria-errormessage": callerErrorMessageId,
+  "aria-invalid": callerInvalid,
   ...inputProps
 }: TextFieldProps) => {
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const errorId = `${inputId}-error`;
-  const descriptionIds = [callerDescriptionIds, errorMessage ? errorId : undefined]
-    .filter(Boolean)
-    .join(" ");
 
   return (
     <div>
       <Label htmlFor={inputId}>{label}</Label>
-      <Input id={inputId} aria-describedby={descriptionIds || undefined} {...inputProps} />
+      <Input
+        id={inputId}
+        aria-describedby={callerDescriptionIds}
+        aria-errormessage={errorMessage ? errorId : callerErrorMessageId}
+        aria-invalid={errorMessage ? true : callerInvalid}
+        {...inputProps}
+      />
       <FieldError id={errorId} message={errorMessage} />
     </div>
   );
