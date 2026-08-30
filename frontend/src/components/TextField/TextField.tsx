@@ -13,7 +13,7 @@ const TextField = ({
   label,
   id,
   errorMessage,
-  "aria-describedby": callerDescriptionIds,
+  "aria-describedby": describedBy,
   "aria-errormessage": callerErrorMessageId,
   "aria-invalid": callerInvalid,
   ...inputProps
@@ -27,7 +27,7 @@ const TextField = ({
       <Label htmlFor={inputId}>{label}</Label>
       <Input
         id={inputId}
-        aria-describedby={callerDescriptionIds}
+        aria-describedby={describedBy}
         aria-errormessage={errorMessage ? errorId : callerErrorMessageId}
         aria-invalid={errorMessage ? true : callerInvalid}
         {...inputProps}
