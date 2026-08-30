@@ -14,8 +14,8 @@ const TextField = ({
   id,
   errorMessage,
   "aria-describedby": describedBy,
-  "aria-errormessage": callerErrorMessageId,
-  "aria-invalid": callerInvalid,
+  "aria-errormessage": externalErrorId,
+  "aria-invalid": isExternallyInvalid,
   ...inputProps
 }: TextFieldProps) => {
   const generatedId = useId();
@@ -28,8 +28,8 @@ const TextField = ({
       <Input
         id={inputId}
         aria-describedby={describedBy}
-        aria-errormessage={errorMessage ? errorId : callerErrorMessageId}
-        aria-invalid={errorMessage ? true : callerInvalid}
+        aria-errormessage={errorMessage ? errorId : externalErrorId}
+        aria-invalid={errorMessage ? true : isExternallyInvalid}
         {...inputProps}
       />
       <FieldError id={errorId} message={errorMessage} />
