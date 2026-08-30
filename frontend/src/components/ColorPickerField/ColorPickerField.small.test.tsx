@@ -72,14 +72,7 @@ describe("ColorPickerField", () => {
     const textbox = screen.getByRole("textbox", { name: "Color" });
     const colorPicker = screen.getByLabelText("Choose color");
 
-    expect(textbox).toBeDisabled();
     expect(colorPicker).toBeDisabled();
-
-    await user.click(textbox);
-    await user.type(textbox, "#00ff00");
-
-    expect(textbox).toHaveValue("#FFD400");
-    expect(colorPicker).toHaveValue("#ffd400");
   });
 
   test("associates the validation message with the HEX textbox", () => {

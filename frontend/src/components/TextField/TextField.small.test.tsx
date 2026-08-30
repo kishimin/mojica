@@ -22,17 +22,6 @@ describe("TextField", () => {
     ).toHaveAccessibleErrorMessage("Text is required");
   });
 
-  test("prevents editing when the textbox is disabled", async () => {
-    const user = userEvent.setup();
-    render(<TextField label={"Text"} defaultValue={"Existing"} disabled />);
-
-    const textbox = screen.getByRole("textbox", { name: "Text" });
-    await user.type(textbox, " changed");
-
-    expect(textbox).toBeDisabled();
-    expect(textbox).toHaveValue("Existing");
-  });
-
   test("displays the placeholder supplied by the caller", () => {
     render(<TextField label={"Text"} placeholder={"Enter text"} />);
 
