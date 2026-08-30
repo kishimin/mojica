@@ -57,8 +57,7 @@ describe("ColorPickerField", () => {
     );
   });
 
-  test("prevents value changes while disabled", async () => {
-    const user = userEvent.setup();
+  test("prevents value changes while disabled", () => {
     render(
       <ColorPickerField
         label={"Color"}
