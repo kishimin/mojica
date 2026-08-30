@@ -1,6 +1,8 @@
 import { ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Locale } from "@/types/i18n";
@@ -16,7 +18,11 @@ type LanguageSwitcherProps = {
   onChange: (locale: Locale) => void;
 };
 
-const LanguageSwitcher = ({ locale, options }: LanguageSwitcherProps) => {
+const LanguageSwitcher = ({
+  locale,
+  options,
+  onChange,
+}: LanguageSwitcherProps) => {
   const selectedLanguage = options.find((option) => option.locale === locale);
 
   return (
@@ -27,6 +33,16 @@ const LanguageSwitcher = ({ locale, options }: LanguageSwitcherProps) => {
           <ChevronDown aria-hidden={"true"} />
         </button>
       </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        {options.map((option) => (
+          <DropdownMenuItem
+            key={option.locale}
+            onSelect={() => onChange(option.locale)}
+          >
+            {option.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
     </DropdownMenu>
   );
 };
