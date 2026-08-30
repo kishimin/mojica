@@ -14,14 +14,13 @@ describe("TextField", () => {
     expect(textbox).toHaveValue("Hello");
   });
 
-  // ID: TEXT-FIELD-S-002
-  // Source: docs/v1/ui/components/TextField.md § Storybook; docs/v1/ui/component-design.md § 4
-  // Given: A text field has a validation error message
-  // When: The user encounters the invalid field
-  // Then: The textbox exposes the error message as its accessible description
-  // Blocked by: TextField implementation
-  // Priority: P0
-  test.todo("associates the validation message with the textbox");
+  test("associates the validation message with the textbox", () => {
+    render(<TextField label="Text" errorMessage="Text is required" />);
+
+    expect(screen.getByRole("textbox", { name: "Text" })).toHaveAccessibleDescription(
+      "Text is required",
+    );
+  });
 
   // ID: TEXT-FIELD-S-003
   // Source: docs/v1/ui/components/TextField.md § Props, § Storybook
