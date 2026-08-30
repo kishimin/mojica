@@ -85,6 +85,10 @@ export default defineConfig([
           selector: "FunctionDeclaration, FunctionExpression",
           message: "Use an arrow function instead.",
         },
+        {
+          selector: "MemberExpression[object.name='React']",
+          message: "Import React APIs directly instead of using the React namespace.",
+        },
       ],
       camelcase: ["warn", { properties: "never" }],
       "@typescript-eslint/switch-exhaustiveness-check": "warn",
