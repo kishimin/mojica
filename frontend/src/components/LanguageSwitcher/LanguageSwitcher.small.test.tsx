@@ -67,12 +67,14 @@ describe("LanguageSwitcher", () => {
     expect(screen.getByRole("button", { name: "English" })).toBeVisible();
   });
 
-  // ID: LANGUAGE-SWITCHER-S-004
-  // Source: docs/v1/ui/components/LanguageSwitcher.md § Storybook, § Tests
-  // Given: The language menu is open
-  // When: The user presses Escape
-  // Then: The menu closes and the selected language remains Japanese
-  // Blocked by: LanguageSwitcher implementation
-  // Priority: P1
-  test.todo("keeps the selected language when the menu is dismissed");
+  test("keeps the selected language when the menu is dismissed", async () => {
+    const user = userEvent.setup();
+    render(<ControlledLanguageSwitcher />);
+
+    await user.tab();
+    await user.keyboard("{Enter}{Escape}");
+
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "日本語" })).toBeVisible();
+  });
 });
