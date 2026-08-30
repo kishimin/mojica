@@ -1,14 +1,18 @@
-import { describe, test } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, test } from "vitest";
+import TextField from "./TextField";
 
 describe("TextField", () => {
-  // ID: TEXT-FIELD-S-001
-  // Source: docs/v1/ui/components/TextField.md § Storybook, § Tests
-  // Given: A text field has a visible label and is enabled
-  // When: The user types text into the field
-  // Then: The field is discoverable by its textbox role and label, and displays the entered text
-  // Blocked by: TextField implementation
-  // Priority: P0
-  test.todo("accepts text through the labeled textbox");
+  test("accepts text through the labeled textbox", async () => {
+    const user = userEvent.setup();
+    render(<TextField label="Text" />);
+
+    const textbox = screen.getByRole("textbox", { name: "Text" });
+    await user.type(textbox, "Hello");
+
+    expect(textbox).toHaveValue("Hello");
+  });
 
   // ID: TEXT-FIELD-S-002
   // Source: docs/v1/ui/components/TextField.md § Storybook; docs/v1/ui/component-design.md § 4
