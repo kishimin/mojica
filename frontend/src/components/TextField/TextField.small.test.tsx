@@ -30,10 +30,19 @@ describe("TextField", () => {
 
   // ID: TEXT-FIELD-S-004
   // Source: docs/v1/ui/components/TextField.md § Props
-  // Given: The caller supplies name, placeholder, and aria-describedby attributes
+  // Given: The caller supplies a native placeholder attribute
   // When: The text field is rendered
-  // Then: The textbox preserves the supplied name, placeholder, and accessible description
+  // Then: The textbox displays the supplied placeholder
   // Blocked by: TextField implementation
   // Priority: P1
-  test.todo("preserves native textbox attributes supplied by the caller");
+  test.todo("preserves a native textbox attribute supplied by the caller");
+
+  // ID: TEXT-FIELD-S-005
+  // Source: docs/v1/ui/components/TextField.md § Props; docs/v1/ui/component-design.md § 4
+  // Given: The caller supplies an accessible description and the field has a validation error
+  // When: The text field is rendered
+  // Then: The textbox exposes both the caller description and validation message as accessible descriptions
+  // Blocked by: TextField implementation
+  // Priority: P0
+  test.todo("preserves the caller description when associating a validation message");
 });
