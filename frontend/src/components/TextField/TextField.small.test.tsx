@@ -35,7 +35,7 @@ describe("TextField", () => {
   // Then: The textbox displays the supplied placeholder
   // Blocked by: TextField implementation
   // Priority: P1
-  test.todo("preserves a native textbox attribute supplied by the caller");
+  test.todo("displays the placeholder supplied by the caller");
 
   // ID: TEXT-FIELD-S-005
   // Source: docs/v1/ui/components/TextField.md § Props; docs/v1/ui/component-design.md § 4
