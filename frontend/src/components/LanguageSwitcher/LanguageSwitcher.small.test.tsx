@@ -3,11 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { localeDefinitions, type Locale } from "@/types/i18n";
+import type { Locale } from "@/types/i18n";
 
-const languageNames = Object.values(localeDefinitions).map(
-  ({ label }) => label,
-);
+const expectedLanguageNames = ["日本語", "English"];
 
 const ControlledLanguageSwitcher = () => {
   const [locale, setLocale] = useState<Locale>("ja");
@@ -41,8 +39,8 @@ describe("LanguageSwitcher", () => {
 
     const menuItems = screen.getAllByRole("menuitem");
 
-    expect(menuItems).toHaveLength(languageNames.length);
-    languageNames.forEach((languageName, index) => {
+    expect(menuItems).toHaveLength(expectedLanguageNames.length);
+    expectedLanguageNames.forEach((languageName, index) => {
       expect(menuItems[index]).toHaveAccessibleName(languageName);
     });
   });
