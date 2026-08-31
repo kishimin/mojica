@@ -1,8 +1,7 @@
 import { screen } from "@testing-library/react";
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test } from "vitest";
 import GenerateButton from "./GenerateButton";
-import { I18nContext } from "@/hooks/i18n-context";
-import { setup } from "@/tests/test-utils";
+import { setupWithI18n } from "@/tests/test-utils";
 
 describe("GenerateButton", () => {
   afterEach(() => {
@@ -10,13 +9,7 @@ describe("GenerateButton", () => {
   });
 
   test("displays an enabled generate action while idle", () => {
-    setup(
-      <I18nContext.Provider
-        value={{ locale: "ja", setLocale: vi.fn<(locale: string) => void>() }}
-      >
-        <GenerateButton state={{ kind: "idle" }} />
-      </I18nContext.Provider>,
-    );
+    setupWithI18n(<GenerateButton state={{ kind: "idle" }} />);
 
     const button = screen.getByRole("button", { name: "画像を生成する" });
 
@@ -24,13 +17,7 @@ describe("GenerateButton", () => {
   });
 
   test("communicates the disabled busy state while submitting", () => {
-    setup(
-      <I18nContext.Provider
-        value={{ locale: "ja", setLocale: vi.fn<(locale: string) => void>() }}
-      >
-        <GenerateButton state={{ kind: "submitting" }} />
-      </I18nContext.Provider>,
-    );
+    setupWithI18n(<GenerateButton state={{ kind: "submitting" }} />);
 
     const button = screen.getByRole("button", { name: "生成中..." });
 
@@ -39,13 +26,7 @@ describe("GenerateButton", () => {
   });
 
   test("displays an enabled retryable action after an error", () => {
-    setup(
-      <I18nContext.Provider
-        value={{ locale: "ja", setLocale: vi.fn<(locale: string) => void>() }}
-      >
-        <GenerateButton state={{ kind: "retryable" }} />
-      </I18nContext.Provider>,
-    );
+    setupWithI18n(<GenerateButton state={{ kind: "retryable" }} />);
 
     const button = screen.getByRole("button", { name: "画像を生成する" });
 
@@ -53,12 +34,8 @@ describe("GenerateButton", () => {
   });
 
   test("displays the disabled retry countdown without owning time passage", () => {
-    setup(
-      <I18nContext.Provider
-        value={{ locale: "ja", setLocale: vi.fn<(locale: string) => void>() }}
-      >
-        <GenerateButton state={{ kind: "cooldown", remainingSeconds: 5 }} />
-      </I18nContext.Provider>,
+    setupWithI18n(
+      <GenerateButton state={{ kind: "cooldown", remainingSeconds: 5 }} />,
     );
 
     const button = screen.getByRole("button", {
@@ -71,13 +48,7 @@ describe("GenerateButton", () => {
   test("displays the English label when English is the active locale", () => {
     localStorage.setItem("locale", "en");
 
-    setup(
-      <I18nContext.Provider
-        value={{ locale: "en", setLocale: vi.fn<(locale: string) => void>() }}
-      >
-        <GenerateButton state={{ kind: "submitting" }} />
-      </I18nContext.Provider>,
-    );
+    setupWithI18n(<GenerateButton state={{ kind: "submitting" }} />, "en");
 
     expect(
       screen.getByRole("button", { name: "Generating..." }),
