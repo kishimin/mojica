@@ -23,7 +23,7 @@ const TextField = ({
   const errorId = `${inputId}-error`;
 
   return (
-    <div className={"flex flex-col gap-1"}>
+    <div className={"flex flex-col gap-2"}>
       <Label htmlFor={inputId}>{label}</Label>
       <Input
         id={inputId}
