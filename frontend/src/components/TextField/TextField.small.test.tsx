@@ -32,6 +32,14 @@ describe("TextField", () => {
     );
   });
 
+  test("keeps a transparent background while disabled", () => {
+    render(<TextField label={"Text"} disabled={true} />);
+
+    expect(screen.getByRole("textbox", { name: "Text" })).toHaveClass(
+      "disabled:bg-transparent",
+    );
+  });
+
   test("retains the caller description when adding a validation error", () => {
     render(
       <>
