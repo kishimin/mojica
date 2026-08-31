@@ -15,7 +15,9 @@ const AlertBanner = ({ title, description }: AlertBannerProps) => (
   >
     <AlertCircle aria-hidden={"true"} />
     <AlertTitle>{title}</AlertTitle>
-    <AlertDescription>{description}</AlertDescription>
+    <AlertDescription className={"!text-foreground"}>
+      {description}
+    </AlertDescription>
   </Alert>
 );
 
