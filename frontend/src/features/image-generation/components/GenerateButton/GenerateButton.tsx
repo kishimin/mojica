@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type GenerateButtonState =
   | { kind: "idle" }
@@ -12,7 +12,8 @@ type GenerateButtonProps = {
   state: GenerateButtonState;
 };
 
-function GenerateButton({ state }: GenerateButtonProps) {
+/** Renders the image generation action for its parent-selected state. */
+const GenerateButton = ({ state }: GenerateButtonProps) => {
   const isSubmitting = state.kind === "submitting";
   const isCooldown = state.kind === "cooldown";
   const isRetryable = state.kind === "retryable" || isCooldown;
@@ -29,11 +30,11 @@ function GenerateButton({ state }: GenerateButtonProps) {
       aria-busy={isSubmitting}
     >
       {isSubmitting ? (
-        <Loader2 aria-hidden={true} className="animate-spin" />
+        <Loader2 aria-hidden={true} className={"animate-spin"} />
       ) : null}
       {label}
     </Button>
   );
-}
+};
 
 export default GenerateButton;

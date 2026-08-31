@@ -1,9 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-
-import { setup } from "@/tests/test-utils";
-
 import GenerateButton from "./GenerateButton";
+import { setup } from "@/tests/test-utils";
 
 describe("GenerateButton", () => {
   test("displays an enabled generate action while idle", () => {
