@@ -36,28 +36,40 @@ const ColorPickerField = ({
   };
 
   return (
-    <div>
+    <div className={"flex flex-col gap-2"}>
       <Label htmlFor={inputId}>{label}</Label>
-      <Input
-        {...inputProps}
-        id={inputId}
-        aria-describedby={describedBy}
-        aria-errormessage={errorMessage ? `${inputId}-error` : externalErrorId}
-        aria-invalid={errorMessage ? true : isExternallyInvalid}
-        value={value}
-        onChange={handleChange}
-      />
-      <input
-        id={colorPickerId}
-        type={"color"}
-        aria-label={colorPickerLabel}
-        aria-describedby={describedBy}
-        aria-errormessage={errorMessage ? `${inputId}-error` : externalErrorId}
-        aria-invalid={errorMessage ? true : isExternallyInvalid}
-        disabled={inputProps.disabled}
-        value={value}
-        onChange={handleChange}
-      />
+      <div
+        className={
+          "flex h-14 items-center gap-3 rounded-lg border border-input px-2.5 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50"
+        }
+      >
+        <input
+          id={colorPickerId}
+          type={"color"}
+          aria-label={colorPickerLabel}
+          aria-describedby={describedBy}
+          aria-errormessage={
+            errorMessage ? `${inputId}-error` : externalErrorId
+          }
+          aria-invalid={errorMessage ? true : isExternallyInvalid}
+          disabled={inputProps.disabled}
+          className={"size-9 shrink-0 rounded-md border-0 p-0"}
+          value={value}
+          onChange={handleChange}
+        />
+        <Input
+          {...inputProps}
+          id={inputId}
+          aria-describedby={describedBy}
+          aria-errormessage={
+            errorMessage ? `${inputId}-error` : externalErrorId
+          }
+          aria-invalid={errorMessage ? true : isExternallyInvalid}
+          className={"h-auto border-0 p-0 shadow-none focus-visible:ring-0"}
+          value={value}
+          onChange={handleChange}
+        />
+      </div>
       <FieldError id={`${inputId}-error`} message={errorMessage} />
     </div>
   );
