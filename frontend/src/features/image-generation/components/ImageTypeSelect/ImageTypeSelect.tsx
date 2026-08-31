@@ -1,3 +1,5 @@
+import FieldError from "@/components/FieldError/FieldError";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -5,9 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import FieldError from "@/components/FieldError/FieldError";
 import type { ImageGenerationRequestDto } from "@/models/imageGenerationRequestDto";
-import { Label } from "@/components/ui/label";
 
 type ImageType = NonNullable<ImageGenerationRequestDto["type"]>;
 
@@ -35,10 +35,10 @@ const ImageTypeSelect = ({
 
   return (
     <div className={"flex flex-col gap-2"}>
-      <Label htmlFor="image-type-select">画像タイプ</Label>
+      <Label htmlFor={"image-type-select"}>{"画像タイプ"}</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger
-          id="image-type-select"
+          id={"image-type-select"}
           aria-describedby={errorMessage ? errorId : undefined}
           aria-errormessage={errorMessage ? errorId : undefined}
           aria-invalid={errorMessage ? true : undefined}
