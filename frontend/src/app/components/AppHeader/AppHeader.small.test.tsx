@@ -1,14 +1,18 @@
-import { describe, test } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+import { I18nProvider } from "../../providers/I18nProvider";
+import AppHeader from "./AppHeader";
 
 describe("AppHeader", () => {
-  // ID: APP-HEADER-S-000
-  // Source: docs/v1/ui/components/AppHeader.md § Responsibility, § Tests
-  // Given: The application header is rendered
-  // When: Assistive technology inspects the page landmarks
-  // Then: The header is exposed as a banner landmark
-  // Blocked by: AppHeader implementation
-  // Priority: P0
-  test.todo("renders the application header as a banner landmark");
+  test("renders the application header as a banner landmark", () => {
+    render(
+      <I18nProvider>
+        <AppHeader />
+      </I18nProvider>,
+    );
+
+    expect(screen.getByRole("banner")).toBeVisible();
+  });
 
   // ID: APP-HEADER-S-001
   // Source: docs/v1/ui/components/AppHeader.md § Storybook, § Tests
