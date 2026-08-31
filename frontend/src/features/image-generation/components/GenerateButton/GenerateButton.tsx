@@ -1,5 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/hooks/use-i18n";
+import { generateButtonMessages } from "@/i18n/messages";
 
 type GenerateButtonState =
   | { kind: "idle" }
@@ -12,21 +14,69 @@ type GenerateButtonProps = {
   state: GenerateButtonState;
 };
 
+type ButtonPresentation = {
+  label: string;
+  disabled: boolean;
+  isRetryable: boolean;
+  isSubmitting: boolean;
+};
+
+const getButtonPresentation = (
+  state: GenerateButtonState,
+  locale: keyof typeof generateButtonMessages,
+): ButtonPresentation => {
+  const messages = generateButtonMessages[locale];
+
+  switch (state.kind) {
+    case "idle":
+      return {
+        label: messages.idle,
+        disabled: false,
+        isRetryable: false,
+        isSubmitting: false,
+      };
+    case "submitting":
+      return {
+        label: messages.submitting,
+        disabled: true,
+        isRetryable: false,
+        isSubmitting: true,
+      };
+    case "retryable":
+      return {
+        label: messages.retryable,
+        disabled: false,
+        isRetryable: true,
+        isSubmitting: false,
+      };
+    case "cooldown":
+      return {
+        label: messages.cooldown(state.remainingSeconds),
+        disabled: true,
+        isRetryable: true,
+        isSubmitting: false,
+      };
+    default:
+      return assertNever(state);
+  }
+};
+
+const assertNever = (value: never): never => {
+  throw new Error(`Unsupported generate button state: ${String(value)}`);
+};
+
 /** Renders the image generation action for its parent-selected state. */
 const GenerateButton = ({ state }: GenerateButtonProps) => {
-  const isSubmitting = state.kind === "submitting";
-  const isCooldown = state.kind === "cooldown";
-  const isRetryable = state.kind === "retryable" || isCooldown;
-  const label = isSubmitting
-    ? "生成中..."
-    : isCooldown
-      ? `${state.remainingSeconds}秒後に再試行できます`
-      : "画像を生成する";
+  const { locale } = useI18n();
+  const { label, disabled, isRetryable, isSubmitting } = getButtonPresentation(
+    state,
+    locale,
+  );
 
   return (
     <Button
       className={isRetryable ? "bg-inverse text-inverse-foreground" : undefined}
-      disabled={isSubmitting || isCooldown}
+      disabled={disabled}
       aria-busy={isSubmitting}
     >
       {isSubmitting ? (
