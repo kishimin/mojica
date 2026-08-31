@@ -50,8 +50,8 @@ describe("GenerateButton", () => {
 
     setupWithI18n(<GenerateButton state={{ kind: "submitting" }} />, "en");
 
-    expect(
-      screen.getByRole("button", { name: "Generating..." }),
-    ).toBeDisabled();
+    const button = screen.getByRole("button", { name: "Generating..." });
+
+    expect(button).toBeDisabled();
   });
 });
