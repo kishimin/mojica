@@ -64,7 +64,4 @@ function Button({
   );
 }
 
-// The shadcn primitive intentionally exports its variant recipe alongside the component for reuse.
-// Fast Refresh cannot prove that mixed export safe, so this vendor-boundary warning is suppressed.
-// eslint-disable-next-line react/only-export-components
 export { Button, buttonVariants };
