@@ -1,5 +1,12 @@
 import type { Locale } from "@/types/i18n";
 
+type GenerateButtonMessages = {
+  idle: string;
+  submitting: string;
+  retryable: string;
+  cooldown: (seconds: number) => string;
+};
+
 export const generateButtonMessages = {
   ja: {
     idle: "画像を生成する",
@@ -13,4 +20,4 @@ export const generateButtonMessages = {
     retryable: "Generate image",
     cooldown: (seconds: number) => `You can retry in ${seconds} seconds`,
   },
-} satisfies Record<Locale, object>;
+} satisfies Record<Locale, GenerateButtonMessages>;
