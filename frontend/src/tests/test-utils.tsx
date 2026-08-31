@@ -1,11 +1,11 @@
-import { render as testingLibraryRender } from "@testing-library/react";
+import {
+  render as testingLibraryRender,
+  type RenderOptions,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactElement } from "react";
 
-export const setup = (
-  element: ReactElement,
-  options?: Parameters<typeof testingLibraryRender>[1],
-) => ({
+export const setup = (ui: ReactElement, options?: RenderOptions) => ({
   user: userEvent.setup(),
-  ...testingLibraryRender(element, options),
+  ...testingLibraryRender(ui, options),
 });
