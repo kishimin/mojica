@@ -77,7 +77,7 @@ const ColorPickerField = ({
           }
           aria-invalid={errorMessage ? true : isExternallyInvalid}
           className={
-            "h-auto border-0 p-0 shadow-none focus-visible:ring-0 aria-invalid:border-0 aria-invalid:ring-0"
+            "h-auto border-0 bg-transparent p-0 shadow-none focus-visible:ring-0 disabled:bg-transparent aria-invalid:border-0 aria-invalid:ring-0"
           }
           value={value}
           onChange={handleChange}
