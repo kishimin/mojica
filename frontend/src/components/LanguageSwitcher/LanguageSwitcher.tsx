@@ -20,7 +20,7 @@ const LanguageSwitcher = ({ locale, onChange }: LanguageSwitcherProps) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className={"inline-flex items-center gap-1"}>
         {selectedLanguage?.label}
         <ChevronDown aria-hidden={"true"} />
       </DropdownMenuTrigger>
