@@ -108,8 +108,13 @@ describe("ImageTypeSelect", () => {
 
     await user.click(screen.getByRole("combobox", { name: "Image type" }));
 
-    expect(
-      screen.getAllByRole("option").map((option) => option.textContent),
-    ).toEqual(["Standard image", "X background image", "X icon image"]);
+    const options = screen.getAllByRole("option");
+
+    expect(options).toHaveLength(3);
+    expect(options.map((option) => option.textContent)).toEqual([
+      "Standard image",
+      "X background image",
+      "X icon image",
+    ]);
   });
 });
