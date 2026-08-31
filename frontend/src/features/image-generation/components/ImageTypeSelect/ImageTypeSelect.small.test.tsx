@@ -12,13 +12,6 @@ const ControlledImageTypeSelect = () => {
 };
 
 describe("ImageTypeSelect", () => {
-  // ID: IMAGE-TYPE-SELECT-S-000
-  // Source: docs/v1/ui/components/ImageTypeSelect.md § Storybook, § Tests
-  // Given: The image-type selector is rendered with the supported API values
-  // When: The user opens the selector
-  // Then: The localized option labels are displayed in the documented order
-  // Blocked by: ImageTypeSelect implementation
-  // Priority: P0
   test("displays every supported image type option in order when opened", async () => {
     const { user } = setupWithI18n(
       <ImageTypeSelect
@@ -39,13 +32,6 @@ describe("ImageTypeSelect", () => {
     ]);
   });
 
-  // ID: IMAGE-TYPE-SELECT-S-001
-  // Source: docs/v1/ui/components/ImageTypeSelect.md § Storybook, § Tests
-  // Given: The controlled image type is standard
-  // When: The selector is rendered
-  // Then: The localized label for the standard image type is displayed as selected
-  // Blocked by: ImageTypeSelect implementation
-  // Priority: P0
   test("displays the localized label for the controlled image type", () => {
     setupWithI18n(
       <ImageTypeSelect
@@ -57,13 +43,6 @@ describe("ImageTypeSelect", () => {
     expect(screen.getByRole("combobox")).toHaveTextContent("標準画像");
   });
 
-  // ID: IMAGE-TYPE-SELECT-S-002
-  // Source: docs/v1/ui/components/ImageTypeSelect.md § Storybook, § Tests
-  // Given: The image-type selector is focused with standard selected
-  // When: The user selects another image type with the keyboard
-  // Then: The newly selected localized label is displayed
-  // Blocked by: ImageTypeSelect implementation
-  // Priority: P0
   test("changes the selected image type through keyboard interaction", async () => {
     const { user } = setupWithI18n(<ControlledImageTypeSelect />);
 
@@ -73,13 +52,6 @@ describe("ImageTypeSelect", () => {
     expect(screen.getByRole("combobox")).toHaveTextContent("X背景画像");
   });
 
-  // ID: IMAGE-TYPE-SELECT-S-003
-  // Source: docs/v1/ui/components/ImageTypeSelect.md § Props; docs/v1/ui/component-design.md § 4
-  // Given: The image-type selector has a validation error message
-  // When: The user encounters the invalid selector
-  // Then: The error copy is displayed and exposed as its accessible description
-  // Blocked by: ImageTypeSelect implementation
-  // Priority: P0
   test("associates the validation message with the selector", () => {
     setupWithI18n(
       <ImageTypeSelect
