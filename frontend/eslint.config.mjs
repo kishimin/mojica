@@ -209,6 +209,7 @@ export default defineConfig([
       ],
       "vitest/no-focused-tests": "error",
       "vitest/no-disabled-tests": "warn",
+      "vitest/require-mock-type-parameters": "error",
     },
     settings: {
       vitest: { typecheck: true },
