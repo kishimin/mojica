@@ -9,7 +9,9 @@ import {
 import type { Locale } from "@/types/i18n";
 
 type LanguageSwitcherProps = {
+  /** Currently selected locale. */
   locale: Locale;
+  /** Called after the user selects another locale. */
   onChange: (locale: Locale) => void;
 };
 

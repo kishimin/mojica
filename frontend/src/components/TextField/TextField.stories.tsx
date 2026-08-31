@@ -4,6 +4,13 @@ import TextField from "./TextField";
 const meta = {
   title: "Components/TextField",
   component: TextField,
+  parameters: {
+    docs: {
+      description: {
+        component: "Labeled text input with accessible validation feedback.",
+      },
+    },
+  },
   args: {
     label: "Name",
   },

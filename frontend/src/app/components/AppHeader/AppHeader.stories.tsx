@@ -5,6 +5,14 @@ import AppHeader from "./AppHeader";
 const meta = {
   title: "App/AppHeader",
   component: AppHeader,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Application header combining the Mojica logo and locale switcher.",
+      },
+    },
+  },
   decorators: [
     (Story) => (
       <I18nProvider>

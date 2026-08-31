@@ -4,6 +4,13 @@ import FieldError from "./FieldError";
 const meta = {
   title: "Components/FieldError",
   component: FieldError,
+  parameters: {
+    docs: {
+      description: {
+        component: "Validation message associated with a form control.",
+      },
+    },
+  },
 } satisfies Meta<typeof FieldError>;
 
 export default meta;

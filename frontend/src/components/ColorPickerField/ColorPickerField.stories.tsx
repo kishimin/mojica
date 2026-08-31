@@ -5,6 +5,13 @@ import ColorPickerField from "./ColorPickerField";
 const meta = {
   title: "Components/ColorPickerField",
   component: ColorPickerField,
+  parameters: {
+    docs: {
+      description: {
+        component: "Combined native color picker and editable HEX text field.",
+      },
+    },
+  },
   args: {
     label: "Color",
     colorPickerLabel: "Choose color",

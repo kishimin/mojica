@@ -4,6 +4,14 @@ import AlertBanner from "./AlertBanner";
 const meta = {
   title: "Components/AlertBanner",
   component: AlertBanner,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Destructive alert for communicating image-generation failures.",
+      },
+    },
+  },
 } satisfies Meta<typeof AlertBanner>;
 
 export default meta;

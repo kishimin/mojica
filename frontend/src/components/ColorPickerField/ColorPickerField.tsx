@@ -9,10 +9,15 @@ type ColorPickerFieldProps = Omit<
   ComponentPropsWithoutRef<"input">,
   "type" | "value" | "onChange"
 > & {
+  /** Visible label for the combined color controls. */
   label: string;
+  /** Accessible name for the native color picker control. */
   colorPickerLabel: string;
+  /** Current HEX color value. */
   value: string;
+  /** Called when either color control produces a new HEX value. */
   onChange: (hex: string) => void;
+  /** Validation message shown beneath the combined control. */
   errorMessage?: string;
 };
 

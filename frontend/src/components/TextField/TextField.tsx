@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 type TextFieldProps = ComponentPropsWithoutRef<"input"> & {
+  /** Visible label associated with the textbox. */
   label: string;
+  /** Validation message announced for the textbox. */
   errorMessage?: string;
 };
 

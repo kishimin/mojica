@@ -5,6 +5,13 @@ import LanguageSwitcher from "./LanguageSwitcher";
 const meta = {
   title: "Components/LanguageSwitcher",
   component: LanguageSwitcher,
+  parameters: {
+    docs: {
+      description: {
+        component: "Controlled menu for selecting the application locale.",
+      },
+    },
+  },
 } satisfies Meta<typeof LanguageSwitcher>;
 
 export default meta;

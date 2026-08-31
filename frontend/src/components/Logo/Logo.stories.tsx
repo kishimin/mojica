@@ -4,6 +4,9 @@ import Logo from "./Logo";
 const meta = {
   title: "Components/Logo",
   component: Logo,
+  parameters: {
+    docs: { description: { component: "Mojica brand mark and wordmark." } },
+  },
 } satisfies Meta<typeof Logo>;
 
 export default meta;

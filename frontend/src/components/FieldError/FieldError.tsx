@@ -1,5 +1,7 @@
 type FieldErrorProps = {
+  /** Optional id referenced by the invalid form control. */
   id?: string;
+  /** Validation message; no element is rendered when omitted. */
   message?: string;
 };
 
