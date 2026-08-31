@@ -73,5 +73,18 @@ describe("ImageTypeSelect", () => {
   // Then: The error copy is displayed and exposed as its accessible description
   // Blocked by: ImageTypeSelect implementation
   // Priority: P0
-  test.todo("associates the validation message with the selector");
+  test("associates the validation message with the selector", () => {
+    setup(
+      <ImageTypeSelect
+        value={"standard"}
+        onChange={vi.fn()}
+        errorMessage={"画像タイプを選択してください"}
+      />,
+    );
+
+    const selector = screen.getByRole("combobox", { name: "画像タイプ" });
+
+    expect(screen.getByText("画像タイプを選択してください")).toBeVisible();
+    expect(selector).toHaveAccessibleErrorMessage("画像タイプを選択してください");
+  });
 });
