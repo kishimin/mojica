@@ -41,7 +41,6 @@ const ImageTypeSelect = ({
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger
           id={"image-type-select"}
-          aria-describedby={errorMessage ? errorId : undefined}
           aria-errormessage={errorMessage ? errorId : undefined}
           aria-invalid={errorMessage ? true : undefined}
           className={"w-full"}
