@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
-import { setupUser } from "@/tests/test-utils";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { setupUser } from "@/tests/test-utils";
 import type { Locale } from "@/types/i18n";
 
 const expectedLanguageNames = ["日本語", "English"];

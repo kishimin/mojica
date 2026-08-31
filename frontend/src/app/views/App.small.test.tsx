@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-import { setupUser } from "@/tests/test-utils";
 import App from "./App";
+import { setupUser } from "@/tests/test-utils";
 
 describe("App", () => {
   test("increments the counter each time the button is clicked", async () => {

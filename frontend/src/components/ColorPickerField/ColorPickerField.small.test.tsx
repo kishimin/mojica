@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
-import { setupUser } from "@/tests/test-utils";
 import ColorPickerField from "./ColorPickerField";
+import { setupUser } from "@/tests/test-utils";
 
 const ControlledColorPickerField = () => {
   const [value, setValue] = useState("#FFD400");

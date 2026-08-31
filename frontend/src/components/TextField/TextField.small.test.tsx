@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-import { setupUser } from "@/tests/test-utils";
 import TextField from "./TextField";
+import { setupUser } from "@/tests/test-utils";
 
 describe("TextField", () => {
   test("accepts text through the labeled textbox", async () => {
