@@ -1,12 +1,19 @@
-import { describe, test } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, test, vi } from "vitest";
+import Layout from "./Layout";
+
+vi.mock("@tanstack/react-router", () => ({
+  Outlet: () => <main>Matched child content</main>,
+}));
 
 describe("Layout", () => {
-  // ID: LAYOUT-S-001
-  // Source: docs/v1/ui/components/Layout.md § Storybook, § Tests
-  // Given: A child route is matched inside the application layout
-  // When: The layout is rendered
-  // Then: The header, matched child content, and footer are all displayed
-  // Blocked by: Layout, AppHeader, and AppFooter implementation
-  // Priority: P0
-  test.todo("wraps matched route content with the header and footer");
+  test("wraps matched route content with the header and footer", () => {
+    render(<Layout />);
+
+    expect(screen.getByRole("banner")).toBeVisible();
+    expect(
+      screen.getByRole("main", { name: "Matched child content" }),
+    ).toBeVisible();
+    expect(screen.getByRole("contentinfo")).toBeVisible();
+  });
 });
