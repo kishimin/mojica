@@ -20,9 +20,13 @@ const LanguageSwitcher = ({ locale, onChange }: LanguageSwitcherProps) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={"inline-flex items-center gap-1"}>
+      <DropdownMenuTrigger
+        className={
+          "inline-flex h-10 w-[142px] items-center justify-between rounded-lg border border-border bg-surface px-3.5 text-sm font-medium"
+        }
+      >
         {selectedLanguage?.label}
-        <ChevronDown aria-hidden={"true"} />
+        <ChevronDown aria-hidden={"true"} className={"size-4"} />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {languageOptions.map((option) => (
