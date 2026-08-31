@@ -5,10 +5,10 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/react-router";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-import { I18nProvider } from "../../providers/I18nProvider";
 import Layout from "./Layout";
+import { renderWithI18n } from "@/app/test-utils";
 
 const rootRoute = createRootRoute({ component: Layout });
 const childRoute = createRoute({
@@ -26,11 +26,7 @@ describe("Layout", () => {
     });
     await router.load();
 
-    render(
-      <I18nProvider>
-        <RouterProvider router={router} />
-      </I18nProvider>,
-    );
+    renderWithI18n(<RouterProvider router={router} />);
 
     expect(await screen.findByRole("banner")).toBeVisible();
     expect(await screen.findByRole("main")).toHaveTextContent(
