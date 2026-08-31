@@ -7,9 +7,7 @@ import type { ImageType } from "@/types/image-type";
 
 type ImageTypeSelectStoryArgs = ComponentProps<typeof ImageTypeSelect>;
 
-// Storybook requires useArgs to run in the story render function itself.
-// eslint-disable-next-line no-restricted-syntax -- Storybook render hooks require a named function.
-function RenderImageTypeSelect(args: ImageTypeSelectStoryArgs) {
+const RenderImageTypeSelect = (args: ImageTypeSelectStoryArgs) => {
   const [{ value }, updateArgs] = useArgs<{ value: ImageType }>();
 
   return (
@@ -19,7 +17,7 @@ function RenderImageTypeSelect(args: ImageTypeSelectStoryArgs) {
       onChange={(nextValue) => updateArgs({ value: nextValue })}
     />
   );
-}
+};
 
 const meta = {
   title: "Features/ImageGeneration/ImageTypeSelect",
