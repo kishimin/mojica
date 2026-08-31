@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, expect, test } from "vitest";
+import { setupUser } from "@/tests/test-utils";
 import TextField from "./TextField";
 
 describe("TextField", () => {
   test("accepts text through the labeled textbox", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     render(<TextField label={"Text"} />);
 
     const textbox = screen.getByRole("textbox", { name: "Text" });

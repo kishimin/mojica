@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
+import { setupUser } from "@/tests/test-utils";
 import LanguageSwitcher from "./LanguageSwitcher";
 import type { Locale } from "@/types/i18n";
 
@@ -26,7 +26,7 @@ describe("LanguageSwitcher", () => {
   });
 
   test("exposes all language options in order when opened from the keyboard", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     render(
       <LanguageSwitcher
         locale={"ja"}
@@ -46,7 +46,7 @@ describe("LanguageSwitcher", () => {
   });
 
   test("updates the displayed language after keyboard selection", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     render(<ControlledLanguageSwitcher />);
 
     await user.tab();
@@ -56,7 +56,7 @@ describe("LanguageSwitcher", () => {
   });
 
   test("keeps the selected language when the menu is dismissed", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     render(<ControlledLanguageSwitcher />);
 
     await user.tab();

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
+import { setupUser } from "@/tests/test-utils";
 import ColorPickerField from "./ColorPickerField";
 
 const ControlledColorPickerField = () => {
@@ -35,7 +35,7 @@ describe("ColorPickerField", () => {
   });
 
   test("synchronizes the color control after editing the HEX textbox", async () => {
-    const user = userEvent.setup();
+    const user = setupUser();
     render(<ControlledColorPickerField />);
 
     const textbox = screen.getByRole("textbox", { name: "Color" });
