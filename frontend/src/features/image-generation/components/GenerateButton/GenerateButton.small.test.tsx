@@ -15,14 +15,14 @@ describe("GenerateButton", () => {
     expect(button).not.toHaveAttribute("aria-busy", "true");
   });
 
-  // ID: GENERATE-BUTTON-S-002
-  // Source: docs/v1/ui/components/GenerateButton.md § Display by state, § Tests
-  // Given: The button state is submitting
-  // When: The button is rendered
-  // Then: It displays the generating state and loader, and is disabled and busy
-  // Blocked by: GenerateButton implementation
-  // Priority: P0
-  test.todo("communicates the disabled busy state while submitting");
+  test("communicates the disabled busy state while submitting", () => {
+    setup(<GenerateButton state={{ kind: "submitting" }} />);
+
+    const button = screen.getByRole("button", { name: "生成中..." });
+
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-busy", "true");
+  });
 
   // ID: GENERATE-BUTTON-S-003
   // Source: docs/v1/ui/components/GenerateButton.md § Display by state, § Tests

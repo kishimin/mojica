@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 type GenerateButtonState =
   | { kind: "idle" }
@@ -11,9 +12,12 @@ type GenerateButtonProps = {
 };
 
 function GenerateButton({ state }: GenerateButtonProps) {
+  const isSubmitting = state.kind === "submitting";
+
   return (
-    <Button disabled={false} aria-busy={false}>
-      {state.kind === "idle" ? "画像を生成する" : "画像を生成する"}
+    <Button disabled={isSubmitting} aria-busy={isSubmitting}>
+      {isSubmitting ? <Loader2 aria-hidden={true} className="animate-spin" /> : null}
+      {isSubmitting ? "生成中..." : "画像を生成する"}
     </Button>
   );
 }
