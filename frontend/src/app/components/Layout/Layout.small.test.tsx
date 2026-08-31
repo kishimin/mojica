@@ -1,4 +1,3 @@
-import { render, screen } from "@testing-library/react";
 import {
   createMemoryHistory,
   createRootRoute,
@@ -6,6 +5,7 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/react-router";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { I18nProvider } from "../../providers/I18nProvider";
 import Layout from "./Layout";
