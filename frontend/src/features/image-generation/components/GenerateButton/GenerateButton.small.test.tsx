@@ -1,14 +1,19 @@
-import { describe, test } from "vitest";
+import { screen } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+
+import { setup } from "@/tests/test-utils";
+
+import GenerateButton from "./GenerateButton";
 
 describe("GenerateButton", () => {
-  // ID: GENERATE-BUTTON-S-001
-  // Source: docs/v1/ui/components/GenerateButton.md § Display by state, § Tests
-  // Given: The button state is idle
-  // When: The button is rendered
-  // Then: It displays the generate action and remains enabled and not busy
-  // Blocked by: GenerateButton implementation
-  // Priority: P0
-  test.todo("displays an enabled generate action while idle");
+  test("displays an enabled generate action while idle", () => {
+    setup(<GenerateButton state={{ kind: "idle" }} />);
+
+    const button = screen.getByRole("button", { name: "画像を生成する" });
+
+    expect(button).toBeEnabled();
+    expect(button).not.toHaveAttribute("aria-busy", "true");
+  });
 
   // ID: GENERATE-BUTTON-S-002
   // Source: docs/v1/ui/components/GenerateButton.md § Display by state, § Tests
