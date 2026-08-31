@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { I18nProvider } from "../../providers/I18nProvider";
+import { I18nProvider } from "../../../providers/I18nProvider";
 import AppHeader from "./AppHeader";
 
 const meta = {

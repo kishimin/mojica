@@ -1,9 +1,6 @@
 import { type ReactNode, useEffect, useState } from "react";
-import { I18nContext } from "../../hooks/i18n-context";
-import {
-  localeDefinitions,
-  type Locale,
-} from "../../types/i18n";
+import { I18nContext } from "../hooks/i18n-context";
+import { localeDefinitions, type Locale } from "../types/i18n";
 
 type I18nProviderProps = {
   children: ReactNode;

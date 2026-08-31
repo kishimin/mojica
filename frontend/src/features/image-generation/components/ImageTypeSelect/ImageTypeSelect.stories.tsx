@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
+import { vi } from "vitest";
 import ImageTypeSelect from "./ImageTypeSelect";
 
 const meta = {
@@ -31,7 +32,7 @@ const ControlledImageTypeSelect = (args: Story["args"]) => {
 
 export const Default: Story = {
   args: {
-    onChange: () => undefined,
+    onChange: vi.fn<(value: string) => void>(),
   },
   render: (args) => <ControlledImageTypeSelect {...args} />,
   play: async ({ canvasElement }) => {
@@ -51,7 +52,7 @@ export const Default: Story = {
 
 export const KeyboardSelection: Story = {
   args: {
-    onChange: () => undefined,
+    onChange: vi.fn<(value: string) => void>(),
   },
   render: (args) => <ControlledImageTypeSelect {...args} />,
   play: async ({ canvasElement }) => {
@@ -67,7 +68,7 @@ export const KeyboardSelection: Story = {
 
 export const WithError: Story = {
   args: {
-    onChange: () => undefined,
+    onChange: vi.fn<(value: string) => void>(),
     errorMessage: "画像タイプを選択してください",
   },
   render: (args) => <ControlledImageTypeSelect {...args} />,
