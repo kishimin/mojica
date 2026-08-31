@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import GenerateButton from "./GenerateButton";
-import { I18nProvider } from "@/providers/I18nProvider";
 
 const meta = {
   title: "Features/Image Generation/GenerateButton",
@@ -13,13 +12,6 @@ const meta = {
       },
     },
   },
-  decorators: [
-    (Story) => (
-      <I18nProvider>
-        <Story />
-      </I18nProvider>
-    ),
-  ],
 } satisfies Meta<typeof GenerateButton>;
 
 export default meta;

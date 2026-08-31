@@ -3,7 +3,6 @@ import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
 import { vi } from "vitest";
 import ImageTypeSelect from "./ImageTypeSelect";
-import { I18nProvider } from "@/providers/I18nProvider";
 
 const meta = {
   title: "Features/ImageGeneration/ImageTypeSelect",
@@ -19,13 +18,6 @@ const meta = {
   args: {
     value: "standard",
   },
-  decorators: [
-    (Story) => (
-      <I18nProvider>
-        <Story />
-      </I18nProvider>
-    ),
-  ],
 } satisfies Meta<typeof ImageTypeSelect>;
 
 export default meta;
