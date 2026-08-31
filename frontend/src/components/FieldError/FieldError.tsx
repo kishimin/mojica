@@ -8,7 +8,11 @@ const FieldError = ({ id, message }: FieldErrorProps) => {
     return null;
   }
 
-  return <p id={id}>{message}</p>;
+  return (
+    <p id={id} className={"text-xs text-destructive"}>
+      {message}
+    </p>
+  );
 };
 
 export default FieldError;

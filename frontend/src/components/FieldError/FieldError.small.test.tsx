@@ -6,7 +6,10 @@ describe("FieldError", () => {
   test("displays the provided error message", () => {
     render(<FieldError message={"Name is required"} />);
 
-    expect(screen.getByText("Name is required")).toBeVisible();
+    const errorMessage = screen.getByText("Name is required");
+
+    expect(errorMessage).toBeVisible();
+    expect(errorMessage).toHaveClass("text-destructive");
   });
 
   test("renders no error content for an empty message", () => {
