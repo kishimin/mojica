@@ -7,6 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useI18n } from "@/hooks/use-i18n";
+import { imageTypeSelectMessages } from "@/i18n/messages";
 import type { ImageGenerationRequestDto } from "@/models/imageGenerationRequestDto";
 
 type ImageType = NonNullable<ImageGenerationRequestDto["type"]>;
@@ -21,21 +23,23 @@ type ImageTypeSelectProps = {
 };
 
 const imageTypeOptions = [
-  { value: "standard", label: "標準画像" },
-  { value: "x-background", label: "X背景画像" },
-  { value: "x-icon", label: "Xアイコン画像" },
-] as const satisfies readonly { value: ImageType; label: string }[];
+  { value: "standard" },
+  { value: "x-background" },
+  { value: "x-icon" },
+] as const satisfies readonly { value: ImageType }[];
 
 const ImageTypeSelect = ({
   value,
   onChange,
   errorMessage,
 }: ImageTypeSelectProps) => {
+  const { locale } = useI18n();
+  const messages = imageTypeSelectMessages[locale];
   const errorId = "image-type-select-error";
 
   return (
     <div className={"flex flex-col gap-2"}>
-      <Label htmlFor={"image-type-select"}>{"画像タイプ"}</Label>
+      <Label htmlFor={"image-type-select"}>{messages.label}</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger
           id={"image-type-select"}
@@ -49,7 +53,7 @@ const ImageTypeSelect = ({
         <SelectContent>
           {imageTypeOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
-              {option.label}
+              {messages.options[option.value]}
             </SelectItem>
           ))}
         </SelectContent>

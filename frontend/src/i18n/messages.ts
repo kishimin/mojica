@@ -1,4 +1,7 @@
+import type { ImageGenerationRequestDto } from "@/models/imageGenerationRequestDto";
 import type { Locale } from "@/types/i18n";
+
+type ImageType = NonNullable<ImageGenerationRequestDto["type"]>;
 
 type GenerateButtonMessages = {
   idle: string;
@@ -21,3 +24,27 @@ export const generateButtonMessages = {
     cooldown: (seconds: number) => `You can retry in ${seconds} seconds`,
   },
 } satisfies Record<Locale, GenerateButtonMessages>;
+
+type ImageTypeSelectMessages = {
+  label: string;
+  options: Record<ImageType, string>;
+};
+
+export const imageTypeSelectMessages = {
+  ja: {
+    label: "画像タイプ",
+    options: {
+      standard: "標準画像",
+      "x-background": "X背景画像",
+      "x-icon": "Xアイコン画像",
+    },
+  },
+  en: {
+    label: "Image type",
+    options: {
+      standard: "Standard image",
+      "x-background": "X background image",
+      "x-icon": "X icon image",
+    },
+  },
+} satisfies Record<Locale, ImageTypeSelectMessages>;

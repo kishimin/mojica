@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
 import ImageTypeSelect from "./ImageTypeSelect";
-import { setup } from "@/tests/test-utils";
+import { setupWithI18n } from "@/tests/test-utils";
 
 const ControlledImageTypeSelect = () => {
   const [value, setValue] = useState("standard");
@@ -19,7 +19,7 @@ describe("ImageTypeSelect", () => {
   // Blocked by: ImageTypeSelect implementation
   // Priority: P0
   test("displays every supported image type option in order when opened", async () => {
-    const { user } = setup(
+    const { user } = setupWithI18n(
       <ImageTypeSelect
         value={"standard"}
         onChange={vi.fn<(value: string) => void>()}
@@ -46,7 +46,7 @@ describe("ImageTypeSelect", () => {
   // Blocked by: ImageTypeSelect implementation
   // Priority: P0
   test("displays the localized label for the controlled image type", () => {
-    setup(
+    setupWithI18n(
       <ImageTypeSelect
         value={"standard"}
         onChange={vi.fn<(value: string) => void>()}
@@ -64,7 +64,7 @@ describe("ImageTypeSelect", () => {
   // Blocked by: ImageTypeSelect implementation
   // Priority: P0
   test("changes the selected image type through keyboard interaction", async () => {
-    const { user } = setup(<ControlledImageTypeSelect />);
+    const { user } = setupWithI18n(<ControlledImageTypeSelect />);
 
     await user.click(screen.getByRole("combobox"));
     await user.keyboard("{ArrowDown}{Enter}");
@@ -80,7 +80,7 @@ describe("ImageTypeSelect", () => {
   // Blocked by: ImageTypeSelect implementation
   // Priority: P0
   test("associates the validation message with the selector", () => {
-    setup(
+    setupWithI18n(
       <ImageTypeSelect
         value={"standard"}
         onChange={vi.fn<(value: string) => void>()}
@@ -94,5 +94,21 @@ describe("ImageTypeSelect", () => {
     expect(selector).toHaveAccessibleErrorMessage(
       "画像タイプを選択してください",
     );
+  });
+
+  test("displays English labels when English is the active locale", async () => {
+    const { user } = setupWithI18n(
+      <ImageTypeSelect
+        value={"standard"}
+        onChange={vi.fn<(value: string) => void>()}
+      />,
+      "en",
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Image type" }));
+
+    expect(
+      screen.getAllByRole("option").map((option) => option.textContent),
+    ).toEqual(["Standard image", "X background image", "X icon image"]);
   });
 });
