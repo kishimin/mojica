@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, test } from "vitest";
 import { I18nProvider } from "../../providers/I18nProvider";
 import AppHeader from "./AppHeader";
@@ -25,12 +26,17 @@ describe("AppHeader", () => {
     expect(screen.getByRole("button", { name: "日本語" })).toBeVisible();
   });
 
-  // ID: APP-HEADER-S-002
-  // Source: docs/v1/ui/components/AppHeader.md § Responsibility, § Tests
-  // Given: The header is displayed in Japanese
-  // When: The user selects English through the language switcher
-  // Then: The header displays the English language label from the i18n boundary
-  // Blocked by: AppHeader and LanguageSwitcher implementation
-  // Priority: P0
-  test.todo("updates its displayed copy after the user changes locale");
+  test("updates its displayed copy after the user changes locale", async () => {
+    const user = userEvent.setup();
+    render(
+      <I18nProvider>
+        <AppHeader />
+      </I18nProvider>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "日本語" }));
+    await user.click(screen.getByRole("menuitem", { name: "English" }));
+
+    expect(screen.getByRole("button", { name: "English" })).toBeVisible();
+  });
 });
