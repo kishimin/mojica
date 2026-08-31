@@ -34,12 +34,14 @@ describe("GenerateButton", () => {
     expect(button).not.toHaveAttribute("aria-busy", "true");
   });
 
-  // ID: GENERATE-BUTTON-S-004
-  // Source: docs/v1/ui/components/GenerateButton.md § Display by state, § Tests
-  // Given: The button state is cooldown with a remaining-second value
-  // When: The button is rendered
-  // Then: It displays the remaining seconds and is disabled without being busy
-  // Blocked by: GenerateButton implementation
-  // Priority: P0
-  test.todo("displays the disabled retry countdown without owning time passage");
+  test("displays the disabled retry countdown without owning time passage", () => {
+    setup(<GenerateButton state={{ kind: "cooldown", remainingSeconds: 5 }} />);
+
+    const button = screen.getByRole("button", {
+      name: "5秒後に再試行できます",
+    });
+
+    expect(button).toBeDisabled();
+    expect(button).not.toHaveAttribute("aria-busy", "true");
+  });
 });

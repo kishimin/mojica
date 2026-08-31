@@ -13,16 +13,21 @@ type GenerateButtonProps = {
 
 function GenerateButton({ state }: GenerateButtonProps) {
   const isSubmitting = state.kind === "submitting";
+  const isCooldown = state.kind === "cooldown";
   const isRetryable = state.kind === "retryable" || state.kind === "cooldown";
 
   return (
     <Button
       className={isRetryable ? "bg-inverse text-inverse-foreground" : undefined}
-      disabled={isSubmitting}
+      disabled={isSubmitting || isCooldown}
       aria-busy={isSubmitting}
     >
       {isSubmitting ? <Loader2 aria-hidden={true} className="animate-spin" /> : null}
-      {isSubmitting ? "生成中..." : "画像を生成する"}
+      {isSubmitting
+        ? "生成中..."
+        : isCooldown
+          ? `${state.remainingSeconds}秒後に再試行できます`
+          : "画像を生成する"}
     </Button>
   );
 }
