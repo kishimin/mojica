@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { vi } from "vitest";
+import { fn } from "storybook/test";
 import ColorPickerField from "./ColorPickerField";
 
 const meta = {
@@ -40,14 +40,14 @@ const ControlledColorPickerField = (args: Story["args"]) => {
 
 export const Default: Story = {
   args: {
-    onChange: vi.fn<(hex: string) => void>(),
+    onChange: fn(),
   },
   render: (args) => <ControlledColorPickerField {...args} />,
 };
 
 export const WithError: Story = {
   args: {
-    onChange: vi.fn<(hex: string) => void>(),
+    onChange: fn(),
     errorMessage: "Enter a valid HEX color",
   },
   render: (args) => <ControlledColorPickerField {...args} />,
@@ -55,7 +55,7 @@ export const WithError: Story = {
 
 export const Disabled: Story = {
   args: {
-    onChange: vi.fn<(hex: string) => void>(),
+    onChange: fn(),
     disabled: true,
   },
   render: (args) => <ControlledColorPickerField {...args} />,

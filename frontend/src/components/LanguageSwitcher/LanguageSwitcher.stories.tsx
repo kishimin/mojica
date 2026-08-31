@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { vi } from "vitest";
+import { fn } from "storybook/test";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const meta = {
@@ -28,7 +28,7 @@ const ControlledLanguageSwitcher = (args: Story["args"]) => {
 export const Default: Story = {
   args: {
     locale: "ja",
-    onChange: vi.fn<(locale: string) => void>(),
+    onChange: fn(),
   },
   render: (args) => <ControlledLanguageSwitcher {...args} />,
 };
@@ -36,7 +36,7 @@ export const Default: Story = {
 export const English: Story = {
   args: {
     locale: "en",
-    onChange: vi.fn<(locale: string) => void>(),
+    onChange: fn(),
   },
   render: (args) => <ControlledLanguageSwitcher {...args} />,
 };

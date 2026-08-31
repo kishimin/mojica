@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentProps } from "react";
 import { useArgs } from "storybook/preview-api";
-import { vi } from "vitest";
+import { fn } from "storybook/test";
 import ImageTypeSelect from "./ImageTypeSelect";
 import type { ImageType } from "@/types/image-type";
 
@@ -42,19 +42,19 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    onChange: vi.fn<(value: string) => void>(),
+    onChange: fn(),
   },
 };
 
 export const KeyboardSelection: Story = {
   args: {
-    onChange: vi.fn<(value: string) => void>(),
+    onChange: fn(),
   },
 };
 
 export const WithError: Story = {
   args: {
-    onChange: vi.fn<(value: string) => void>(),
+    onChange: fn(),
     errorMessage: "画像タイプを選択してください",
   },
 };
