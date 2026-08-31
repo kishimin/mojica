@@ -1,9 +1,16 @@
 import { screen } from "@testing-library/react";
+import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
 
 import { setup } from "@/tests/test-utils";
 
 import ImageTypeSelect from "./ImageTypeSelect";
+
+const ControlledImageTypeSelect = () => {
+  const [value, setValue] = useState("standard");
+
+  return <ImageTypeSelect value={value} onChange={setValue} />;
+};
 
 describe("ImageTypeSelect", () => {
   // ID: IMAGE-TYPE-SELECT-S-000
@@ -50,7 +57,14 @@ describe("ImageTypeSelect", () => {
   // Then: The newly selected localized label is displayed
   // Blocked by: ImageTypeSelect implementation
   // Priority: P0
-  test.todo("changes the selected image type through keyboard interaction");
+  test("changes the selected image type through keyboard interaction", async () => {
+    const { user } = setup(<ControlledImageTypeSelect />);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.keyboard("{ArrowDown}{Enter}");
+
+    expect(screen.getByRole("combobox")).toHaveTextContent("X背景画像");
+  });
 
   // ID: IMAGE-TYPE-SELECT-S-003
   // Source: docs/v1/ui/components/ImageTypeSelect.md § Props; docs/v1/ui/component-design.md § 4
