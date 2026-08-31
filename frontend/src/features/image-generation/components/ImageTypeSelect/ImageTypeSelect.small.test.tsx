@@ -1,4 +1,9 @@
-import { describe, test } from "vitest";
+import { screen } from "@testing-library/react";
+import { describe, expect, test, vi } from "vitest";
+
+import { setup } from "@/tests/test-utils";
+
+import ImageTypeSelect from "./ImageTypeSelect";
 
 describe("ImageTypeSelect", () => {
   // ID: IMAGE-TYPE-SELECT-S-000
@@ -8,7 +13,22 @@ describe("ImageTypeSelect", () => {
   // Then: The localized option labels are displayed in the documented order
   // Blocked by: ImageTypeSelect implementation
   // Priority: P0
-  test.todo("displays every supported image type option in order");
+  test("displays every supported image type option in order when opened", async () => {
+    const { user } = setup(
+      <ImageTypeSelect value={"standard"} onChange={vi.fn()} />,
+    );
+
+    await user.click(screen.getByRole("combobox"));
+
+    const options = screen.getAllByRole("option");
+
+    expect(options).toHaveLength(3);
+    expect(options.map((option) => option.textContent)).toEqual([
+      "標準画像",
+      "X背景画像",
+      "Xアイコン画像",
+    ]);
+  });
 
   // ID: IMAGE-TYPE-SELECT-S-001
   // Source: docs/v1/ui/components/ImageTypeSelect.md § Storybook, § Tests
