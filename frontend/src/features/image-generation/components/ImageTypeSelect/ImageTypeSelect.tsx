@@ -1,3 +1,4 @@
+import { imageTypeOptions } from "./image-type-options";
 import FieldError from "@/components/FieldError/FieldError";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,12 +20,6 @@ type ImageTypeSelectProps = {
   /** Optional validation message associated with the selector. */
   errorMessage?: string;
 };
-
-const imageTypeOptions = [
-  { value: "standard" },
-  { value: "x-background" },
-  { value: "x-icon" },
-] as const satisfies readonly { value: ImageType }[];
 
 const ImageTypeSelect = ({
   value,
