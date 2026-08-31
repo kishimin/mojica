@@ -1,6 +1,15 @@
 import { describe, test } from "vitest";
 
 describe("ImageTypeSelect", () => {
+  // ID: IMAGE-TYPE-SELECT-S-000
+  // Source: docs/v1/ui/components/ImageTypeSelect.md § Storybook, § Tests
+  // Given: The image-type selector is rendered with the supported API values
+  // When: The user opens the selector
+  // Then: The localized option labels are displayed in the documented order
+  // Blocked by: ImageTypeSelect implementation
+  // Priority: P0
+  test.todo("displays every supported image type option in order");
+
   // ID: IMAGE-TYPE-SELECT-S-001
   // Source: docs/v1/ui/components/ImageTypeSelect.md § Storybook, § Tests
   // Given: The controlled image type is standard

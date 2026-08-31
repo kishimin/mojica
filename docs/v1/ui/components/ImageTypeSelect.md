@@ -35,4 +35,4 @@ Display labels such as `標準画像` (Standard image) are UI copy, not API valu
 ## Tests
 
 - Size: Small
-- Verifies: Prop-driven display state
+- Verifies: Supported option labels and order, prop-driven display state, keyboard selection, and validation message accessibility
