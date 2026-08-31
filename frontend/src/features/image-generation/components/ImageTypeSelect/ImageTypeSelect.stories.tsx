@@ -1,7 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import type { ComponentProps } from "react";
+import { useArgs } from "storybook/preview-api";
 import { vi } from "vitest";
 import ImageTypeSelect from "./ImageTypeSelect";
+import type { ImageType } from "@/types/image-type";
+
+type ImageTypeSelectStoryArgs = ComponentProps<typeof ImageTypeSelect>;
+
+// Storybook requires useArgs to run in the story render function itself.
+// eslint-disable-next-line no-restricted-syntax -- Storybook render hooks require a named function.
+function RenderImageTypeSelect(args: ImageTypeSelectStoryArgs) {
+  const [{ value }, updateArgs] = useArgs<{ value: ImageType }>();
+
+  return (
+    <ImageTypeSelect
+      {...args}
+      value={value}
+      onChange={(nextValue) => updateArgs({ value: nextValue })}
+    />
+  );
+}
 
 const meta = {
   title: "Features/ImageGeneration/ImageTypeSelect",
@@ -17,30 +35,23 @@ const meta = {
   args: {
     value: "standard",
   },
+  render: RenderImageTypeSelect,
 } satisfies Meta<typeof ImageTypeSelect>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const ControlledImageTypeSelect = (args: Story["args"]) => {
-  const [value, setValue] = useState(args?.value ?? "standard");
-
-  return <ImageTypeSelect {...args} value={value} onChange={setValue} />;
-};
-
 export const Default: Story = {
   args: {
     onChange: vi.fn<(value: string) => void>(),
   },
-  render: (args) => <ControlledImageTypeSelect {...args} />,
 };
 
 export const KeyboardSelection: Story = {
   args: {
     onChange: vi.fn<(value: string) => void>(),
   },
-  render: (args) => <ControlledImageTypeSelect {...args} />,
 };
 
 export const WithError: Story = {
@@ -48,5 +59,4 @@ export const WithError: Story = {
     onChange: vi.fn<(value: string) => void>(),
     errorMessage: "画像タイプを選択してください",
   },
-  render: (args) => <ControlledImageTypeSelect {...args} />,
 };
