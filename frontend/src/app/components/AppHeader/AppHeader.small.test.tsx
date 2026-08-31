@@ -1,6 +1,15 @@
 import { describe, test } from "vitest";
 
 describe("AppHeader", () => {
+  // ID: APP-HEADER-S-000
+  // Source: docs/v1/ui/components/AppHeader.md § Responsibility, § Tests
+  // Given: The application header is rendered
+  // When: Assistive technology inspects the page landmarks
+  // Then: The header is exposed as a banner landmark
+  // Blocked by: AppHeader implementation
+  // Priority: P0
+  test.todo("renders the application header as a banner landmark");
+
   // ID: APP-HEADER-S-001
   // Source: docs/v1/ui/components/AppHeader.md § Storybook, § Tests
   // Given: The application locale is Japanese
