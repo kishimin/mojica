@@ -3,6 +3,7 @@ import type { ComponentProps } from "react";
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 import ImageTypeSelect from "./ImageTypeSelect";
+import { I18nProvider } from "@/providers/I18nProvider";
 import type { ImageType } from "@/types/image-type";
 
 type ImageTypeSelectStoryArgs = ComponentProps<typeof ImageTypeSelect>;
@@ -57,4 +58,17 @@ export const WithError: Story = {
     onChange: fn(),
     errorMessage: "画像タイプを選択してください",
   },
+};
+
+export const English: Story = {
+  args: {
+    onChange: fn(),
+  },
+  decorators: [
+    (Story) => (
+      <I18nProvider initialLocale={"en"}>
+        <Story />
+      </I18nProvider>
+    ),
+  ],
 };

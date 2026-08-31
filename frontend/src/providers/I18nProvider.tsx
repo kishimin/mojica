@@ -4,6 +4,7 @@ import { localeDefinitions, type Locale } from "../types/i18n";
 
 type I18nProviderProps = {
   children: ReactNode;
+  initialLocale?: Locale;
 };
 
 const isLocale = (value: string): value is Locale =>
@@ -21,8 +22,13 @@ const getInitialLocale = (): Locale => {
   }
 };
 
-export const I18nProvider = ({ children }: I18nProviderProps) => {
-  const [locale, setLocaleState] = useState(getInitialLocale);
+export const I18nProvider = ({
+  children,
+  initialLocale,
+}: I18nProviderProps) => {
+  const [locale, setLocaleState] = useState(
+    () => initialLocale ?? getInitialLocale(),
+  );
 
   useEffect(() => {
     document.documentElement.lang = locale;
