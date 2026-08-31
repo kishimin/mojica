@@ -3,7 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import Layout from "./Layout";
 
 vi.mock("@tanstack/react-router", () => ({
-  Outlet: () => <main>Matched child content</main>,
+  Outlet: () => <main>{"Matched child content"}</main>,
 }));
 
 vi.mock("../AppHeader/AppHeader", () => ({
