@@ -119,6 +119,26 @@ export default defineConfig([
     },
   },
 
+  // Feature UI components consume UI-owned types; generated API models stay at
+  // the feature boundary where request mapping is performed.
+  {
+    files: ["src/features/*/components/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/models/*"],
+              message:
+                "UI components must use UI-owned types instead of generated API models.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   // bulletproof-react style architectural boundaries: shared/ never depends on
   // features/ or app/, features/<feature> never imports another feature, and
   // nothing depends on app/. gen/, models/, and external packages are left
