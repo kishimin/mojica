@@ -1,4 +1,5 @@
 import { imageTypeOptions } from "./image-type-options";
+import { useId } from "react";
 import FieldError from "@/components/FieldError/FieldError";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,14 +29,16 @@ const ImageTypeSelect = ({
 }: ImageTypeSelectProps) => {
   const { locale } = useI18n();
   const messages = imageTypeSelectMessages[locale];
-  const errorId = "image-type-select-error";
+  const generatedId = useId();
+  const selectId = `image-type-select-${generatedId}`;
+  const errorId = `${selectId}-error`;
 
   return (
     <div className={"flex flex-col gap-2"}>
-      <Label htmlFor={"image-type-select"}>{messages.label}</Label>
+      <Label htmlFor={selectId}>{messages.label}</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger
-          id={"image-type-select"}
+          id={selectId}
           aria-errormessage={errorMessage ? errorId : undefined}
           aria-invalid={errorMessage ? true : undefined}
           className={"w-full"}
