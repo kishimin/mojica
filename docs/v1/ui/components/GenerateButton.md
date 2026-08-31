@@ -3,7 +3,7 @@
 - Layer: Feature UI
 - Location: `features/image-generation/components/GenerateButton/GenerateButton.tsx`
 - Implementation: shadcn/ui `Button` + Lucide `Loader2` (`animate-spin`)
-- Responsibility: Displays copy, icon, `aria-busy`, `disabled`, and the Retryable variant according to an exclusive state received from its parent
+- Responsibility: Displays copy, icon, `aria-busy`, and `disabled` according to an exclusive state received from its parent
 
 ## Props
 
@@ -27,12 +27,12 @@ The `Button` itself does not receive a prop such as `isLoading`. Loading is expr
 
 ## Display by state
 
-| `kind`       | Display | `disabled` | `aria-busy` | Variant |
-| ------------ | ------- | ---------- | ----------- | ------- |
-| `idle`       | `画像を生成する` (Generate image) | false | false | Normal |
-| `submitting` | Loader2 + `生成中...` (Generating...) | true | true | Normal |
-| `retryable`  | `画像を生成する` (Generate image) | false | false | Retryable |
-| `cooldown`   | `{remainingSeconds}秒後に再試行できます` (You can retry in ... seconds) | true | false | Retryable |
+| `kind`       | Display | `disabled` | `aria-busy` |
+| ------------ | ------- | ---------- | ----------- |
+| `idle`       | `画像を生成する` (Generate image) | false | false |
+| `submitting` | Loader2 + `生成中...` (Generating...) | true | true |
+| `retryable`  | `画像を生成する` (Generate image) | false | false |
+| `cooldown`   | `{remainingSeconds}秒後に再試行できます` (You can retry in ... seconds) | true | false |
 
 `GenerateButton` neither interprets the `Retry-After` header nor owns a timer. `useRetryAfterCountdown` owns the countdown, and [ImageGenerationForm](./ImageGenerationForm.md) maps API errors to `state`.
 
@@ -40,9 +40,9 @@ The `Button` itself does not receive a prop such as `isLoading`. Loading is expr
 
 | Main story state | Verification |
 | ---------------- | ------------ |
-| Idle / Submitting (shows Lucide `Loader2`) / Retryable / Cooldown | Copy, `aria-busy`, `disabled`, and variant for each `state.kind` |
+| Idle / Submitting (shows Lucide `Loader2`) / Retryable / Cooldown | Copy, `aria-busy`, and `disabled` for each `state.kind` |
 
 ## Tests
 
 - Size: Small
-- Verifies: Displayed copy, Loader2, `aria-busy`, `disabled`, and the Retryable variant for each `state.kind`. Time passage and timer implementation are not tested here.
+- Verifies: Displayed copy, Loader2, `aria-busy`, and `disabled` for each `state.kind`. Time passage and timer implementation are not tested here.

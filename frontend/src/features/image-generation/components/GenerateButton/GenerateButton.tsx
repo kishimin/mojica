@@ -17,7 +17,6 @@ type GenerateButtonProps = {
 type ButtonPresentation = {
   label: string;
   disabled: boolean;
-  isRetryable: boolean;
   isSubmitting: boolean;
 };
 
@@ -32,28 +31,24 @@ const getButtonPresentation = (
       return {
         label: messages.idle,
         disabled: false,
-        isRetryable: false,
         isSubmitting: false,
       };
     case "submitting":
       return {
         label: messages.submitting,
         disabled: true,
-        isRetryable: false,
         isSubmitting: true,
       };
     case "retryable":
       return {
         label: messages.retryable,
         disabled: false,
-        isRetryable: true,
         isSubmitting: false,
       };
     case "cooldown":
       return {
         label: messages.cooldown(state.remainingSeconds),
         disabled: true,
-        isRetryable: true,
         isSubmitting: false,
       };
     default:
@@ -68,17 +63,13 @@ const assertNever = (value: never): never => {
 /** Renders the image generation action for its parent-selected state. */
 const GenerateButton = ({ state }: GenerateButtonProps) => {
   const { locale } = useI18n();
-  const { label, disabled, isRetryable, isSubmitting } = getButtonPresentation(
+  const { label, disabled, isSubmitting } = getButtonPresentation(
     state,
     locale,
   );
 
   return (
-    <Button
-      className={isRetryable ? "bg-inverse text-inverse-foreground" : undefined}
-      disabled={disabled}
-      aria-busy={isSubmitting}
-    >
+    <Button disabled={disabled} aria-busy={isSubmitting}>
       {isSubmitting ? (
         <Loader2 aria-hidden={true} className={"animate-spin"} />
       ) : null}
