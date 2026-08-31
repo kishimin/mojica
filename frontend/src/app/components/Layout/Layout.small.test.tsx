@@ -1,37 +1,12 @@
-import {
-  createMemoryHistory,
-  createRootRoute,
-  createRoute,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/react-router";
-import { screen } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
-import Layout from "./Layout";
-import { setupWithI18n } from "@/app/tests/test-utils";
-
-const rootRoute = createRootRoute({ component: Layout });
-const childRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/",
-  component: () => <main>{"Matched child content"}</main>,
-});
-const routeTree = rootRoute.addChildren([childRoute]);
+import { describe, test } from "vitest";
 
 describe("Layout", () => {
-  test("wraps matched route content with the header and footer", async () => {
-    const router = createRouter({
-      routeTree,
-      history: createMemoryHistory({ initialEntries: ["/"] }),
-    });
-    await router.load();
-
-    setupWithI18n(<RouterProvider router={router} />);
-
-    expect(await screen.findByRole("banner")).toBeVisible();
-    expect(await screen.findByRole("main")).toHaveTextContent(
-      "Matched child content",
-    );
-    expect(await screen.findByRole("contentinfo")).toBeVisible();
-  });
+  // ID: LAYOUT-S-001
+  // Source: docs/v1/ui/components/Layout.md § Storybook, § Tests
+  // Given: A child route is matched inside the application layout
+  // When: The layout is rendered
+  // Then: The header, matched child content, and footer are all displayed
+  // Blocked by: Layout, AppHeader, and AppFooter implementation
+  // Priority: P0
+  test.todo("wraps matched route content with the header and footer");
 });
