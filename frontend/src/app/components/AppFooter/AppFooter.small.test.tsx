@@ -1,4 +1,6 @@
-import { describe, test } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+import AppFooter from "./AppFooter";
 
 describe("AppFooter", () => {
   // ID: APP-FOOTER-S-000
@@ -8,7 +10,11 @@ describe("AppFooter", () => {
   // Then: The footer is exposed as a contentinfo landmark
   // Blocked by: AppFooter implementation
   // Priority: P0
-  test.todo("renders the application footer as a contentinfo landmark");
+  test("renders the application footer as a contentinfo landmark", () => {
+    render(<AppFooter />);
+
+    expect(screen.getByRole("contentinfo")).toBeVisible();
+  });
 
   // ID: APP-FOOTER-S-001
   // Source: docs/v1/ui/components/AppFooter.md § Storybook, § Tests
