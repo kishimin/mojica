@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { useI18n } from "../../hooks/use-i18n";
-import { I18nProvider } from "../../providers/I18nProvider";
+import { useI18n } from "../hooks/use-i18n";
+import { I18nProvider } from "./I18nProvider";
 
 describe("I18nProvider locale contract", () => {
   beforeEach(() => {
