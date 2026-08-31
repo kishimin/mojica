@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { I18nContext } from "../hooks/i18n-context";
 import { localeDefinitions, type Locale } from "../types/i18n";
 
@@ -29,9 +29,20 @@ export const I18nProvider = ({
   const [locale, setLocaleState] = useState(
     () => initialLocale ?? getInitialLocale(),
   );
+  const previousDocumentLanguage = useRef<string | undefined>(undefined);
 
   useEffect(() => {
+    if (previousDocumentLanguage.current === undefined) {
+      previousDocumentLanguage.current = document.documentElement.lang;
+    }
+
     document.documentElement.lang = locale;
+
+    return () => {
+      if (previousDocumentLanguage.current !== undefined) {
+        document.documentElement.lang = previousDocumentLanguage.current;
+      }
+    };
   }, [locale]);
 
   const setLocale = (nextLocale: Locale) => {

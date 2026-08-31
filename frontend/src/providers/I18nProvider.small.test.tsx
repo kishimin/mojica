@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { useI18n } from "../hooks/use-i18n";
 import { I18nProvider } from "./I18nProvider";
 
@@ -71,10 +71,6 @@ describe("I18nProvider locale contract", () => {
   });
 
   describe("document language synchronization", () => {
-    afterEach(() => {
-      document.documentElement.lang = "";
-    });
-
     test("sets the document language to the active locale on initial render", () => {
       renderHook(() => useI18n(), { wrapper: I18nProvider });
 
@@ -89,6 +85,20 @@ describe("I18nProvider locale contract", () => {
       act(() => result.current.setLocale("en"));
 
       expect(document.documentElement.lang).toBe("en");
+    });
+
+    test("restores the previous document language when unmounted", () => {
+      document.documentElement.lang = "en-US";
+
+      const { unmount } = renderHook(() => useI18n(), {
+        wrapper: I18nProvider,
+      });
+
+      expect(document.documentElement.lang).toBe("ja");
+
+      unmount();
+
+      expect(document.documentElement.lang).toBe("en-US");
     });
   });
 });

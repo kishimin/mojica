@@ -9,7 +9,6 @@ afterEach(() => {
   worker.resetHandlers();
   cleanup();
   localStorage.clear();
-  document.documentElement.lang = "";
 });
 
 afterAll(() => worker.stop());
