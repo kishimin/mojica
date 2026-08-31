@@ -8,13 +8,19 @@ type GenerateButtonState =
   | { kind: "cooldown"; remainingSeconds: number };
 
 type GenerateButtonProps = {
+  /** Presentation state selected by the image generation form. */
   state: GenerateButtonState;
 };
 
 function GenerateButton({ state }: GenerateButtonProps) {
   const isSubmitting = state.kind === "submitting";
   const isCooldown = state.kind === "cooldown";
-  const isRetryable = state.kind === "retryable" || state.kind === "cooldown";
+  const isRetryable = state.kind === "retryable" || isCooldown;
+  const label = isSubmitting
+    ? "生成中..."
+    : isCooldown
+      ? `${state.remainingSeconds}秒後に再試行できます`
+      : "画像を生成する";
 
   return (
     <Button
@@ -22,12 +28,10 @@ function GenerateButton({ state }: GenerateButtonProps) {
       disabled={isSubmitting || isCooldown}
       aria-busy={isSubmitting}
     >
-      {isSubmitting ? <Loader2 aria-hidden={true} className="animate-spin" /> : null}
-      {isSubmitting
-        ? "生成中..."
-        : isCooldown
-          ? `${state.remainingSeconds}秒後に再試行できます`
-          : "画像を生成する"}
+      {isSubmitting ? (
+        <Loader2 aria-hidden={true} className="animate-spin" />
+      ) : null}
+      {label}
     </Button>
   );
 }
