@@ -37,7 +37,11 @@ describe("ImageTypeSelect", () => {
   // Then: The localized label for the standard image type is displayed as selected
   // Blocked by: ImageTypeSelect implementation
   // Priority: P0
-  test.todo("displays the localized label for the controlled image type");
+  test("displays the localized label for the controlled image type", () => {
+    setup(<ImageTypeSelect value={"standard"} onChange={vi.fn()} />);
+
+    expect(screen.getByRole("combobox")).toHaveTextContent("標準画像");
+  });
 
   // ID: IMAGE-TYPE-SELECT-S-002
   // Source: docs/v1/ui/components/ImageTypeSelect.md § Storybook, § Tests
