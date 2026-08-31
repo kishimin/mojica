@@ -23,5 +23,9 @@ describe("AppFooter", () => {
   // Then: The documented copyright text is displayed
   // Blocked by: AppFooter implementation
   // Priority: P1
-  test.todo("displays the documented copyright text");
+  test("displays the documented copyright text", () => {
+    render(<AppFooter />);
+
+    expect(screen.getByText("© kishimin 2026")).toBeVisible();
+  });
 });
