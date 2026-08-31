@@ -89,12 +89,12 @@ describe("ImageTypeSelect", () => {
     const errorMessageIds = selectors.map((selector) =>
       selector.getAttribute("aria-errormessage"),
     );
+    const visibleErrorIds = screen
+      .getAllByText("画像タイプを選択してください")
+      .map((error) => error.getAttribute("id"));
 
     expect(new Set(errorMessageIds).size).toBe(2);
-    errorMessageIds.forEach((errorMessageId) => {
-      expect(errorMessageId).not.toBeNull();
-      expect(document.getElementById(errorMessageId as string)).toBeVisible();
-    });
+    expect(new Set(errorMessageIds)).toEqual(new Set(visibleErrorIds));
   });
 
   test("displays English labels when English is the active locale", async () => {
