@@ -89,6 +89,9 @@ describe("ColorPickerField", () => {
     );
 
     expect(screen.getByText("Enter a valid HEX color")).toBeVisible();
+    expect(screen.getByRole("group", { name: "Color" })).toHaveClass(
+      "border-destructive",
+    );
     expect(
       screen.getByRole("textbox", { name: "Color" }),
     ).toHaveAccessibleErrorMessage("Enter a valid HEX color");

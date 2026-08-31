@@ -3,6 +3,7 @@ import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
 import FieldError from "@/components/FieldError/FieldError";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 type ColorPickerFieldProps = Omit<
   ComponentPropsWithoutRef<"input">,
@@ -39,9 +40,14 @@ const ColorPickerField = ({
     <div className={"flex flex-col gap-2"}>
       <Label htmlFor={inputId}>{label}</Label>
       <div
-        className={
-          "flex h-14 items-center gap-3 rounded-lg border border-input px-2.5 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50"
-        }
+        role={"group"}
+        aria-label={label}
+        className={cn(
+          "flex h-14 items-center gap-3 rounded-lg border px-2.5",
+          errorMessage
+            ? "border-destructive focus-within:ring-3 focus-within:ring-destructive/20"
+            : "border-input focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50",
+        )}
       >
         <input
           id={colorPickerId}
@@ -65,7 +71,9 @@ const ColorPickerField = ({
             errorMessage ? `${inputId}-error` : externalErrorId
           }
           aria-invalid={errorMessage ? true : isExternallyInvalid}
-          className={"h-auto border-0 p-0 shadow-none focus-visible:ring-0"}
+          className={
+            "h-auto border-0 p-0 shadow-none focus-visible:ring-0 aria-invalid:border-0 aria-invalid:ring-0"
+          }
           value={value}
           onChange={handleChange}
         />
