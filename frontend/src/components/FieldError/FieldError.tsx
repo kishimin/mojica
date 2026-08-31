@@ -11,7 +11,7 @@ const FieldError = ({ id, message }: FieldErrorProps) => {
   }
 
   return (
-    <p id={id} className={"text-xs text-destructive"}>
+    <p id={id} aria-live={"polite"} className={"text-xs text-destructive"}>
       {message}
     </p>
   );
