@@ -14,14 +14,16 @@ describe("AppHeader", () => {
     expect(screen.getByRole("banner")).toBeVisible();
   });
 
-  // ID: APP-HEADER-S-001
-  // Source: docs/v1/ui/components/AppHeader.md § Storybook, § Tests
-  // Given: The application locale is Japanese
-  // When: The header is rendered
-  // Then: The logo and Japanese language label are displayed
-  // Blocked by: AppHeader implementation
-  // Priority: P0
-  test.todo("displays the logo and copy for the current locale");
+  test("displays the logo and copy for the current locale", () => {
+    render(
+      <I18nProvider>
+        <AppHeader />
+      </I18nProvider>,
+    );
+
+    expect(screen.getByText("mojica")).toBeVisible();
+    expect(screen.getByRole("button", { name: "日本語" })).toBeVisible();
+  });
 
   // ID: APP-HEADER-S-002
   // Source: docs/v1/ui/components/AppHeader.md § Responsibility, § Tests
