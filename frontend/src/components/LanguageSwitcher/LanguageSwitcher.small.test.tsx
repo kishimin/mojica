@@ -5,7 +5,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import { setup } from "@/tests/test-utils";
 import type { Locale } from "@/types/i18n";
 
-const expectedLanguageNames = ["日本語", "English"];
+const expectedLanguageLabels = ["日本語", "English"];
 
 const ControlledLanguageSwitcher = () => {
   const [locale, setLocale] = useState<Locale>("ja");
@@ -38,10 +38,9 @@ describe("LanguageSwitcher", () => {
 
     const menuItems = screen.getAllByRole("menuitem");
 
-    expect(menuItems).toHaveLength(expectedLanguageNames.length);
-    expectedLanguageNames.forEach((languageName, index) => {
-      expect(menuItems[index]).toHaveAccessibleName(languageName);
-    });
+    expect(menuItems.map((menuItem) => menuItem.textContent)).toEqual(
+      expectedLanguageLabels,
+    );
   });
 
   test("updates the displayed language after keyboard selection", async () => {
