@@ -8,7 +8,7 @@ import {
 import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import Layout from "./Layout";
-import { setupWithI18n } from "@/app/test-utils";
+import { setupWithI18n } from "@/app/tests/test-utils";
 
 const rootRoute = createRootRoute({ component: Layout });
 const childRoute = createRoute({

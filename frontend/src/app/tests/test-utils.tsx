@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { I18nProvider } from "./providers/I18nProvider";
+import { I18nProvider } from "../providers/I18nProvider";
 import { setup } from "@/tests/test-utils";
 
 export const setupWithI18n = (element: ReactElement) =>

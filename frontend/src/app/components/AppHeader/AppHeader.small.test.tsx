@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import AppHeader from "./AppHeader";
-import { setupWithI18n } from "@/app/test-utils";
+import { setupWithI18n } from "@/app/tests/test-utils";
 
 describe("AppHeader", () => {
   test("renders the application header as a banner landmark", () => {
