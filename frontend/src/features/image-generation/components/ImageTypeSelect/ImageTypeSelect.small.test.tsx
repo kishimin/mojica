@@ -69,6 +69,34 @@ describe("ImageTypeSelect", () => {
     );
   });
 
+  test("keeps selector and validation IDs unique across instances", () => {
+    setupWithI18n(
+      <>
+        <ImageTypeSelect
+          value={"standard"}
+          onChange={vi.fn<(value: string) => void>()}
+          errorMessage={"画像タイプを選択してください"}
+        />
+        <ImageTypeSelect
+          value={"x-icon"}
+          onChange={vi.fn<(value: string) => void>()}
+          errorMessage={"画像タイプを選択してください"}
+        />
+      </>,
+    );
+
+    const selectors = screen.getAllByRole("combobox", { name: "画像タイプ" });
+    const errorMessageIds = selectors.map((selector) =>
+      selector.getAttribute("aria-errormessage"),
+    );
+
+    expect(new Set(errorMessageIds).size).toBe(2);
+    errorMessageIds.forEach((errorMessageId) => {
+      expect(errorMessageId).not.toBeNull();
+      expect(document.getElementById(errorMessageId as string)).toBeVisible();
+    });
+  });
+
   test("displays English labels when English is the active locale", async () => {
     const { user } = setupWithI18n(
       <ImageTypeSelect
