@@ -8,7 +8,7 @@ import {
 import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import Layout from "./Layout";
-import { renderWithI18n } from "@/app/test-utils";
+import { setupWithI18n } from "@/app/test-utils";
 
 const rootRoute = createRootRoute({ component: Layout });
 const childRoute = createRoute({
@@ -26,7 +26,7 @@ describe("Layout", () => {
     });
     await router.load();
 
-    renderWithI18n(<RouterProvider router={router} />);
+    setupWithI18n(<RouterProvider router={router} />);
 
     expect(await screen.findByRole("banner")).toBeVisible();
     expect(await screen.findByRole("main")).toHaveTextContent(

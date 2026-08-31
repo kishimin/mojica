@@ -1,12 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import TextField from "./TextField";
-import { setupUser } from "@/tests/test-utils";
+import { setup } from "@/tests/test-utils";
 
 describe("TextField", () => {
   test("accepts text through the labeled textbox", async () => {
-    const user = setupUser();
-    render(<TextField label={"Text"} />);
+    const { user } = setup(<TextField label={"Text"} />);
 
     const textbox = screen.getByRole("textbox", { name: "Text" });
     await user.type(textbox, "Hello");
