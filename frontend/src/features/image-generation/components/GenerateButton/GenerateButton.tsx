@@ -13,9 +13,14 @@ type GenerateButtonProps = {
 
 function GenerateButton({ state }: GenerateButtonProps) {
   const isSubmitting = state.kind === "submitting";
+  const isRetryable = state.kind === "retryable" || state.kind === "cooldown";
 
   return (
-    <Button disabled={isSubmitting} aria-busy={isSubmitting}>
+    <Button
+      className={isRetryable ? "bg-inverse text-inverse-foreground" : undefined}
+      disabled={isSubmitting}
+      aria-busy={isSubmitting}
+    >
       {isSubmitting ? <Loader2 aria-hidden={true} className="animate-spin" /> : null}
       {isSubmitting ? "生成中..." : "画像を生成する"}
     </Button>

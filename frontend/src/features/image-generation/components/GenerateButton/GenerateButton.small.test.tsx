@@ -24,14 +24,15 @@ describe("GenerateButton", () => {
     expect(button).toHaveAttribute("aria-busy", "true");
   });
 
-  // ID: GENERATE-BUTTON-S-003
-  // Source: docs/v1/ui/components/GenerateButton.md § Display by state, § Tests
-  // Given: The button state is retryable
-  // When: The button is rendered
-  // Then: It displays an enabled generate action with the retryable appearance
-  // Blocked by: GenerateButton implementation
-  // Priority: P1
-  test.todo("displays an enabled retryable action after an error");
+  test("displays an enabled retryable action after an error", () => {
+    setup(<GenerateButton state={{ kind: "retryable" }} />);
+
+    const button = screen.getByRole("button", { name: "画像を生成する" });
+
+    expect(button).toBeEnabled();
+    expect(button).toHaveClass("bg-inverse");
+    expect(button).not.toHaveAttribute("aria-busy", "true");
+  });
 
   // ID: GENERATE-BUTTON-S-004
   // Source: docs/v1/ui/components/GenerateButton.md § Display by state, § Tests
