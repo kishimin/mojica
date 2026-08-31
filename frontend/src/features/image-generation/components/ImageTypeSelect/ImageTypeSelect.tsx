@@ -9,9 +9,7 @@ import {
 } from "@/components/ui/select";
 import { useI18n } from "@/hooks/use-i18n";
 import { imageTypeSelectMessages } from "@/i18n/messages";
-import type { ImageGenerationRequestDto } from "@/models/imageGenerationRequestDto";
-
-type ImageType = NonNullable<ImageGenerationRequestDto["type"]>;
+import type { ImageType } from "@/types/image-type";
 
 type ImageTypeSelectProps = {
   /** The image type controlled by the parent form. */

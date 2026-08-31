@@ -3,9 +3,10 @@ import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
 import ImageTypeSelect from "./ImageTypeSelect";
 import { setupWithI18n } from "@/tests/test-utils";
+import type { ImageType } from "@/types/image-type";
 
 const ControlledImageTypeSelect = () => {
-  const [value, setValue] = useState("standard");
+  const [value, setValue] = useState<ImageType>("standard");
 
   return <ImageTypeSelect value={value} onChange={setValue} />;
 };

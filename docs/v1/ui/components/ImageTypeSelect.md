@@ -20,7 +20,7 @@ type ImageTypeSelectProps = {
 };
 ```
 
-The actual generated type name and import path follow the OpenAPI schema name and Orval output. Do not redefine a string union of API values inside `ImageTypeSelect`; derive it from the generated request type's `type` property.
+`ImageType` is a UI-owned union (`standard`, `x-background`, and `x-icon`) defined in `src/types/image-type.ts`. Keep the component independent from generated API models; map this UI value to the API request at the feature boundary.
 
 If Orval generates the image-type enum as a runtime object, build the option values from that output. If it generates only a type, statically check the UI-defined value list against `ImageType` so that values absent from the OpenAPI contract cannot be added.
 

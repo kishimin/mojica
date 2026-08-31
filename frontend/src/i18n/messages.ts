@@ -1,7 +1,5 @@
-import type { ImageGenerationRequestDto } from "@/models/imageGenerationRequestDto";
 import type { Locale } from "@/types/i18n";
-
-type ImageType = NonNullable<ImageGenerationRequestDto["type"]>;
+import type { ImageType } from "@/types/image-type";
 
 type GenerateButtonMessages = {
   idle: string;
