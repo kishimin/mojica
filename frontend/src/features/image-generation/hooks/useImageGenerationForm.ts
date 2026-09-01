@@ -7,6 +7,11 @@ import {
 import { imageTypeDefinitions } from "@/types/image-type";
 
 const defaultValues = {
+  text: "KA",
+  foregroundCharacter: "",
+  foregroundColor: "#FFD400",
+  backgroundCharacter: "☀",
+  backgroundColor: "#FF69B4",
   type: imageTypeDefinitions.standard,
 } satisfies DefaultValues<ImageGenerationFormValues>;
 
