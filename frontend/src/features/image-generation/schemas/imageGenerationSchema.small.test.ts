@@ -1,4 +1,5 @@
-import { describe, test } from "vitest";
+import { describe, expect, test } from "vitest";
+import { imageGenerationSchema } from "./imageGenerationSchema";
 
 describe("imageGenerationSchema validation contract", () => {
   // ID: IMAGE-GENERATION-SCHEMA-S-001
@@ -6,9 +7,19 @@ describe("imageGenerationSchema validation contract", () => {
   // Given: The form contains the minimum valid text, rendering character, colors, and supported image type
   // When: The values are validated
   // Then: Validation succeeds without reporting a validation error
-  // Blocked by: imageGenerationSchema implementation
   // Priority: P0
-  test.todo("accepts a complete valid image generation request");
+  test("accepts a complete valid image generation request", () => {
+    const result = imageGenerationSchema.safeParse({
+      text: "KA",
+      foregroundCharacter: "🌻",
+      foregroundColor: "#FFD400",
+      backgroundCharacter: "☀",
+      backgroundColor: "#FF69B4",
+      type: "standard",
+    });
+
+    expect(result.success).toBe(true);
+  });
 
   describe("text-to-render", () => {
     // ID: IMAGE-GENERATION-SCHEMA-S-002
