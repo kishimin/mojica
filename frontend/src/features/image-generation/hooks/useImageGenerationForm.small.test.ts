@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-import { imageTypeDefinitions } from "@/types/image-type";
 import { useImageGenerationForm } from "./useImageGenerationForm";
+import { imageTypeDefinitions } from "@/types/image-type";
 
 describe("useImageGenerationForm", () => {
   // ID: IMAGE-GENERATION-FORM-S-001
