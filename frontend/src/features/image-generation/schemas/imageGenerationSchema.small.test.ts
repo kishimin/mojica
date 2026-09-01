@@ -26,8 +26,8 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "text.required",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["text"], message: "text.required" }),
       );
     });
 
@@ -46,8 +46,8 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "text.maxLength",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["text"], message: "text.maxLength" }),
       );
     });
 
@@ -59,8 +59,8 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "text.required",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["text"], message: "text.required" }),
       );
     });
 
@@ -72,8 +72,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "text.controlCharacter",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["text"],
+          message: "text.controlCharacter",
+        }),
       );
     });
 
@@ -85,8 +88,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "text.controlCharacter",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["text"],
+          message: "text.controlCharacter",
+        }),
       );
     });
   });
@@ -100,8 +106,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "foregroundCharacter.required",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["foregroundCharacter"],
+          message: "foregroundCharacter.required",
+        }),
       );
     });
 
@@ -122,8 +131,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "foregroundCharacter.maxLength",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["foregroundCharacter"],
+          message: "foregroundCharacter.maxLength",
+        }),
       );
     });
 
@@ -135,8 +147,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "foregroundCharacter.controlCharacter",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["foregroundCharacter"],
+          message: "foregroundCharacter.controlCharacter",
+        }),
       );
     });
   });
@@ -150,8 +165,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "backgroundCharacter.required",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["backgroundCharacter"],
+          message: "backgroundCharacter.required",
+        }),
       );
     });
 
@@ -172,8 +190,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "backgroundCharacter.maxLength",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["backgroundCharacter"],
+          message: "backgroundCharacter.maxLength",
+        }),
       );
     });
 
@@ -185,8 +206,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "backgroundCharacter.controlCharacter",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["backgroundCharacter"],
+          message: "backgroundCharacter.controlCharacter",
+        }),
       );
     });
   });
@@ -201,8 +225,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "characterCombination.required",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["foregroundCharacter"],
+          message: "characterCombination.required",
+        }),
       );
     });
 
@@ -244,8 +271,11 @@ describe("imageGenerationSchema validation contract", () => {
 
       expect(result.success).toBe(false);
       if (result.success) return;
-      expect(result.error.issues.map(({ message }) => message)).toContain(
-        "imageType.invalid",
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["type"],
+          message: "imageType.invalid",
+        }),
       );
     });
   });
