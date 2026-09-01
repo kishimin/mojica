@@ -15,11 +15,11 @@ describe("useImageGenerationForm", () => {
     const { result } = renderHook(() => useImageGenerationForm());
 
     expect(result.current.getValues()).toEqual({
-      text: "KA",
+      text: "",
       foregroundCharacter: "",
-      foregroundColor: "#FFD400",
-      backgroundCharacter: "☀",
-      backgroundColor: "#FF69B4",
+      foregroundColor: "",
+      backgroundCharacter: "",
+      backgroundColor: "",
       type: imageTypeDefinitions.standard,
     });
   });
