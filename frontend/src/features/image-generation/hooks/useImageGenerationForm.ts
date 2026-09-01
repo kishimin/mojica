@@ -9,9 +9,9 @@ import { imageTypeDefinitions } from "@/types/image-type";
 const defaultValues = {
   text: "",
   foregroundCharacter: "",
-  foregroundColor: "",
+  foregroundColor: "#000000",
   backgroundCharacter: "",
-  backgroundColor: "",
+  backgroundColor: "#FFFFFF",
   type: imageTypeDefinitions.standard,
 } satisfies DefaultValues<ImageGenerationFormValues>;
 
