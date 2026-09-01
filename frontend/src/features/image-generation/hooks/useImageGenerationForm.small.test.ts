@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { useImageGenerationForm } from "./useImageGenerationForm";
 
@@ -31,7 +31,17 @@ describe("useImageGenerationForm", () => {
   // Error: text.required
   // Blocked by: useImageGenerationForm implementation
   // Priority: P0
-  test.todo("exposes the schema validation message for an invalid text value");
+  test("exposes the schema validation message for an invalid text value", async () => {
+    const { result } = renderHook(() => useImageGenerationForm());
+
+    result.current.setValue("text", " ", { shouldValidate: true });
+
+    await waitFor(() => {
+      expect(result.current.formState.errors.text?.message).toBe(
+        "text.required",
+      );
+    });
+  });
 
   // ID: IMAGE-GENERATION-FORM-S-003
   // Source: docs/v1/ui/components/ImageGenerationForm.md § Validation schema; docs/v1/ui/ui.md § 11
