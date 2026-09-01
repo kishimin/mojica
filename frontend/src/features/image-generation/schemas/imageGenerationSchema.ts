@@ -1,7 +1,12 @@
 import { z } from "zod";
-import { imageTypeValues } from "@/types/image-type";
+import { imageTypeDefinitions } from "@/types/image-type";
 
 const printableText = /^\P{Cc}*$/u;
+const imageTypeValues = [
+  imageTypeDefinitions.standard,
+  imageTypeDefinitions.xBackground,
+  imageTypeDefinitions.xIcon,
+] as const;
 
 export const imageGenerationSchema = z
   .object({
