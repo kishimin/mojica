@@ -19,15 +19,7 @@ const exceedsGraphemeLimit = (value: string, maximumGraphemes: number) => {
     return true;
   }
 
-  let count = 0;
-  for (const _ of graphemeSegmenter.segment(value)) {
-    if (count === maximumGraphemes) {
-      return true;
-    }
-    count += 1;
-  }
-
-  return false;
+  return [...graphemeSegmenter.segment(value)].length > maximumGraphemes;
 };
 
 const containsVisibleCharacter = (value: string) => {
