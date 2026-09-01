@@ -14,6 +14,7 @@ type ColorPickerFieldProps = Omit<
   "type" | "value" | "onChange"
 > & {
   label: string;
+  colorPickerLabel: string; // Accessible label for the native color picker
   value: string; // HEX format (for example, "#FFD400")
   onChange: (hex: string) => void;
   errorMessage?: string;
@@ -22,9 +23,9 @@ type ColorPickerFieldProps = Omit<
 
 ## Storybook
 
-| Main story state                         | Verification |
-| ---------------------------------------- | ------------ |
-| Default / Filled (shows HEX) / Error / Disabled | Use `play` to verify that editing either the HEX text input or the color picker displays the same HEX value in both controls |
+| Main story state                                | Verification                                                                                                                                                                  |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Default / Filled (shows HEX) / Error / Disabled | Use `play` to verify that editing either the HEX text input or the color picker displays equivalent HEX values in both controls (the native color input may normalize casing) |
 
 ## Tests
 

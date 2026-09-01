@@ -1,6 +1,6 @@
 export const localeDefinitions = {
-  en: null,
   ja: null,
+  en: null,
 };
 
 export type Locale = keyof typeof localeDefinitions;
