@@ -50,5 +50,10 @@ describe("useImageGenerationForm", () => {
   // Then: The form reports no field validation errors
   // Blocked by: useImageGenerationForm implementation
   // Priority: P0
-  test.todo("accepts valid image-generation form values");
+  test("accepts valid image-generation form values", async () => {
+    const { result } = renderHook(() => useImageGenerationForm());
+
+    await expect(result.current.trigger()).resolves.toBe(true);
+    expect(result.current.formState.errors).toEqual({});
+  });
 });
