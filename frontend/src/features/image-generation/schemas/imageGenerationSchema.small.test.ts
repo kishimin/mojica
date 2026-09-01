@@ -2,6 +2,15 @@ import { describe, expect, test } from "vitest";
 import { imageGenerationSchema } from "./imageGenerationSchema";
 
 describe("imageGenerationSchema validation contract", () => {
+  const validInput = {
+    text: "KA",
+    foregroundCharacter: "🌻",
+    foregroundColor: "#FFD400",
+    backgroundCharacter: "☀",
+    backgroundColor: "#FF69B4",
+    type: "standard",
+  } as const;
+
   // ID: IMAGE-GENERATION-SCHEMA-S-001
   // Source: docs/v1/ui/components/ImageGenerationForm.md § Validation schema; docs/v1/ui/ui.md § 11
   // Given: The form contains the minimum valid text, rendering character, colors, and supported image type
@@ -9,14 +18,7 @@ describe("imageGenerationSchema validation contract", () => {
   // Then: Validation succeeds without reporting a validation error
   // Priority: P0
   test("accepts a complete valid image generation request", () => {
-    const result = imageGenerationSchema.safeParse({
-      text: "KA",
-      foregroundCharacter: "🌻",
-      foregroundColor: "#FFD400",
-      backgroundCharacter: "☀",
-      backgroundColor: "#FF69B4",
-      type: "standard",
-    });
+    const result = imageGenerationSchema.safeParse(validInput);
 
     expect(result.success).toBe(true);
   });
