@@ -215,10 +215,12 @@ describe("imageGenerationSchema validation contract", () => {
     });
 
     test("rejects an unsupported image type value", () => {
-      expect(
-        imageGenerationSchema.safeParse({ ...validInput, type: "unknown" })
-          .success,
-      ).toBe(false);
+      const result = imageGenerationSchema.safeParse({
+        ...validInput,
+        type: "unknown",
+      });
+
+      expect(hasValidationMessage(result, "imageType.invalid")).toBe(true);
     });
   });
 });
