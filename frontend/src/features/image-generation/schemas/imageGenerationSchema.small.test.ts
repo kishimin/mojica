@@ -71,6 +71,12 @@ describe("imageGenerationSchema validation contract", () => {
       expect(result.error.issues).toContainEqual(
         expect.objectContaining({ path: ["text"], message: "text.required" }),
       );
+      expect(result.error.issues).not.toContainEqual(
+        expect.objectContaining({
+          path: ["text"],
+          message: "text.controlCharacter",
+        }),
+      );
     });
 
     test("rejects control characters in the text-to-render value", () => {
