@@ -26,7 +26,9 @@ export const imageGenerationSchema = z
         message: "backgroundCharacter.controlCharacter",
       }),
     backgroundColor: z.string(),
-    type: z.enum(["standard", "x-background", "x-icon"]),
+    type: z.enum(["standard", "x-background", "x-icon"], {
+      error: "imageType.invalid",
+    }),
   })
   .refine(
     ({ foregroundCharacter, backgroundCharacter }) =>
