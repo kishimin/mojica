@@ -1,6 +1,18 @@
 import { describe, expect, test } from "vitest";
 import { imageGenerationSchema } from "./imageGenerationSchema";
 
+const hasValidationMessage = (
+  result: ReturnType<typeof imageGenerationSchema.safeParse>,
+  message: string,
+) => {
+  return (
+    !result.success &&
+    result.error.issues.some(
+      ({ message: issueMessage }) => issueMessage === message,
+    )
+  );
+};
+
 describe("imageGenerationSchema validation contract", () => {
   const validInput = {
     text: "KA",
@@ -24,12 +36,7 @@ describe("imageGenerationSchema validation contract", () => {
         text: "",
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "text.required",
-        );
-      }
+      expect(hasValidationMessage(result, "text.required")).toBe(true);
     });
 
     test("accepts a text-to-render value at the 64-character limit", () => {
@@ -45,12 +52,7 @@ describe("imageGenerationSchema validation contract", () => {
         text: "a".repeat(65),
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "text.maxLength",
-        );
-      }
+      expect(hasValidationMessage(result, "text.maxLength")).toBe(true);
     });
 
     test("rejects a whitespace-only text-to-render value", () => {
@@ -59,12 +61,7 @@ describe("imageGenerationSchema validation contract", () => {
         text: " \t\n",
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "text.required",
-        );
-      }
+      expect(hasValidationMessage(result, "text.required")).toBe(true);
     });
 
     test("rejects control characters in the text-to-render value", () => {
@@ -73,12 +70,7 @@ describe("imageGenerationSchema validation contract", () => {
         text: "KA\u0000",
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "text.controlCharacter",
-        );
-      }
+      expect(hasValidationMessage(result, "text.controlCharacter")).toBe(true);
     });
 
     test("rejects trailing control characters in the text-to-render value", () => {
@@ -87,12 +79,7 @@ describe("imageGenerationSchema validation contract", () => {
         text: "KA\t",
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "text.controlCharacter",
-        );
-      }
+      expect(hasValidationMessage(result, "text.controlCharacter")).toBe(true);
     });
   });
 
@@ -103,12 +90,9 @@ describe("imageGenerationSchema validation contract", () => {
         foregroundCharacter: "",
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "foregroundCharacter.required",
-        );
-      }
+      expect(hasValidationMessage(result, "foregroundCharacter.required")).toBe(
+        true,
+      );
     });
 
     test("accepts a rendering-character value at the 128-character limit", () => {
@@ -126,12 +110,9 @@ describe("imageGenerationSchema validation contract", () => {
         foregroundCharacter: "a".repeat(129),
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "foregroundCharacter.maxLength",
-        );
-      }
+      expect(
+        hasValidationMessage(result, "foregroundCharacter.maxLength"),
+      ).toBe(true);
     });
 
     test("rejects control characters in the rendering-character value", () => {
@@ -140,12 +121,9 @@ describe("imageGenerationSchema validation contract", () => {
         foregroundCharacter: "a\u0000",
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "foregroundCharacter.controlCharacter",
-        );
-      }
+      expect(
+        hasValidationMessage(result, "foregroundCharacter.controlCharacter"),
+      ).toBe(true);
     });
   });
 
@@ -156,12 +134,9 @@ describe("imageGenerationSchema validation contract", () => {
         backgroundCharacter: "",
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "backgroundCharacter.required",
-        );
-      }
+      expect(hasValidationMessage(result, "backgroundCharacter.required")).toBe(
+        true,
+      );
     });
 
     test("accepts a background-character value at the 128-character limit", () => {
@@ -179,12 +154,9 @@ describe("imageGenerationSchema validation contract", () => {
         backgroundCharacter: "a".repeat(129),
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "backgroundCharacter.maxLength",
-        );
-      }
+      expect(
+        hasValidationMessage(result, "backgroundCharacter.maxLength"),
+      ).toBe(true);
     });
 
     test("rejects control characters in the background-character value", () => {
@@ -193,12 +165,9 @@ describe("imageGenerationSchema validation contract", () => {
         backgroundCharacter: "a\u0000",
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "backgroundCharacter.controlCharacter",
-        );
-      }
+      expect(
+        hasValidationMessage(result, "backgroundCharacter.controlCharacter"),
+      ).toBe(true);
     });
   });
 
@@ -210,12 +179,9 @@ describe("imageGenerationSchema validation contract", () => {
         backgroundCharacter: "\t",
       });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.map(({ message }) => message)).toContain(
-          "characterCombination.required",
-        );
-      }
+      expect(
+        hasValidationMessage(result, "characterCombination.required"),
+      ).toBe(true);
     });
 
     test("accepts a displayable background character when the rendering character is whitespace-only", () => {
