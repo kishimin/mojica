@@ -5,7 +5,7 @@ describe("imageGenerationSchema validation contract", () => {
   // Source: docs/v1/ui/components/ImageGenerationForm.md § Validation schema; docs/v1/ui/ui.md § 11
   // Given: The form contains the minimum valid text, rendering character, colors, and supported image type
   // When: The values are validated
-  // Then: Validation succeeds and preserves the submitted values
+  // Then: Validation succeeds without reporting a validation error
   // Blocked by: imageGenerationSchema implementation
   // Priority: P0
   test.todo("accepts a complete valid image generation request");
