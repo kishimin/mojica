@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { imageTypeDefinitions } from "@/types/image-type";
 import { useImageGenerationForm } from "./useImageGenerationForm";
@@ -48,6 +48,17 @@ describe("useImageGenerationForm", () => {
   // Priority: P0
   test("accepts valid image-generation form values", async () => {
     const { result } = renderHook(() => useImageGenerationForm());
+
+    act(() => {
+      result.current.reset({
+        text: "KA",
+        foregroundCharacter: "🌻",
+        foregroundColor: "#FFD400",
+        backgroundCharacter: "☀",
+        backgroundColor: "#FF69B4",
+        type: imageTypeDefinitions.standard,
+      });
+    });
 
     await expect(result.current.trigger()).resolves.toBe(true);
     expect(result.current.formState.errors).toEqual({});
