@@ -8,13 +8,18 @@ describe("useImageGenerationForm", () => {
   // Source: docs/v1/ui/components/ImageGenerationForm.md § Tests; docs/v1/ui/ui.md § 6
   // Given: The image-generation form is initialized without caller-provided values
   // When: The form state is observed
-  // Then: The form exposes only the documented initial image type
+  // Then: The form exposes the documented initial values for every field
   // Blocked by: useImageGenerationForm implementation
   // Priority: P0
   test("exposes the documented initial form values", () => {
     const { result } = renderHook(() => useImageGenerationForm());
 
     expect(result.current.getValues()).toEqual({
+      text: "KA",
+      foregroundCharacter: "",
+      foregroundColor: "#FFD400",
+      backgroundCharacter: "☀",
+      backgroundColor: "#FF69B4",
       type: imageTypeDefinitions.standard,
     });
   });
