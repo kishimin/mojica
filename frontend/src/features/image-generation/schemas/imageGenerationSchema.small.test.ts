@@ -40,8 +40,10 @@ describe("imageGenerationSchema validation contract", () => {
 
     test("accepts 64 emoji grapheme clusters in the text-to-render value", () => {
       expect(
-        imageGenerationSchema.safeParse({ ...validInput, text: "😀".repeat(64) })
-          .success,
+        imageGenerationSchema.safeParse({
+          ...validInput,
+          text: "😀".repeat(64),
+        }).success,
       ).toBe(true);
     });
 
