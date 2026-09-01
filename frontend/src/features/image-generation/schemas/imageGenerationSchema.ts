@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { imageTypeValues } from "@/types/image-type";
 
 const printableText = /^\P{Cc}*$/u;
 
@@ -26,7 +27,7 @@ export const imageGenerationSchema = z
         message: "backgroundCharacter.controlCharacter",
       }),
     backgroundColor: z.string(),
-    type: z.enum(["standard", "x-background", "x-icon"], {
+    type: z.enum(imageTypeValues, {
       error: "imageType.invalid",
     }),
   })

@@ -1,7 +1,3 @@
-import type { ImageType } from "@/types/image-type";
+import { imageTypeValues } from "@/types/image-type";
 
-export const imageTypeOptions = [
-  { value: "standard" },
-  { value: "x-background" },
-  { value: "x-icon" },
-] as const satisfies readonly { value: ImageType }[];
+export const imageTypeOptions = imageTypeValues.map((value) => ({ value }));
