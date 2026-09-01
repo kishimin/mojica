@@ -1,7 +1,5 @@
-import type { ImageType } from "@/types/image-type";
+import { imageTypeDefinitions } from "@/types/image-type";
 
-export const imageTypeOptions = [
-  { value: "standard" },
-  { value: "x-background" },
-  { value: "x-icon" },
-] as const satisfies readonly { value: ImageType }[];
+export const imageTypeOptions = Object.values(imageTypeDefinitions).map(
+  (value) => ({ value }),
+);

@@ -1,2 +1,9 @@
 /** Image type values exposed by the image-generation UI. */
-export type ImageType = "standard" | "x-background" | "x-icon";
+export const imageTypeDefinitions = {
+  standard: "standard",
+  xBackground: "x-background",
+  xIcon: "x-icon",
+} as const;
+
+export type ImageType =
+  (typeof imageTypeDefinitions)[keyof typeof imageTypeDefinitions];

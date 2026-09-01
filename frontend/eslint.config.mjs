@@ -13,6 +13,7 @@ import testingLibrary from "eslint-plugin-testing-library";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+import preferObjectDerivedUnion from "./eslint-rules/prefer-object-derived-union.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -81,6 +82,7 @@ export default defineConfig([
       },
     },
     rules: {
+      "local/prefer-object-derived-union": "error",
       "no-console": "warn",
       "no-restricted-syntax": [
         "error",
@@ -119,6 +121,13 @@ export default defineConfig([
       "react/jsx-key": ["error", { checkFragmentShorthand: true }],
       "react/react-in-jsx-scope": 0,
       "react/jsx-uses-react": 0,
+    },
+    plugins: {
+      local: {
+        rules: {
+          "prefer-object-derived-union": preferObjectDerivedUnion,
+        },
+      },
     },
   },
 
