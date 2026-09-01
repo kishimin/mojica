@@ -38,6 +38,13 @@ describe("imageGenerationSchema validation contract", () => {
       ).toBe(true);
     });
 
+    test("accepts 64 emoji grapheme clusters in the text-to-render value", () => {
+      expect(
+        imageGenerationSchema.safeParse({ ...validInput, text: "😀".repeat(64) })
+          .success,
+      ).toBe(true);
+    });
+
     test("rejects a text-to-render value over 64 characters", () => {
       const result = imageGenerationSchema.safeParse({
         ...validInput,
@@ -119,6 +126,15 @@ describe("imageGenerationSchema validation contract", () => {
         imageGenerationSchema.safeParse({
           ...validInput,
           foregroundCharacter: "a".repeat(128),
+        }).success,
+      ).toBe(true);
+    });
+
+    test("accepts 128 emoji grapheme clusters in the rendering-character value", () => {
+      expect(
+        imageGenerationSchema.safeParse({
+          ...validInput,
+          foregroundCharacter: "😀".repeat(128),
         }).success,
       ).toBe(true);
     });
@@ -247,6 +263,38 @@ describe("imageGenerationSchema validation contract", () => {
           backgroundCharacter: "☀",
         }).success,
       ).toBe(true);
+    });
+
+    test("accepts 128 emoji grapheme clusters in the background-character value", () => {
+      expect(
+        imageGenerationSchema.safeParse({
+          ...validInput,
+          backgroundCharacter: "😀".repeat(128),
+        }).success,
+      ).toBe(true);
+    });
+
+    test("rejects a format-only and whitespace-only character combination", () => {
+      const result = imageGenerationSchema.safeParse({
+        ...validInput,
+        foregroundCharacter: "\u200B",
+        backgroundCharacter: " ",
+      });
+
+      expect(result.success).toBe(false);
+      if (result.success) return;
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["foregroundCharacter"],
+          message: "characterCombination.required",
+        }),
+      );
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["backgroundCharacter"],
+          message: "characterCombination.required",
+        }),
+      );
     });
 
     test("accepts a displayable rendering character when the background character is whitespace-only", () => {
