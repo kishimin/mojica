@@ -51,6 +51,13 @@ describe("imageGenerationSchema validation contract", () => {
           .success,
       ).toBe(false);
     });
+
+    test("rejects trailing control characters in the text-to-render value", () => {
+      expect(
+        imageGenerationSchema.safeParse({ ...validInput, text: "KA\t" })
+          .success,
+      ).toBe(false);
+    });
   });
 
   describe("rendering-character", () => {
