@@ -1,17 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { imageTypeDefinitions } from "@/types/image-type";
 import {
   imageGenerationSchema,
   type ImageGenerationFormValues,
 } from "../schemas/imageGenerationSchema";
 
 const defaultValues: ImageGenerationFormValues = {
-  text: "KA",
-  foregroundCharacter: "🌻",
-  foregroundColor: "#FFD400",
-  backgroundCharacter: "☀",
-  backgroundColor: "#FF69B4",
-  type: "standard",
+  type: imageTypeDefinitions.standard,
 };
 
 export const useImageGenerationForm = () =>
