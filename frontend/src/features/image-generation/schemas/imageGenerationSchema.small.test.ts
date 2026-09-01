@@ -231,6 +231,12 @@ describe("imageGenerationSchema validation contract", () => {
           message: "characterCombination.required",
         }),
       );
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["backgroundCharacter"],
+          message: "characterCombination.required",
+        }),
+      );
     });
 
     test("accepts a displayable background character when the rendering character is whitespace-only", () => {
