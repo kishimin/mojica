@@ -60,7 +60,14 @@ export const imageGenerationSchema = z
   .object({
     text: z
       .string()
-      .regex(printableText, { message: "text.controlCharacter" })
+      .superRefine((value, context) => {
+        if (value.trim() !== "" && !printableText.test(value)) {
+          context.addIssue({
+            code: "custom",
+            message: "text.controlCharacter",
+          });
+        }
+      })
       .trim()
       .min(1, { message: "text.required" })
       .superRefine((value, context) => {
