@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const printableText = /^\P{Cc}*$/u;
+
 export const imageGenerationSchema = z
   .object({
     text: z
@@ -7,12 +9,12 @@ export const imageGenerationSchema = z
       .trim()
       .min(1, { message: "text.required" })
       .max(64, { message: "text.maxLength" })
-      .regex(/^[^\u0000-\u001F\u007F]*$/, { message: "text.controlCharacter" }),
+      .regex(printableText, { message: "text.controlCharacter" }),
     foregroundCharacter: z
       .string()
       .min(1, { message: "foregroundCharacter.required" })
       .max(128, { message: "foregroundCharacter.maxLength" })
-      .regex(/^[^\u0000-\u001F\u007F]*$/, {
+      .regex(printableText, {
         message: "foregroundCharacter.controlCharacter",
       }),
     foregroundColor: z.string(),
@@ -20,7 +22,7 @@ export const imageGenerationSchema = z
       .string()
       .min(1, { message: "backgroundCharacter.required" })
       .max(128, { message: "backgroundCharacter.maxLength" })
-      .regex(/^[^\u0000-\u001F\u007F]*$/, {
+      .regex(printableText, {
         message: "backgroundCharacter.controlCharacter",
       }),
     backgroundColor: z.string(),
