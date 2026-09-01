@@ -17,9 +17,9 @@ describe("useImageGenerationForm", () => {
     expect(result.current.getValues()).toEqual({
       text: "",
       foregroundCharacter: "",
-      foregroundColor: "",
+      foregroundColor: "#000000",
       backgroundCharacter: "",
-      backgroundColor: "",
+      backgroundColor: "#FFFFFF",
       type: imageTypeDefinitions.standard,
     });
   });
