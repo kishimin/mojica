@@ -30,10 +30,24 @@ export const imageGenerationSchema = z
       error: "imageType.invalid",
     }),
   })
-  .refine(
-    ({ foregroundCharacter, backgroundCharacter }) =>
-      foregroundCharacter.trim() !== "" || backgroundCharacter.trim() !== "",
-    { message: "characterCombination.required", path: ["foregroundCharacter"] },
-  );
+  .superRefine(({ foregroundCharacter, backgroundCharacter }, context) => {
+    if (
+      foregroundCharacter.trim() !== "" ||
+      backgroundCharacter.trim() !== ""
+    ) {
+      return;
+    }
+
+    context.addIssue({
+      code: "custom",
+      message: "characterCombination.required",
+      path: ["foregroundCharacter"],
+    });
+    context.addIssue({
+      code: "custom",
+      message: "characterCombination.required",
+      path: ["backgroundCharacter"],
+    });
+  });
 
 export type ImageGenerationFormValues = z.infer<typeof imageGenerationSchema>;
