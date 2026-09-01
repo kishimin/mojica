@@ -6,10 +6,10 @@ export const imageGenerationSchema = z
   .object({
     text: z
       .string()
+      .regex(printableText, { message: "text.controlCharacter" })
       .trim()
       .min(1, { message: "text.required" })
-      .max(64, { message: "text.maxLength" })
-      .regex(printableText, { message: "text.controlCharacter" }),
+      .max(64, { message: "text.maxLength" }),
     foregroundCharacter: z
       .string()
       .min(1, { message: "foregroundCharacter.required" })
