@@ -50,9 +50,9 @@ describe("toImageGenerationErrorPresentation", () => {
     // Blocked by: toImageGenerationErrorPresentation implementation and error-heading i18n definitions
     // Priority: P1
     test("maps IMAGE_GENERATION_FAILED to the image-generation-service heading", () => {
-      expect(toImageGenerationErrorPresentation("IMAGE_GENERATION_FAILED")).toBe(
-        "imageGenerationServiceError",
-      );
+      expect(
+        toImageGenerationErrorPresentation("IMAGE_GENERATION_FAILED"),
+      ).toBe("imageGenerationServiceError");
     });
 
     // ID: IMAGE-GENERATION-ERROR-PRESENTATION-S-005
@@ -63,9 +63,9 @@ describe("toImageGenerationErrorPresentation", () => {
     // Blocked by: toImageGenerationErrorPresentation implementation and error-heading i18n definitions
     // Priority: P1
     test("maps IMAGE_GENERATION_TIMEOUT to the timeout heading", () => {
-      expect(toImageGenerationErrorPresentation("IMAGE_GENERATION_TIMEOUT")).toBe(
-        "timeout",
-      );
+      expect(
+        toImageGenerationErrorPresentation("IMAGE_GENERATION_TIMEOUT"),
+      ).toBe("timeout");
     });
   });
 
