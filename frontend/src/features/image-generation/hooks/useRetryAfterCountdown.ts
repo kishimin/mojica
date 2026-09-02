@@ -10,11 +10,11 @@ export const useRetryAfterCountdown = (retryAfterSeconds: number) => {
       return;
     }
 
-    const timerId = window.setInterval(() => {
+    const timerId = setInterval(() => {
       setRemainingSeconds((currentSeconds) => Math.max(0, currentSeconds - 1));
     }, 1000);
 
-    return () => window.clearInterval(timerId);
+    return () => clearInterval(timerId);
   }, [retryAfterSeconds]);
 
   return remainingSeconds;
