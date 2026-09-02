@@ -1,8 +1,16 @@
 import { act, renderHook } from "@testing-library/react";
-import { describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { useRetryAfterCountdown } from "./useRetryAfterCountdown";
 
 describe("useRetryAfterCountdown", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   describe("initial value", () => {
     // ID: RETRY-AFTER-COUNTDOWN-S-001
     // Source: docs/v1/ui/components/ImageGenerationForm.md § Tests; docs/v1/ui/ui.md § 12
@@ -27,19 +35,13 @@ describe("useRetryAfterCountdown", () => {
     // Blocked by: useRetryAfterCountdown implementation
     // Priority: P0
     test("decreases the remaining seconds once per elapsed second", () => {
-      vi.useFakeTimers();
+      const { result } = renderHook(() => useRetryAfterCountdown(5));
 
-      try {
-        const { result } = renderHook(() => useRetryAfterCountdown(5));
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
 
-        act(() => {
-          vi.advanceTimersByTime(1000);
-        });
-
-        expect(result.current).toBe(4);
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(result.current).toBe(4);
     });
 
     // ID: RETRY-AFTER-COUNTDOWN-S-003
@@ -50,19 +52,13 @@ describe("useRetryAfterCountdown", () => {
     // Blocked by: useRetryAfterCountdown implementation
     // Priority: P0
     test("stops decrementing after reaching zero", () => {
-      vi.useFakeTimers();
+      const { result } = renderHook(() => useRetryAfterCountdown(1));
 
-      try {
-        const { result } = renderHook(() => useRetryAfterCountdown(1));
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
 
-        act(() => {
-          vi.advanceTimersByTime(3000);
-        });
-
-        expect(result.current).toBe(0);
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(result.current).toBe(0);
     });
   });
 
@@ -75,25 +71,19 @@ describe("useRetryAfterCountdown", () => {
     // Blocked by: useRetryAfterCountdown implementation
     // Priority: P0
     test("restarts from the new duration when Retry-After changes", () => {
-      vi.useFakeTimers();
+      const { result, rerender } = renderHook(
+        ({ seconds }: { seconds: number }) => useRetryAfterCountdown(seconds),
+        { initialProps: { seconds: 5 } },
+      );
 
-      try {
-        const { result, rerender } = renderHook(
-          ({ seconds }: { seconds: number }) => useRetryAfterCountdown(seconds),
-          { initialProps: { seconds: 5 } },
-        );
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+      expect(result.current).toBe(3);
 
-        act(() => {
-          vi.advanceTimersByTime(2000);
-        });
-        expect(result.current).toBe(3);
+      rerender({ seconds: 10 });
 
-        rerender({ seconds: 10 });
-
-        expect(result.current).toBe(10);
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(result.current).toBe(10);
     });
   });
 
@@ -106,19 +96,13 @@ describe("useRetryAfterCountdown", () => {
     // Blocked by: useRetryAfterCountdown implementation
     // Priority: P1
     test("disposes the countdown timer when unmounted", () => {
-      vi.useFakeTimers();
+      const { unmount } = renderHook(() => useRetryAfterCountdown(5));
 
-      try {
-        const { unmount } = renderHook(() => useRetryAfterCountdown(5));
+      expect(vi.getTimerCount()).toBe(1);
 
-        expect(vi.getTimerCount()).toBe(1);
+      unmount();
 
-        unmount();
-
-        expect(vi.getTimerCount()).toBe(0);
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(vi.getTimerCount()).toBe(0);
     });
   });
 });
