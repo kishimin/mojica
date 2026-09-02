@@ -3,6 +3,7 @@ export type ImageGenerationErrorPresentation =
   | "requestLimit"
   | "serverError"
   | "imageGenerationServiceError"
+  | "timeout"
   | "fallback";
 
 export const toImageGenerationErrorPresentation = (
@@ -17,6 +18,8 @@ export const toImageGenerationErrorPresentation = (
       return "serverError";
     case "IMAGE_GENERATION_FAILED":
       return "imageGenerationServiceError";
+    case "IMAGE_GENERATION_TIMEOUT":
+      return "timeout";
     default:
       return "fallback";
   }
