@@ -10,6 +10,7 @@ export const useRetryAfterCountdown = (retryAfterSeconds: number) => {
       return;
     }
 
+    // Keep the deadline fixed so delayed callbacks still reflect elapsed time.
     const deadline = Date.now() + retryAfterSeconds * 1000;
     const timerId = setInterval(() => {
       const nextRemainingSeconds = Math.max(
