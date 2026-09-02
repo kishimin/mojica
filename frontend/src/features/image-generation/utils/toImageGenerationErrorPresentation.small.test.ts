@@ -36,7 +36,11 @@ describe("toImageGenerationErrorPresentation", () => {
     // Then: The result identifies the localized "Server error" heading
     // Blocked by: toImageGenerationErrorPresentation implementation and error-heading i18n definitions
     // Priority: P1
-    test.todo("maps INTERNAL_SERVER_ERROR to the server-error heading");
+    test("maps INTERNAL_SERVER_ERROR to the server-error heading", () => {
+      expect(toImageGenerationErrorPresentation("INTERNAL_SERVER_ERROR")).toBe(
+        "serverError",
+      );
+    });
 
     // ID: IMAGE-GENERATION-ERROR-PRESENTATION-S-004
     // Source: docs/v1/ui/branch-plans/feat-mojica-ui-image-generation.md; docs/v1/ui/branch-plans/feat-mojica-ui-image-generation-work.md § 4; docs/v1/ui/ui.md § 12
