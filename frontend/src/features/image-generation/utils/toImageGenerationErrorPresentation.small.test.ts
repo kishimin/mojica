@@ -77,8 +77,11 @@ describe("toImageGenerationErrorPresentation", () => {
     // Then: The result identifies the localized fallback heading without exposing the internal code
     // Blocked by: toImageGenerationErrorPresentation implementation and error-heading i18n definitions
     // Priority: P1
-    test.todo(
-      "maps an unsupported API error code to the safe fallback heading",
-    );
+    test("maps absent and unsupported API error codes to the safe fallback heading", () => {
+      expect(toImageGenerationErrorPresentation("UNKNOWN_CODE")).toBe(
+        "fallback",
+      );
+      expect(toImageGenerationErrorPresentation(undefined)).toBe("fallback");
+    });
   });
 });
