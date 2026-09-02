@@ -106,6 +106,20 @@ describe("useRetryAfterCountdown", () => {
     // Then: The timer is disposed without updating the unmounted hook
     // Blocked by: useRetryAfterCountdown implementation
     // Priority: P1
-    test.todo("disposes the countdown timer when unmounted");
+    test("disposes the countdown timer when unmounted", () => {
+      vi.useFakeTimers();
+
+      try {
+        const { unmount } = renderHook(() => useRetryAfterCountdown(5));
+
+        expect(vi.getTimerCount()).toBe(1);
+
+        unmount();
+
+        expect(vi.getTimerCount()).toBe(0);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 });
