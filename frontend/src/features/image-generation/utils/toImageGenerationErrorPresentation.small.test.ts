@@ -1,4 +1,5 @@
-import { describe, test } from "vitest";
+import { describe, expect, test } from "vitest";
+import { toImageGenerationErrorPresentation } from "./toImageGenerationErrorPresentation";
 
 describe("toImageGenerationErrorPresentation", () => {
   describe("supported API error codes", () => {
@@ -9,7 +10,11 @@ describe("toImageGenerationErrorPresentation", () => {
     // Then: The result identifies the localized "Request error" heading
     // Blocked by: toImageGenerationErrorPresentation implementation and error-heading i18n definitions
     // Priority: P1
-    test.todo("maps BAD_REQUEST to the request-error heading");
+    test("maps BAD_REQUEST to the request-error heading", () => {
+      expect(toImageGenerationErrorPresentation("BAD_REQUEST")).toBe(
+        "requestError",
+      );
+    });
 
     // ID: IMAGE-GENERATION-ERROR-PRESENTATION-S-002
     // Source: docs/v1/ui/branch-plans/feat-mojica-ui-image-generation.md; docs/v1/ui/branch-plans/feat-mojica-ui-image-generation-work.md § 4; docs/v1/ui/ui.md § 12
