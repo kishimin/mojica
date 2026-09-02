@@ -1,4 +1,6 @@
-import { describe, test } from "vitest";
+import { renderHook } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+import { useRetryAfterCountdown } from "./useRetryAfterCountdown";
 
 describe("useRetryAfterCountdown", () => {
   describe("initial value", () => {
@@ -9,7 +11,11 @@ describe("useRetryAfterCountdown", () => {
     // Then: The remaining seconds equal the supplied duration
     // Blocked by: useRetryAfterCountdown implementation
     // Priority: P0
-    test.todo("starts with the supplied Retry-After duration");
+    test("starts with the supplied Retry-After duration", () => {
+      const { result } = renderHook(() => useRetryAfterCountdown(5));
+
+      expect(result.current).toBe(5);
+    });
   });
 
   describe("countdown", () => {
