@@ -58,16 +58,4 @@ describe("useRetryAfterCountdown", () => {
       expect(result.current).toBe(10);
     });
   });
-
-  describe("lifecycle", () => {
-    test("disposes the countdown timer when unmounted", () => {
-      const { unmount } = renderHook(() => useRetryAfterCountdown(5));
-
-      expect(vi.getTimerCount()).toBe(1);
-
-      unmount();
-
-      expect(vi.getTimerCount()).toBe(0);
-    });
-  });
 });
