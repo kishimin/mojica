@@ -23,7 +23,11 @@ describe("toImageGenerationErrorPresentation", () => {
     // Then: The result identifies the localized "Request limit exceeded" heading
     // Blocked by: toImageGenerationErrorPresentation implementation and error-heading i18n definitions
     // Priority: P1
-    test.todo("maps RATE_LIMIT_EXCEEDED to the request-limit heading");
+    test("maps RATE_LIMIT_EXCEEDED to the request-limit heading", () => {
+      expect(toImageGenerationErrorPresentation("RATE_LIMIT_EXCEEDED")).toBe(
+        "requestLimit",
+      );
+    });
 
     // ID: IMAGE-GENERATION-ERROR-PRESENTATION-S-003
     // Source: docs/v1/ui/branch-plans/feat-mojica-ui-image-generation.md; docs/v1/ui/branch-plans/feat-mojica-ui-image-generation-work.md § 4; docs/v1/ui/ui.md § 12
