@@ -62,7 +62,11 @@ describe("toImageGenerationErrorPresentation", () => {
     // Then: The result identifies the localized "Timeout" heading
     // Blocked by: toImageGenerationErrorPresentation implementation and error-heading i18n definitions
     // Priority: P1
-    test.todo("maps IMAGE_GENERATION_TIMEOUT to the timeout heading");
+    test("maps IMAGE_GENERATION_TIMEOUT to the timeout heading", () => {
+      expect(toImageGenerationErrorPresentation("IMAGE_GENERATION_TIMEOUT")).toBe(
+        "timeout",
+      );
+    });
   });
 
   describe("unsupported API error codes", () => {
