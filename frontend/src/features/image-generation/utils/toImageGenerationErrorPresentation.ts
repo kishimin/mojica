@@ -1,10 +1,11 @@
+import type { ApiErrorResponse } from "@/models/apiErrorResponse";
 import {
   imageGenerationErrorPresentations,
   type ImageGenerationErrorPresentation,
 } from "@/types/image-generation-error-presentation";
 
 export const toImageGenerationErrorPresentation = (
-  code: string | null | undefined,
+  code: ApiErrorResponse["code"],
 ): ImageGenerationErrorPresentation => {
   switch (code) {
     case "BAD_REQUEST":
