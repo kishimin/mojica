@@ -39,6 +39,18 @@ describe("useRetryAfterCountdown", () => {
 
       expect(result.current).toBe(0);
     });
+
+    test("derives the remaining seconds from elapsed wall-clock time", () => {
+      const { result } = renderHook(() => useRetryAfterCountdown(60));
+
+      vi.setSystemTime(new Date(Date.now() + 30_000));
+
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
+
+      expect(result.current).toBe(29);
+    });
   });
 
   describe("input changes", () => {
