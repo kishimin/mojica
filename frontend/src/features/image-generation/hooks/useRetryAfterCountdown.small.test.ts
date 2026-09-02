@@ -1,5 +1,5 @@
-import { renderHook } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { act, renderHook } from "@testing-library/react";
+import { describe, expect, test, vi } from "vitest";
 import { useRetryAfterCountdown } from "./useRetryAfterCountdown";
 
 describe("useRetryAfterCountdown", () => {
@@ -26,7 +26,21 @@ describe("useRetryAfterCountdown", () => {
     // Then: The remaining seconds decrease by one
     // Blocked by: useRetryAfterCountdown implementation
     // Priority: P0
-    test.todo("decreases the remaining seconds once per elapsed second");
+    test("decreases the remaining seconds once per elapsed second", () => {
+      vi.useFakeTimers();
+
+      try {
+        const { result } = renderHook(() => useRetryAfterCountdown(5));
+
+        act(() => {
+          vi.advanceTimersByTime(1000);
+        });
+
+        expect(result.current).toBe(4);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
 
     // ID: RETRY-AFTER-COUNTDOWN-S-003
     // Source: docs/v1/ui/components/ImageGenerationForm.md § Tests; docs/v1/ui/ui.md § 12
