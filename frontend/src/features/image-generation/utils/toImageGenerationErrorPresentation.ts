@@ -1,26 +1,32 @@
+export const imageGenerationErrorPresentations = {
+  requestError: "requestError",
+  requestLimit: "requestLimit",
+  serverError: "serverError",
+  imageGenerationServiceError: "imageGenerationServiceError",
+  timeout: "timeout",
+  fallback: "fallback",
+} as const;
+
 export type ImageGenerationErrorPresentation =
-  | "requestError"
-  | "requestLimit"
-  | "serverError"
-  | "imageGenerationServiceError"
-  | "timeout"
-  | "fallback";
+  (typeof imageGenerationErrorPresentations)[keyof typeof imageGenerationErrorPresentations];
 
 export const toImageGenerationErrorPresentation = (
   code: string | null | undefined,
 ): ImageGenerationErrorPresentation => {
   switch (code) {
     case "BAD_REQUEST":
-      return "requestError";
+      return imageGenerationErrorPresentations.requestError;
     case "RATE_LIMIT_EXCEEDED":
-      return "requestLimit";
+      return imageGenerationErrorPresentations.requestLimit;
     case "INTERNAL_SERVER_ERROR":
-      return "serverError";
+      return imageGenerationErrorPresentations.serverError;
     case "IMAGE_GENERATION_FAILED":
-      return "imageGenerationServiceError";
+      return imageGenerationErrorPresentations.imageGenerationServiceError;
     case "IMAGE_GENERATION_TIMEOUT":
-      return "timeout";
+      return imageGenerationErrorPresentations.timeout;
+    case null:
+    case undefined:
     default:
-      return "fallback";
+      return imageGenerationErrorPresentations.fallback;
   }
 };
