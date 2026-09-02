@@ -49,7 +49,21 @@ describe("useRetryAfterCountdown", () => {
     // Then: The remaining seconds stay at zero and no further decrement occurs
     // Blocked by: useRetryAfterCountdown implementation
     // Priority: P0
-    test.todo("stops decrementing after reaching zero");
+    test("stops decrementing after reaching zero", () => {
+      vi.useFakeTimers();
+
+      try {
+        const { result } = renderHook(() => useRetryAfterCountdown(1));
+
+        act(() => {
+          vi.advanceTimersByTime(3000);
+        });
+
+        expect(result.current).toBe(0);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 
   describe("input changes", () => {
