@@ -1,14 +1,7 @@
-export const imageGenerationErrorPresentations = {
-  requestError: "requestError",
-  requestLimit: "requestLimit",
-  serverError: "serverError",
-  imageGenerationServiceError: "imageGenerationServiceError",
-  timeout: "timeout",
-  fallback: "fallback",
-} as const;
-
-export type ImageGenerationErrorPresentation =
-  (typeof imageGenerationErrorPresentations)[keyof typeof imageGenerationErrorPresentations];
+import {
+  imageGenerationErrorPresentations,
+  type ImageGenerationErrorPresentation,
+} from "@/types/image-generation-error-presentation";
 
 export const toImageGenerationErrorPresentation = (
   code: string | null | undefined,
