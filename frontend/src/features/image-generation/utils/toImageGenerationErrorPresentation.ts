@@ -2,6 +2,7 @@ export type ImageGenerationErrorPresentation =
   | "requestError"
   | "requestLimit"
   | "serverError"
+  | "imageGenerationServiceError"
   | "fallback";
 
 export const toImageGenerationErrorPresentation = (
@@ -14,6 +15,8 @@ export const toImageGenerationErrorPresentation = (
       return "requestLimit";
     case "INTERNAL_SERVER_ERROR":
       return "serverError";
+    case "IMAGE_GENERATION_FAILED":
+      return "imageGenerationServiceError";
     default:
       return "fallback";
   }
