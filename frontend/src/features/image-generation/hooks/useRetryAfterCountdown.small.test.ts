@@ -79,8 +79,7 @@ describe("useRetryAfterCountdown", () => {
 
       try {
         const { result, rerender } = renderHook(
-          ({ seconds }: { seconds: number }) =>
-            useRetryAfterCountdown(seconds),
+          ({ seconds }: { seconds: number }) => useRetryAfterCountdown(seconds),
           { initialProps: { seconds: 5 } },
         );
 

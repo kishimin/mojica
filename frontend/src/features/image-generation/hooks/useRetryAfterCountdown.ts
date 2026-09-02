@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
 export const useRetryAfterCountdown = (retryAfterSeconds: number) => {
-  const [remainingSeconds, setRemainingSeconds] =
-    useState(retryAfterSeconds);
+  const [remainingSeconds, setRemainingSeconds] = useState(retryAfterSeconds);
 
   useEffect(() => {
     setRemainingSeconds(retryAfterSeconds);
@@ -12,9 +11,7 @@ export const useRetryAfterCountdown = (retryAfterSeconds: number) => {
     }
 
     const timerId = window.setInterval(() => {
-      setRemainingSeconds((currentSeconds) =>
-        Math.max(0, currentSeconds - 1),
-      );
+      setRemainingSeconds((currentSeconds) => Math.max(0, currentSeconds - 1));
     }, 1000);
 
     return () => window.clearInterval(timerId);
