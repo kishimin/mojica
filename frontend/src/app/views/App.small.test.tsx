@@ -4,14 +4,19 @@ import App from "./App";
 import { setup } from "@/tests/test-utils";
 
 describe("App", () => {
-  test("increments the counter each time the button is clicked", async () => {
-    const { user } = setup(<App />);
+  test("renders the image-generation screen inside the application shell", () => {
+    setup(<App />);
 
-    const button = screen.getByRole("button", { name: "Count is 0" });
-    await user.click(button);
-
+    expect(screen.getByRole("banner")).toBeVisible();
     expect(
-      screen.getByRole("button", { name: "Count is 1" }),
-    ).toBeInTheDocument();
+      screen.getByRole("heading", { name: "文字で、文字を描く。" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("textbox", { name: "描画する文字列" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "画像を生成する" }),
+    ).toBeEnabled();
+    expect(screen.getByRole("contentinfo")).toBeVisible();
   });
 });

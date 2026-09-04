@@ -78,6 +78,33 @@ export const imageGenerationFormMessages = {
   },
 } satisfies Record<Locale, ImageGenerationFormMessages>;
 
+type ImageGenerationScreenMessages = {
+  heading: string;
+  description: string;
+  textHelper: string;
+  characterHelper: string;
+  downloadHelper: string;
+};
+
+export const imageGenerationScreenMessages = {
+  ja: {
+    heading: "文字で、文字を描く。",
+    description:
+      "好きな文字と2つの色を組み合わせて、文字アート画像を生成します。",
+    textHelper: "1〜64文字",
+    characterHelper: "1〜128文字",
+    downloadHelper: "生成したPNG画像は自動でダウンロードされます。",
+  },
+  en: {
+    heading: "Draw letters with letters.",
+    description:
+      "Combine your favorite characters and two colors to generate text art.",
+    textHelper: "1–64 characters",
+    characterHelper: "1–128 characters",
+    downloadHelper: "The generated PNG image will download automatically.",
+  },
+} satisfies Record<Locale, ImageGenerationScreenMessages>;
+
 export const imageGenerationValidationMessages: Record<
   Locale,
   Record<string, string>

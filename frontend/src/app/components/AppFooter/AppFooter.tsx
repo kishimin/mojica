@@ -1,5 +1,9 @@
 const AppFooter = () => (
-  <footer className={"px-6 py-4 text-center text-sm text-helper-foreground"}>
+  <footer
+    className={
+      "flex h-[var(--layout-footer-height)] items-center justify-center px-6 text-center text-sm text-helper-foreground"
+    }
+  >
     {"© kishimin 2026"}
   </footer>
 );

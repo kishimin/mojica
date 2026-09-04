@@ -19,6 +19,7 @@ import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
 import {
   imageGenerationFormMessages,
+  imageGenerationScreenMessages,
   imageGenerationValidationMessages,
 } from "@/i18n/messages";
 import type { Locale } from "@/types/i18n";
@@ -65,6 +66,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     },
   });
   const messages = imageGenerationFormMessages[locale];
+  const screenMessages = imageGenerationScreenMessages[locale];
 
   const submitForm = handleSubmit((values) => {
     setApiError(undefined);
@@ -79,6 +81,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
 
   return (
     <form
+      className={"flex flex-col gap-6"}
       onSubmit={(event) => {
         void submitForm(event);
       }}
@@ -92,12 +95,14 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
 
       <TextField
         label={messages.text}
+        helperText={screenMessages.textHelper}
         errorMessage={getErrorMessage(errors.text?.message)}
         {...register("text")}
       />
 
       <TextField
         label={messages.foregroundCharacter}
+        helperText={screenMessages.characterHelper}
         errorMessage={getErrorMessage(errors.foregroundCharacter?.message)}
         {...register("foregroundCharacter")}
       />
@@ -118,6 +123,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
 
       <TextField
         label={messages.backgroundCharacter}
+        helperText={screenMessages.characterHelper}
         errorMessage={getErrorMessage(errors.backgroundCharacter?.message)}
         {...register("backgroundCharacter")}
       />
@@ -156,6 +162,10 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
           hasApiError: apiError !== undefined,
         })}
       />
+
+      <p className={"text-center text-xs text-helper-foreground"}>
+        {screenMessages.downloadHelper}
+      </p>
     </form>
   );
 };
