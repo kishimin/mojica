@@ -3,6 +3,7 @@ import { Controller } from "react-hook-form";
 import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
 import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
 import applyImageGenerationFieldErrors from "../../utils/applyImageGenerationFieldErrors";
+import toGenerateButtonState from "../../utils/toGenerateButtonState";
 import toImageGenerationApiError from "../../utils/toImageGenerationApiError";
 import toRetryAfterSeconds from "../../utils/toRetryAfterSeconds";
 import GenerateButton from "../GenerateButton/GenerateButton";
@@ -134,18 +135,12 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         )}
       />
       <GenerateButton
-        state={
-          isPending || isSubmitting
-            ? { kind: "submitting" }
-            : remainingRetryAfterSeconds > 0
-              ? {
-                  kind: "cooldown",
-                  remainingSeconds: remainingRetryAfterSeconds,
-                }
-              : apiError
-                ? { kind: "retryable" }
-                : { kind: "idle" }
-        }
+        state={toGenerateButtonState({
+          isPending,
+          isSubmitting,
+          remainingRetryAfterSeconds,
+          hasApiError: apiError !== undefined,
+        })}
       />
     </form>
   );

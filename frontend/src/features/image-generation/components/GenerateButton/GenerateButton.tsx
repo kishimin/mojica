@@ -2,12 +2,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { generateButtonMessages } from "@/i18n/messages";
-
-type GenerateButtonState =
-  | { kind: "idle" }
-  | { kind: "submitting" }
-  | { kind: "retryable" }
-  | { kind: "cooldown"; remainingSeconds: number };
+import type { GenerateButtonState } from "@/types/generate-button-state";
 
 type GenerateButtonProps = {
   /** Presentation state selected by the image generation form. */
