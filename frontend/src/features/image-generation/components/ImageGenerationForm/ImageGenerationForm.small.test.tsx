@@ -1,20 +1,14 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { describe, expect, test, vi } from "vitest";
 import ImageGenerationForm from "./ImageGenerationForm";
 import { getPostImagesMockHandler } from "@/api/endpoints/image/image.msw";
 import { worker } from "@/api/mocks/browser";
-import { setupWithI18n } from "@/tests/test-utils";
+import { setupWithProviders } from "@/tests/test-utils";
 import type { Locale } from "@/types/i18n";
 
 const setupImageGenerationForm = (locale: Locale) =>
-  setupWithI18n(
-    <QueryClientProvider client={new QueryClient()}>
-      <ImageGenerationForm locale={locale} />
-    </QueryClientProvider>,
-    locale,
-  );
+  setupWithProviders(<ImageGenerationForm locale={locale} />, locale);
 
 describe("ImageGenerationForm", () => {
   describe("initial rendering", () => {

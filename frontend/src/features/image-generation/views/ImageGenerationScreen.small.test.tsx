@@ -1,17 +1,11 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import ImageGenerationScreen from "./ImageGenerationScreen";
-import { setupWithI18n } from "@/tests/test-utils";
+import { setupWithProviders } from "@/tests/test-utils";
 import type { Locale } from "@/types/i18n";
 
 const renderScreen = (locale: Locale) =>
-  setupWithI18n(
-    <QueryClientProvider client={new QueryClient()}>
-      <ImageGenerationScreen />
-    </QueryClientProvider>,
-    locale,
-  );
+  setupWithProviders(<ImageGenerationScreen />, locale);
 
 describe("ImageGenerationScreen", () => {
   describe("Japanese copy", () => {
