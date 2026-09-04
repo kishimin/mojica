@@ -152,7 +152,7 @@ export default defineConfig([
     ignores: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
     rules: {
       "max-lines-per-function": [
-        "warn",
+        "error",
         { max: 30, skipBlankLines: true, skipComments: true },
       ],
     },
