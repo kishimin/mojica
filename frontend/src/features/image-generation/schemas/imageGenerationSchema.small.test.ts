@@ -344,4 +344,38 @@ describe("imageGenerationSchema validation contract", () => {
       );
     });
   });
+
+  describe("colors", () => {
+    test("rejects an invalid foreground HEX color", () => {
+      const result = imageGenerationSchema.safeParse({
+        ...validInput,
+        foregroundColor: "#GGGGGG",
+      });
+
+      expect(result.success).toBe(false);
+      if (result.success) return;
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["foregroundColor"],
+          message: "foregroundColor.invalid",
+        }),
+      );
+    });
+
+    test("rejects an invalid background HEX color", () => {
+      const result = imageGenerationSchema.safeParse({
+        ...validInput,
+        backgroundColor: "#12345",
+      });
+
+      expect(result.success).toBe(false);
+      if (result.success) return;
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["backgroundColor"],
+          message: "backgroundColor.invalid",
+        }),
+      );
+    });
+  });
 });
