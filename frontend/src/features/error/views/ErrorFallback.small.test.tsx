@@ -1,7 +1,12 @@
 import { screen } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import { setup } from "@/tests/test-utils";
 import ErrorFallback from "./ErrorFallback";
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  localStorage.clear();
+});
 
 describe("ErrorFallback", () => {
   describe("localized fallback content", () => {
@@ -84,7 +89,19 @@ describe("ErrorFallback", () => {
     // Then: The first supported browser language determines the displayed copy
     // Blocked by: ErrorFallback implementation
     // Priority: P1
-    test.todo("uses the first supported browser locale when storage has no supported locale");
+    test("uses the first supported browser locale when storage has no supported locale", () => {
+      localStorage.clear();
+      Object.defineProperty(navigator, "languages", {
+        configurable: true,
+        value: ["fr-FR", "en-US", "ja-JP"],
+      });
+
+      setup(<ErrorFallback />);
+
+      expect(
+        screen.getByRole("heading", { name: "An error occurred" }),
+      ).toBeVisible();
+    });
 
     // ID: ERROR-FALLBACK-S-005
     // Source: docs/v1/ui/ui.md § 20; docs/v1/ui/components/ErrorFallback.md § i18n
@@ -93,7 +110,21 @@ describe("ErrorFallback", () => {
     // Then: The fallback remains usable and displays the Japanese default copy
     // Blocked by: ErrorFallback implementation
     // Priority: P0
-    test.todo("falls back to Japanese when locale sources are unreadable or unsupported");
+    test("falls back to Japanese when locale sources are unreadable or unsupported", () => {
+      vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+        throw new Error("storage unavailable");
+      });
+      Object.defineProperty(navigator, "languages", {
+        configurable: true,
+        value: ["fr-FR"],
+      });
+
+      setup(<ErrorFallback />);
+
+      expect(
+        screen.getByRole("heading", { name: "エラーが発生しました" }),
+      ).toBeVisible();
+    });
   });
 
   describe("recovery action", () => {
