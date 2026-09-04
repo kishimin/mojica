@@ -18,5 +18,6 @@ const defaultValues = {
 export const useImageGenerationForm = () =>
   useForm<ImageGenerationFormValues>({
     defaultValues,
+    mode: "onChange",
     resolver: zodResolver(imageGenerationSchema),
   });
