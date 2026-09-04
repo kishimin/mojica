@@ -186,7 +186,46 @@ describe("ImageGenerationForm", () => {
     // Then: The action is unavailable and no duplicate POST /images request is sent
     // Blocked by: ImageGenerationForm implementation
     // Priority: P0
-    test.todo("prevents duplicate submissions while generating");
+    test("prevents duplicate submissions while generating", async () => {
+      const requests: unknown[] = [];
+      let resolveResponse!: () => void;
+      const responseReady = new Promise<void>((resolve) => {
+        resolveResponse = resolve;
+      });
+      worker.use(
+        http.post("*/images", async ({ request }) => {
+          requests.push(await request.json());
+          await responseReady;
+          return new HttpResponse(null, { status: 200 });
+        }),
+      );
+
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      const submittingButton = await screen.findByRole("button", {
+        name: "生成中...",
+      });
+      expect(submittingButton).toBeDisabled();
+
+      await user.click(submittingButton);
+      expect(requests).toHaveLength(1);
+
+      resolveResponse();
+    });
   });
 
   describe("API validation errors", () => {
