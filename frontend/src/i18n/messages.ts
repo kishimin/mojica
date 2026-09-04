@@ -110,6 +110,10 @@ export const imageGenerationValidationMessages: Record<
   Record<string, string>
 > = {
   ja: {
+    "foregroundColor.invalid":
+      "描画に使う文字の色をHEXカラー形式（#RRGGBB）で指定してください。",
+    "backgroundColor.invalid":
+      "敷き詰める文字の色をHEXカラー形式（#RRGGBB）で指定してください。",
     "text.required": "描画する文字列を入力してください。",
     "text.whitespaceOnly": "空白以外の文字を入力してください。",
     "text.maxLength": "描画する文字列は64文字以内で入力してください。",
@@ -130,6 +134,10 @@ export const imageGenerationValidationMessages: Record<
     "imageType.invalid": "画像タイプを選択してください。",
   },
   en: {
+    "foregroundColor.invalid":
+      "Enter the rendering character color in HEX format (#RRGGBB).",
+    "backgroundColor.invalid":
+      "Enter the background character color in HEX format (#RRGGBB).",
     "text.required": "Enter the text to render.",
     "text.whitespaceOnly": "Enter a character other than whitespace.",
     "text.maxLength": "The text to render must be 64 characters or fewer.",
