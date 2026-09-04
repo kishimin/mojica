@@ -197,7 +197,8 @@ describe("ImageGenerationForm", () => {
       worker.use(
         getPostImagesMockHandler(async ({ request }) => {
           requests.push(await request.json());
-          // Do not use a fixed delay; keep the request pending until duplicate submission is checked.
+          // Do not complete the response yet; duplicate clicks must be checked while it is pending.
+          // Do not use a fixed delay; release the response explicitly after that check.
           await responseReady;
         }),
       );
