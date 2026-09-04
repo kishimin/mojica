@@ -79,6 +79,16 @@ const lintFunctionParameters = async (source) => {
   return result.messages.filter(({ ruleId }) => ruleId === "max-params");
 };
 
+const lintFunctionLength = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "src/components/Logo/Logo.tsx",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "max-lines-per-function",
+  );
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -253,6 +263,33 @@ test("allows Props definitions with five keys", async () => {
       five: string;
     }
   `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects functions longer than thirty lines", async () => {
+  const statements = Array.from(
+    { length: 31 },
+    (_, index) => `  const value${index} = ${index};`,
+  ).join("\n");
+  const messages = await lintFunctionLength(
+    `const render = () => {\n${statements}\n};`,
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["max-lines-per-function"],
+  );
+});
+
+test("allows functions with thirty lines", async () => {
+  const statements = Array.from(
+    { length: 28 },
+    (_, index) => `  const value${index} = ${index};`,
+  ).join("\n");
+  const messages = await lintFunctionLength(
+    `const render = () => {\n${statements}\n};`,
+  );
 
   assert.deepEqual(messages, []);
 });

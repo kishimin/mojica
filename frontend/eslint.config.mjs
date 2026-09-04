@@ -90,6 +90,10 @@ export default defineConfig([
       "local/prefer-named-exports-in-utils": "error",
       "local/limit-props-keys": "error",
       "max-params": ["error", 5],
+      "max-lines-per-function": [
+        "warn",
+        { max: 30, skipBlankLines: true, skipComments: true },
+      ],
       "no-console": "warn",
       "no-restricted-syntax": [
         "error",
