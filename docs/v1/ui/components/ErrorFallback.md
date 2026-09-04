@@ -3,13 +3,13 @@
 - Layer: Feature UI (`features/error/views/`)
 - Location: `features/error/views/ErrorFallback.tsx`
 - Implementation: Tailwind only
-- Responsibility: The `ErrorBoundary` fallback UI. When an unexpected exception occurs during rendering, it replaces the entire application, including [AppHeader](./AppHeader.md) and [AppFooter](./AppFooter.md) (ui.md §20).
+- Responsibility: The `ErrorBoundary` fallback UI. When an unexpected exception occurs during rendering, it replaces the application content without rendering [AppHeader](./AppHeader.md) or [AppFooter](./AppFooter.md) (ui.md §20).
 
 Although it has no API calls or form state, it is a screen for the error feature and is treated like [NotFoundView](./NotFoundView.md). Following the frontend-folder-structure placement workflow, it belongs in `features/error/views/` rather than `app/components/`.
 
 ## Difference from the 404 screen
 
-`NotFoundView` replaces only the contents of [Layout](./Layout.md)'s `<Outlet />`, so `AppHeader` and `AppFooter` remain visible. `ErrorFallback`, however, replaces the entire screen including the header and footer because `ErrorBoundary` is located at the application root in `app/providers/AppProviders.tsx`. `NotFoundView` participates in routing as the `notFoundComponent` of `routes/__root.tsx`; `ErrorFallback` is rendered directly by `ErrorBoundary` independently of routing.
+`NotFoundView` replaces only the contents of [Layout](./Layout.md)'s `<Outlet />`, so `AppHeader` and `AppFooter` remain visible. `ErrorFallback` is rendered directly by the root `ErrorBoundary` and therefore does not render the header or footer. `NotFoundView` participates in routing as the `notFoundComponent` of `routes/__root.tsx`; `ErrorFallback` is rendered independently of routing.
 
 Place `ErrorBoundary` at the outermost edge of `AppProviders`, outside `QueryClientProvider` and `I18nProvider`. This ensures that `ErrorFallback` remains available even if `I18nProvider` itself causes an exception. Accordingly, `ErrorFallback` does not use the `I18nProvider` React context.
 
