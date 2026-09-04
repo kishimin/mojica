@@ -25,11 +25,12 @@ export const postImages = (
   imageGenerationRequestDto: ImageGenerationRequestDto,
   signal?: AbortSignal,
 ) => {
-  return customInstance<void>({
+  return customInstance<Blob>({
     url: `/images`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     data: imageGenerationRequestDto,
+    responseType: "blob",
     signal,
   });
 };

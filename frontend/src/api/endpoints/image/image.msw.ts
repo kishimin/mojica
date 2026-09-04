@@ -7,22 +7,31 @@
 import { HttpResponse, http } from "msw";
 import type { RequestHandlerOptions } from "msw";
 
+import { getPostImagesResponseMock } from "./image.faker";
+
+export { getPostImagesResponseMock } from "./image.faker";
+
 export const getPostImagesMockHandler = (
   overrideResponse?:
-    | void
+    | ArrayBuffer
     | ((
         info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<void> | void),
+      ) => Promise<ArrayBuffer> | ArrayBuffer),
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
     "*/images",
     async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
-      if (typeof overrideResponse === "function") {
-        await overrideResponse(info);
-      }
-
-      return new HttpResponse(null, { status: 200 });
+      const binaryBody =
+        overrideResponse !== undefined
+          ? typeof overrideResponse === "function"
+            ? await overrideResponse(info)
+            : overrideResponse
+          : getPostImagesResponseMock();
+      return HttpResponse.arrayBuffer(
+        binaryBody instanceof ArrayBuffer ? binaryBody : new ArrayBuffer(0),
+        { status: 200, headers: { "Content-Type": "image/png" } },
+      );
     },
     options,
   );

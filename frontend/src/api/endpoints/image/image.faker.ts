@@ -4,3 +4,7 @@
  * Mojica.Api
  * OpenAPI spec version: 1.0
  */
+import { faker } from "@faker-js/faker";
+
+export const getPostImagesResponseMock = (): ArrayBuffer =>
+  new ArrayBuffer(faker.number.int({ min: 1, max: 64 }));
