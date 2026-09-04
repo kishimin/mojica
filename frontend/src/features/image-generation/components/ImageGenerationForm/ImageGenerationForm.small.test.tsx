@@ -377,7 +377,38 @@ describe("ImageGenerationForm", () => {
     // Error: 429 Too Many Requests without Retry-After
     // Blocked by: ImageGenerationForm implementation
     // Priority: P1
-    test.todo("allows an immediate retry when Retry-After is absent");
+    test("allows an immediate retry when Retry-After is absent", async () => {
+      worker.use(
+        http.post("*/images", () =>
+          HttpResponse.json(
+            {
+              code: "RATE_LIMIT_EXCEEDED",
+              message: "しばらくお待ちください。",
+            },
+            { status: 429 },
+          ),
+        ),
+      );
+
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      expect(
+        await screen.findByRole("button", { name: "画像を生成する" }),
+      ).toBeEnabled();
+    });
   });
 
   describe("successful generation", () => {
