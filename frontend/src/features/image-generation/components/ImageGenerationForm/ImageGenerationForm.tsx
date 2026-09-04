@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { usePostImages } from "@/api/endpoints/image/image";
+import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
+import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
+import { toImageGenerationErrorPresentation } from "../../utils/toImageGenerationErrorPresentation";
+import GenerateButton from "../GenerateButton/GenerateButton";
+import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
+import {
+  usePostImages,
+  type PostImagesMutationError,
+} from "@/api/endpoints/image/image";
+import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
 import {
@@ -8,12 +17,6 @@ import {
   imageGenerationFormMessages,
   imageGenerationValidationMessages,
 } from "@/i18n/messages";
-import AlertBanner from "@/components/AlertBanner/AlertBanner";
-import { toImageGenerationErrorPresentation } from "../../utils/toImageGenerationErrorPresentation";
-import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
-import GenerateButton from "../GenerateButton/GenerateButton";
-import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
-import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
 import type { Locale } from "@/types/i18n";
 
 type ImageGenerationFormProps = {
@@ -36,7 +39,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     setError,
     formState: { errors, isSubmitting },
   } = useImageGenerationForm();
-  const { isPending, mutate } = usePostImages({
+  const { isPending, mutate } = usePostImages<PostImagesMutationError>({
     mutation: {
       onError: (error) => {
         const response = error.response?.data;
@@ -74,10 +77,18 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
             description: response?.message ?? "",
           });
 
-          const retryAfterHeader = error.response?.headers.get("Retry-After");
-          const retryAfter = retryAfterHeader
-            ? Number.parseInt(retryAfterHeader, 10)
-            : 0;
+          const headers = error.response?.headers;
+          const retryAfterHeader =
+            headers &&
+            typeof headers !== "string" &&
+            "get" in headers &&
+            typeof headers.get === "function"
+              ? headers.get("Retry-After")
+              : undefined;
+          const retryAfter =
+            typeof retryAfterHeader === "string"
+              ? Number.parseInt(retryAfterHeader, 10)
+              : 0;
           setRetryAfterSeconds(Number.isFinite(retryAfter) ? retryAfter : 0);
         }
       },
@@ -97,7 +108,11 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
       : undefined;
 
   return (
-    <form onSubmit={submitForm}>
+    <form
+      onSubmit={(event) => {
+        void submitForm(event);
+      }}
+    >
       {apiError ? (
         <AlertBanner
           title={apiError.title}
@@ -115,7 +130,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         {...register("foregroundCharacter")}
       />
       <Controller
-        name="foregroundColor"
+        name={"foregroundColor"}
         control={control}
         render={({ field }) => (
           <ColorPickerField
@@ -133,7 +148,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         {...register("backgroundCharacter")}
       />
       <Controller
-        name="backgroundColor"
+        name={"backgroundColor"}
         control={control}
         render={({ field }) => (
           <ColorPickerField
@@ -146,7 +161,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         )}
       />
       <Controller
-        name="type"
+        name={"type"}
         control={control}
         render={({ field }) => (
           <ImageTypeSelect
