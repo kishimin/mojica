@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import toGenerateButtonState from "./toGenerateButtonState";
+import { toGenerateButtonState } from "./toGenerateButtonState";
 
 describe("toGenerateButtonState", () => {
   test("prioritizes submitting while a request is being sent", () => {

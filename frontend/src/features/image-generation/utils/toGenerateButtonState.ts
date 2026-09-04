@@ -7,7 +7,7 @@ type GenerateButtonStateInputs = {
   hasApiError: boolean;
 };
 
-const toGenerateButtonState = ({
+export const toGenerateButtonState = ({
   isPending,
   isSubmitting,
   remainingRetryAfterSeconds,
@@ -30,5 +30,3 @@ const toGenerateButtonState = ({
 
   return { kind: "idle" };
 };
-
-export default toGenerateButtonState;

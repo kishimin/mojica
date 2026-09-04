@@ -2,7 +2,7 @@ import type { UseFormSetError } from "react-hook-form";
 import type { ImageGenerationFormValues } from "../schemas/imageGenerationSchema";
 import type { ApiValidationFieldError } from "@/models/apiValidationFieldError";
 
-const applyImageGenerationFieldErrors = (
+export const applyImageGenerationFieldErrors = (
   fieldErrors: ApiValidationFieldError[] | null | undefined,
   setError: UseFormSetError<ImageGenerationFormValues>,
 ) => {
@@ -28,5 +28,3 @@ const applyImageGenerationFieldErrors = (
     }
   }
 };
-
-export default applyImageGenerationFieldErrors;

@@ -11,7 +11,7 @@ type ImageGenerationApiError = {
   description: string;
 };
 
-const toImageGenerationApiError = (
+export const toImageGenerationApiError = (
   response: ApiErrorResponse | ApiValidationErrorResponse | undefined,
   locale: Locale,
 ): ImageGenerationApiError => {
@@ -24,5 +24,3 @@ const toImageGenerationApiError = (
     description: response?.message ?? "",
   };
 };
-
-export default toImageGenerationApiError;

@@ -4,7 +4,7 @@ type RetryAfterHeaderSource = {
   [key: string]: unknown;
 };
 
-const toRetryAfterSeconds = (
+export const toRetryAfterSeconds = (
   headers: AxiosResponse<unknown>["headers"] | undefined,
 ) => {
   const retryAfterHeader =
@@ -18,5 +18,3 @@ const toRetryAfterSeconds = (
 
   return Number.isFinite(retryAfter) ? retryAfter : 0;
 };
-
-export default toRetryAfterSeconds;
