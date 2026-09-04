@@ -42,7 +42,7 @@ The decomposition below is an implementation plan inferred from the contracts; i
 - [ ] Add the Small form integration test with MSW for success, `422`, `400`, `429`, `500`, `502`, and `504`, including field errors and retry behavior.
 - [ ] Implement automatic PNG download from the successful response body and `Content-Disposition` filename.
 - [ ] Implement `ImageGenerationScreen.tsx` as the page container with the documented centered maximum width.
-- [ ] Add the `ImageGenerationForm` and `ImageGenerationScreen` Storybook stories with MSW-backed Default, Filled, ValidationError, ServerError, Submitting, Success, and API error states.
+- [ ] Add the `ImageGenerationForm` Storybook stories with MSW-backed Filled, ValidationError, ServerError, Submitting, Success, and API error states, plus Default and English stories for `ImageGenerationScreen`.
 - [ ] Run formatting, type checking, lint, Small/Medium tests, coverage, Storybook tests/build, and frontend build before opening the PR.
 
 ## Non-goals
