@@ -1,6 +1,6 @@
 import { act, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import ImageGenerationForm from "./ImageGenerationForm";
 import { getPostImagesMockHandler } from "@/api/endpoints/image/image.msw";
 import { worker } from "@/api/mocks/browser";
@@ -9,6 +9,10 @@ import type { Locale } from "@/types/i18n";
 
 const setupImageGenerationForm = (locale: Locale) =>
   setupWithProviders(<ImageGenerationForm locale={locale} />, locale);
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("ImageGenerationForm", () => {
   describe("initial rendering", () => {
@@ -115,13 +119,53 @@ describe("ImageGenerationForm", () => {
       });
     });
 
-    // ID: IMAGE-GENERATION-FORM-S-013
-    // Source: docs/v1/ui/components/ImageGenerationForm.md § State model; docs/v1/ui/ui.md §10, §12
-    // Given: A valid form submission receives a PNG response with a Content-Disposition filename
-    // When: The image-generation request succeeds
-    // Then: The generated image is automatically offered for download with the server-provided filename
-    // Priority: P0
-    test.todo("downloads a successful PNG response with its server filename");
+    test("downloads a successful PNG response automatically", async () => {
+      const objectUrl = "blob:http://localhost/generated-image";
+      const createdAnchors: HTMLAnchorElement[] = [];
+      vi.spyOn(URL, "createObjectURL").mockReturnValue(objectUrl);
+      vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => undefined);
+      const createElement = vi.spyOn(document, "createElement");
+      createElement.mockImplementation((tagName) => {
+        const element = document.createElementNS(
+          "http://www.w3.org/1999/xhtml",
+          tagName,
+        );
+        if (element instanceof HTMLAnchorElement) {
+          createdAnchors.push(element);
+        }
+        return element;
+      });
+      const click = vi
+        .spyOn(HTMLAnchorElement.prototype, "click")
+        .mockImplementation(() => undefined);
+      worker.use(
+        getPostImagesMockHandler(() => new Uint8Array([137, 80]).buffer),
+      );
+
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      await waitFor(() => {
+        expect(click).toHaveBeenCalledOnce();
+      });
+      expect(createdAnchors[0]).toHaveAttribute(
+        "download",
+        "generated-image.png",
+      );
+      expect(createdAnchors[0]).toHaveAttribute("href", objectUrl);
+    });
 
     test("blocks submission and displays client validation errors", async () => {
       const { user } = setupImageGenerationForm("ja");
