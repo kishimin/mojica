@@ -9,7 +9,7 @@ describe("ImageGenerationForm", () => {
     // Then: The form exposes the required inputs, the standard image type, and the generate-image action with documented empty defaults
     // Blocked by: ImageGenerationForm implementation
     // Priority: P0
-    test.todo("renders the empty Japanese image-generation form");
+    test.todo("renders the image-generation form in Japanese");
 
     // ID: IMAGE-GENERATION-FORM-S-002
     // Source: docs/v1/ui/ui.md § 13; docs/v1/ui/components/ImageGenerationForm.md § Props
