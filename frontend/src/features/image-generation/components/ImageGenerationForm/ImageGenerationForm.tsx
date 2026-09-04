@@ -82,16 +82,19 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
           description={apiError.description}
         />
       ) : null}
+
       <TextField
         label={messages.text}
         errorMessage={getErrorMessage(errors.text?.message)}
         {...register("text")}
       />
+
       <TextField
         label={messages.foregroundCharacter}
         errorMessage={getErrorMessage(errors.foregroundCharacter?.message)}
         {...register("foregroundCharacter")}
       />
+
       <Controller
         name={"foregroundColor"}
         control={control}
@@ -105,11 +108,13 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
           />
         )}
       />
+
       <TextField
         label={messages.backgroundCharacter}
         errorMessage={getErrorMessage(errors.backgroundCharacter?.message)}
         {...register("backgroundCharacter")}
       />
+
       <Controller
         name={"backgroundColor"}
         control={control}
@@ -123,6 +128,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
           />
         )}
       />
+
       <Controller
         name={"type"}
         control={control}
@@ -134,6 +140,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
           />
         )}
       />
+
       <GenerateButton
         state={toGenerateButtonState({
           isPending,

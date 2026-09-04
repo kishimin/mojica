@@ -17,6 +17,7 @@ import preferObjectDerivedUnion from "./eslint-rules/prefer-object-derived-union
 import preferGeneratedImageMswHandler from "./eslint-rules/prefer-generated-image-msw-handler.mjs";
 import preferNamedExportsInUtils from "./eslint-rules/prefer-named-exports-in-utils.mjs";
 import limitPropsKeys from "./eslint-rules/limit-props-keys.mjs";
+import requireBlankLineBetweenFormFields from "./eslint-rules/require-blank-line-between-form-fields.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -90,6 +91,7 @@ export default defineConfig([
       "local/prefer-named-exports-in-utils": "error",
       "local/limit-props-keys": "error",
       "max-params": ["error", 5],
+      "local/require-blank-line-between-form-fields": "error",
       "no-console": "warn",
       "no-restricted-syntax": [
         "error",
@@ -140,6 +142,8 @@ export default defineConfig([
           "prefer-generated-image-msw-handler": preferGeneratedImageMswHandler,
           "prefer-named-exports-in-utils": preferNamedExportsInUtils,
           "limit-props-keys": limitPropsKeys,
+          "require-blank-line-between-form-fields":
+            requireBlankLineBetweenFormFields,
         },
       },
     },

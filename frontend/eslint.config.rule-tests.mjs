@@ -90,6 +90,17 @@ const lintFunctionLength = async (source) => {
   );
 };
 
+const lintFormFields = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath:
+      "src/features/image-generation/components/ImageGenerationForm/ImageGenerationForm.tsx",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/require-blank-line-between-form-fields",
+  );
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -291,6 +302,36 @@ test("allows functions with thirty lines", async () => {
   const messages = await lintFunctionLength(
     `const render = () => {\n${statements}\n};`,
   );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects adjacent form fields without a blank line", async () => {
+  const messages = await lintFormFields(
+    "const Form = () => <form><TextField /><TextField /></form>;",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/require-blank-line-between-form-fields",
+        message: "Separate form fields with a blank line.",
+      },
+    ],
+  );
+});
+
+test("allows form fields separated by a blank line", async () => {
+  const messages = await lintFormFields(`
+    const Form = () => (
+      <form>
+        <TextField />
+
+        <TextField />
+      </form>
+    );
+  `);
 
   assert.deepEqual(messages, []);
 });
