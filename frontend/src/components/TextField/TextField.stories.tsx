@@ -33,3 +33,10 @@ export const WithError: Story = {
     errorMessage: "Name is required",
   },
 };
+
+export const LongValue: Story = {
+  args: {
+    defaultValue:
+      "This is a long value that verifies the text field remains usable when the entered text exceeds the available width.",
+  },
+};
