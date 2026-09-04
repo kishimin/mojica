@@ -105,10 +105,14 @@ export default defineConfig([
           selector: "JSXText[value=/\\S/]",
           message: "Wrap JSX text in braces.",
         },
+        {
+          selector: "VariableDeclaration[kind='let']",
+          message: "Use const instead of let.",
+        },
       ],
       camelcase: ["warn", { properties: "never" }],
       "@typescript-eslint/switch-exhaustiveness-check": "warn",
-      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
       "import/order": [
         "error",

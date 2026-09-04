@@ -29,6 +29,16 @@ const lintTypeScript = async (source) => {
   );
 };
 
+const lintExplicitAny = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "src/types/image-type.ts",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "@typescript-eslint/no-explicit-any",
+  );
+};
+
 const lintImageMocks = async (source) => {
   const [result] = await eslint.lintText(source, {
     filePath:
@@ -65,6 +75,24 @@ test("allows whitespace used to format nested JSX", async () => {
   );
 
   assert.deepEqual(messages, []);
+});
+
+test("rejects let declarations", async () => {
+  const messages = await lintJsx("let value = 1;");
+
+  assert.deepEqual(
+    messages.map(({ message }) => message),
+    ["Use const instead of let."],
+  );
+});
+
+test("rejects explicit any assertions", async () => {
+  const messages = await lintExplicitAny("const value = input as any;");
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["@typescript-eslint/no-explicit-any"],
+  );
 });
 
 test("rejects inline string literal unions", async () => {
