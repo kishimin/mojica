@@ -29,6 +29,14 @@ describe("ErrorFallback", () => {
       expect(
         screen.getByRole("heading", { name: "エラーが発生しました" }),
       ).toBeVisible();
+      expect(
+        screen.getByText(
+          "予期しない問題が発生しました。しばらくしてからページを再読み込みしてください。",
+        ),
+      ).toBeVisible();
+      expect(
+        screen.getByRole("button", { name: "ページを再読み込み" }),
+      ).toBeEnabled();
     });
 
     // ID: ERROR-FALLBACK-S-002
