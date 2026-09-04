@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { setup } from "@/tests/test-utils";
 import ErrorFallback from "./ErrorFallback";
+import { setup } from "@/tests/test-utils";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -62,9 +62,7 @@ describe("ErrorFallback", () => {
           "Something unexpected happened. Please reload the page and try again.",
         ),
       ).toBeVisible();
-      expect(
-        screen.getByRole("button", { name: "Reload page" }),
-      ).toBeEnabled();
+      expect(screen.getByRole("button", { name: "Reload page" })).toBeEnabled();
     });
   });
 

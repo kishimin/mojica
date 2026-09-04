@@ -7,7 +7,8 @@ const messages = {
   },
   en: {
     heading: "An error occurred",
-    description: "Something unexpected happened. Please reload the page and try again.",
+    description:
+      "Something unexpected happened. Please reload the page and try again.",
     button: "Reload page",
   },
 } as const;
@@ -49,7 +50,7 @@ const ErrorFallback = () => {
     <main>
       <h1>{copy.heading}</h1>
       <p>{copy.description}</p>
-      <button type="button" onClick={() => window.location.reload()}>
+      <button type={"button"} onClick={() => window.location.reload()}>
         {copy.button}
       </button>
     </main>
