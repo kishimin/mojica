@@ -145,8 +145,8 @@ describe("ImageGenerationForm", () => {
 
       await user.click(screen.getByRole("button", { name: "画像を生成する" }));
 
-      // Use waitFor because resolver errors are published during a later state update.
-      // Do not use findByRole because the textbox already exists.
+      // Do not assert synchronously; resolver errors are published during a later state update.
+      // Do not use findByRole; the textbox exists before its error state updates.
       await waitFor(() => {
         expect(
           screen.getByRole("textbox", { name: "描画する文字列" }),
