@@ -4,16 +4,14 @@ import { http, HttpResponse } from "msw";
 import { describe, expect, test, vi } from "vitest";
 import ImageGenerationForm from "./ImageGenerationForm";
 import { worker } from "@/api/mocks/browser";
-import { I18nProvider } from "@/providers/I18nProvider";
-import { setup } from "@/tests/test-utils";
+import { setupWithI18n } from "@/tests/test-utils";
 
 const setupImageGenerationForm = (locale: "ja" | "en") =>
-  setup(
+  setupWithI18n(
     <QueryClientProvider client={new QueryClient()}>
-      <I18nProvider initialLocale={locale}>
-        <ImageGenerationForm locale={locale} />
-      </I18nProvider>
+      <ImageGenerationForm locale={locale} />
     </QueryClientProvider>,
+    locale,
   );
 
 describe("ImageGenerationForm", () => {
