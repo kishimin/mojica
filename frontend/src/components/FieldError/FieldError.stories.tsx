@@ -28,3 +28,10 @@ export const Empty: Story = {
     message: "",
   },
 };
+
+export const LongMessage: Story = {
+  args: {
+    message:
+      "This validation message is intentionally long to verify that it wraps within the available field width.",
+  },
+};

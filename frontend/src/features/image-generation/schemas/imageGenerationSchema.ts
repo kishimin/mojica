@@ -4,6 +4,7 @@ import { imageTypeDefinitions } from "@/types/image-type";
 const printableText = /^\P{Cc}*$/u;
 const whitespaceCharacter = /^\p{White_Space}$/u;
 const formatCharacter = /^\p{Cf}$/u;
+const hexColor = /^#[0-9A-Fa-f]{6}$/;
 const maximumCodeUnitsPerGrapheme = 1024;
 const graphemeSegmenter = new Intl.Segmenter(undefined, {
   granularity: "grapheme",
@@ -87,7 +88,9 @@ export const imageGenerationSchema = z
       .regex(printableText, {
         message: "foregroundCharacter.controlCharacter",
       }),
-    foregroundColor: z.string(),
+    foregroundColor: z.string().regex(hexColor, {
+      message: "foregroundColor.invalid",
+    }),
     backgroundCharacter: z
       .string()
       .min(1, { message: "backgroundCharacter.required" })
@@ -102,7 +105,9 @@ export const imageGenerationSchema = z
       .regex(printableText, {
         message: "backgroundCharacter.controlCharacter",
       }),
-    backgroundColor: z.string(),
+    backgroundColor: z.string().regex(hexColor, {
+      message: "backgroundColor.invalid",
+    }),
     type: z.enum(imageTypeValues, {
       error: "imageType.invalid",
     }),

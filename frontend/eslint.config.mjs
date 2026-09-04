@@ -120,6 +120,10 @@ export default defineConfig([
       camelcase: ["warn", { properties: "never" }],
       "@typescript-eslint/switch-exhaustiveness-check": "warn",
       "@typescript-eslint/no-explicit-any": "error",
+      // Promise-returning operations must be observed so user actions and
+      // asynchronous side effects cannot fail silently.
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-misused-promises": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
       "import/order": [
         "error",
