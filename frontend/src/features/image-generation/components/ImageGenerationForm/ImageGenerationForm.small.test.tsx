@@ -1,6 +1,9 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
 import { describe, expect, test } from "vitest";
-import { setupWithI18n } from "@/tests/test-utils";
+import { AppProviders } from "@/app/providers/AppProviders";
+import { setup, setupWithI18n } from "@/tests/test-utils";
+import { worker } from "@/api/mocks/browser";
 import ImageGenerationForm from "./ImageGenerationForm";
 
 describe("ImageGenerationForm", () => {
@@ -82,7 +85,48 @@ describe("ImageGenerationForm", () => {
     // Then: One POST /images request is sent with the entered values in the documented API shape
     // Blocked by: ImageGenerationForm implementation
     // Priority: P0
-    test.todo("submits a valid image-generation request once");
+    test("submits a valid image-generation request once", async () => {
+      const requests: unknown[] = [];
+      worker.use(
+        http.post("*/images", async ({ request }) => {
+          requests.push(await request.json());
+          return new HttpResponse(null, { status: 200 });
+        }),
+      );
+
+      const { user } = setup(
+        <AppProviders>
+          <ImageGenerationForm locale={"ja"} />
+        </AppProviders>,
+      );
+
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      await waitFor(() => {
+        expect(requests).toEqual([
+          {
+            text: "KA",
+            foregroundCharacter: "🌻",
+            foregroundColor: "#000000",
+            backgroundCharacter: "☀",
+            backgroundColor: "#FFFFFF",
+            type: "standard",
+          },
+        ]);
+      });
+    });
 
     // ID: IMAGE-GENERATION-FORM-S-004
     // Source: docs/v1/ui/ui.md § 11; docs/v1/ui/components/ImageGenerationForm.md § Validation schema
