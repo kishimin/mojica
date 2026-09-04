@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { HttpResponse, http } from "msw";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import ImageGenerationForm from "./ImageGenerationForm";
 import { getPostImagesMockHandler } from "@/api/endpoints/image/image.msw";
 import { I18nProvider } from "@/providers/I18nProvider";
@@ -76,9 +76,11 @@ export const ValidationError: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await submitForm(canvasElement);
-    await expect(
-      canvas.getByRole("textbox", { name: "描画する文字列" }),
-    ).toHaveAccessibleErrorMessage("描画する文字列を入力してください。");
+    await waitFor(async () => {
+      await expect(
+        canvas.getByRole("textbox", { name: "描画する文字列" }),
+      ).toHaveAccessibleErrorMessage("描画する文字列を入力してください。");
+    });
   },
 };
 
@@ -91,9 +93,11 @@ export const TextTooLong: Story = {
     });
 
     await userEvent.type(textField, "a".repeat(65));
-    await expect(textField).toHaveAccessibleErrorMessage(
-      "描画する文字列は64文字以内で入力してください。",
-    );
+    await waitFor(async () => {
+      await expect(textField).toHaveAccessibleErrorMessage(
+        "描画する文字列は64文字以内で入力してください。",
+      );
+    });
   },
 };
 
@@ -106,9 +110,11 @@ export const RenderingCharacterTooLong: Story = {
     });
 
     await userEvent.type(characterField, "a".repeat(129));
-    await expect(characterField).toHaveAccessibleErrorMessage(
-      "描画に使う文字は128文字以内で入力してください。",
-    );
+    await waitFor(async () => {
+      await expect(characterField).toHaveAccessibleErrorMessage(
+        "描画に使う文字は128文字以内で入力してください。",
+      );
+    });
   },
 };
 
@@ -121,9 +127,11 @@ export const BackgroundCharacterTooLong: Story = {
     });
 
     await userEvent.type(characterField, "a".repeat(129));
-    await expect(characterField).toHaveAccessibleErrorMessage(
-      "敷き詰める文字は128文字以内で入力してください。",
-    );
+    await waitFor(async () => {
+      await expect(characterField).toHaveAccessibleErrorMessage(
+        "敷き詰める文字は128文字以内で入力してください。",
+      );
+    });
   },
 };
 
