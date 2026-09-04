@@ -10,12 +10,15 @@ type TextFieldProps = ComponentPropsWithoutRef<"input"> & {
   label: string;
   /** Validation message announced for the textbox. */
   errorMessage?: string;
+  /** Supporting guidance displayed below the textbox. */
+  helperText?: string;
 };
 
 const TextField = ({
   label,
   id,
   errorMessage,
+  helperText,
   "aria-describedby": describedBy,
   "aria-errormessage": externalErrorId,
   "aria-invalid": isExternallyInvalid,
@@ -37,6 +40,9 @@ const TextField = ({
         className={cn("disabled:bg-transparent", className)}
         {...inputProps}
       />
+      {helperText ? (
+        <p className={"text-xs text-helper-foreground"}>{helperText}</p>
+      ) : null}
       <FieldError id={errorId} message={errorMessage} />
     </div>
   );

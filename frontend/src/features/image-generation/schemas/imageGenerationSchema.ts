@@ -53,6 +53,15 @@ export const imageGenerationSchema = z
     text: z
       .string()
       .superRefine((value, context) => {
+        if (value === "") {
+          context.addIssue({ code: "custom", message: "text.required" });
+        } else if (value.trim() === "") {
+          context.addIssue({
+            code: "custom",
+            message: "text.whitespaceOnly",
+          });
+        }
+
         if (value.trim() !== "" && !printableText.test(value)) {
           context.addIssue({
             code: "custom",
@@ -61,7 +70,6 @@ export const imageGenerationSchema = z
         }
       })
       .trim()
-      .min(1, { message: "text.required" })
       .superRefine((value, context) => {
         addGraphemeLimitIssue(value, context, 64, "text.maxLength");
       }),

@@ -29,6 +29,78 @@ const lintTypeScript = async (source) => {
   );
 };
 
+const lintExplicitAny = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "src/types/image-type.ts",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "@typescript-eslint/no-explicit-any",
+  );
+};
+
+const lintImageMocks = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath:
+      "src/features/image-generation/components/ImageGenerationForm/ImageGenerationForm.small.test.tsx",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/prefer-generated-image-msw-handler",
+  );
+};
+
+const lintUtils = async (
+  source,
+  filePath = "src/features/image-generation/utils/toImageGenerationErrorPresentation.ts",
+) => {
+  const [result] = await eslint.lintText(source, { filePath });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/prefer-named-exports-in-utils",
+  );
+};
+
+const lintProps = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "src/components/AlertBanner/AlertBanner.tsx",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/limit-props-keys",
+  );
+};
+
+const lintFunctionParameters = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "src/components/Logo/Logo.tsx",
+  });
+
+  return result.messages.filter(({ ruleId }) => ruleId === "max-params");
+};
+
+const lintFunctionLength = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath:
+      "src/features/image-generation/utils/toImageGenerationErrorPresentation.ts",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "max-lines-per-function",
+  );
+};
+
+const lintFormFields = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath:
+      "src/features/image-generation/components/ImageGenerationForm/ImageGenerationForm.tsx",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/require-blank-line-between-form-fields",
+  );
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -54,6 +126,24 @@ test("allows whitespace used to format nested JSX", async () => {
   );
 
   assert.deepEqual(messages, []);
+});
+
+test("rejects let declarations", async () => {
+  const messages = await lintJsx("let value = 1;");
+
+  assert.deepEqual(
+    messages.map(({ message }) => message),
+    ["Use const instead of let."],
+  );
+});
+
+test("rejects explicit any assertions", async () => {
+  const messages = await lintExplicitAny("const value = input as any;");
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["@typescript-eslint/no-explicit-any"],
+  );
 });
 
 test("rejects inline string literal unions", async () => {
@@ -82,6 +172,165 @@ test("allows object-derived string unions", async () => {
     } as const;
     type ImageType =
       (typeof imageTypeDefinitions)[keyof typeof imageTypeDefinitions];
+  `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects successful inline image MSW handlers", async () => {
+  const messages = await lintImageMocks(`
+    http.post("*/images", () => new HttpResponse(null, { status: 200 }));
+  `);
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/prefer-generated-image-msw-handler",
+        message:
+          "Use the generated image MSW handler for successful POST /images mocks.",
+      },
+    ],
+  );
+});
+
+test("allows error responses to use an inline image MSW handler", async () => {
+  const messages = await lintImageMocks(`
+    http.post("*/images", () => HttpResponse.json({}, { status: 422 }));
+  `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects default exports from utility files", async () => {
+  const messages = await lintUtils("export default mapValue;");
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/prefer-named-exports-in-utils",
+        message: "Use named exports in utility files.",
+      },
+    ],
+  );
+});
+
+test("allows named exports from utility files", async () => {
+  const messages = await lintUtils("export const mapValue = () => null;");
+
+  assert.deepEqual(messages, []);
+});
+
+test("allows default exports from component files", async () => {
+  const messages = await lintUtils(
+    "export default Component;",
+    "src/components/Logo/Logo.tsx",
+  );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects functions with more than five parameters", async () => {
+  const messages = await lintFunctionParameters(
+    "const render = (one, two, three, four, five, six) => null;",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["max-params"],
+  );
+});
+
+test("rejects Props definitions with more than five keys", async () => {
+  const messages = await lintProps(`
+    type ExampleProps = {
+      one: string;
+      two: string;
+      three: string;
+      four: string;
+      five: string;
+      six: string;
+    };
+  `);
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/limit-props-keys",
+        message: "Keep Props definitions to five keys or fewer.",
+      },
+    ],
+  );
+});
+
+test("allows Props definitions with five keys", async () => {
+  const messages = await lintProps(`
+    interface ExampleProps {
+      one: string;
+      two: string;
+      three: string;
+      four: string;
+      five: string;
+    }
+  `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects functions longer than thirty lines", async () => {
+  const statements = Array.from(
+    { length: 31 },
+    (_, index) => `  const value${index} = ${index};`,
+  ).join("\n");
+  const messages = await lintFunctionLength(
+    `const render = () => {\n${statements}\n};`,
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["max-lines-per-function"],
+  );
+});
+
+test("allows functions with thirty lines", async () => {
+  const statements = Array.from(
+    { length: 28 },
+    (_, index) => `  const value${index} = ${index};`,
+  ).join("\n");
+  const messages = await lintFunctionLength(
+    `const render = () => {\n${statements}\n};`,
+  );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects adjacent form fields without a blank line", async () => {
+  const messages = await lintFormFields(
+    "const Form = () => <form><TextField /><TextField /></form>;",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/require-blank-line-between-form-fields",
+        message: "Separate form fields with a blank line.",
+      },
+    ],
+  );
+});
+
+test("allows form fields separated by a blank line", async () => {
+  const messages = await lintFormFields(`
+    const Form = () => (
+      <form>
+        <TextField />
+
+        <TextField />
+      </form>
+    );
   `);
 
   assert.deepEqual(messages, []);

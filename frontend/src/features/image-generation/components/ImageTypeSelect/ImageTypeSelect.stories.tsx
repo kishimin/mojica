@@ -21,7 +21,7 @@ const RenderImageTypeSelect = (args: ImageTypeSelectStoryArgs) => {
 };
 
 const meta = {
-  title: "Features/ImageGeneration/ImageTypeSelect",
+  title: "Features/Image Generation/ImageTypeSelect",
   component: ImageTypeSelect,
   parameters: {
     docs: {

@@ -8,6 +8,21 @@ using Mojica.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var allowedCorsOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? ["http://localhost:5173"];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy.WithOrigins(allowedCorsOrigins)
+            .WithMethods("GET", "POST", "OPTIONS")
+            .WithHeaders("Content-Type", "Accept-Language")
+            .WithExposedHeaders("Retry-After", "Content-Disposition");
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -49,6 +64,7 @@ builder.Services.AddRateLimiter(limiterOptions =>
 
 var app = builder.Build();
 
+app.UseCors("Frontend");
 app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())

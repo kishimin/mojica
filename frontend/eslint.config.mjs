@@ -14,6 +14,10 @@ import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import preferObjectDerivedUnion from "./eslint-rules/prefer-object-derived-union.mjs";
+import preferGeneratedImageMswHandler from "./eslint-rules/prefer-generated-image-msw-handler.mjs";
+import preferNamedExportsInUtils from "./eslint-rules/prefer-named-exports-in-utils.mjs";
+import limitPropsKeys from "./eslint-rules/limit-props-keys.mjs";
+import requireBlankLineBetweenFormFields from "./eslint-rules/require-blank-line-between-form-fields.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -83,6 +87,11 @@ export default defineConfig([
     },
     rules: {
       "local/prefer-object-derived-union": "error",
+      "local/prefer-generated-image-msw-handler": "error",
+      "local/prefer-named-exports-in-utils": "error",
+      "local/limit-props-keys": "error",
+      "max-params": ["error", 5],
+      "local/require-blank-line-between-form-fields": "error",
       "no-console": "warn",
       "no-restricted-syntax": [
         "error",
@@ -103,10 +112,14 @@ export default defineConfig([
           selector: "JSXText[value=/\\S/]",
           message: "Wrap JSX text in braces.",
         },
+        {
+          selector: "VariableDeclaration[kind='let']",
+          message: "Use const instead of let.",
+        },
       ],
       camelcase: ["warn", { properties: "never" }],
       "@typescript-eslint/switch-exhaustiveness-check": "warn",
-      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
       "import/order": [
         "error",
@@ -126,8 +139,26 @@ export default defineConfig([
       local: {
         rules: {
           "prefer-object-derived-union": preferObjectDerivedUnion,
+          "prefer-generated-image-msw-handler": preferGeneratedImageMswHandler,
+          "prefer-named-exports-in-utils": preferNamedExportsInUtils,
+          "limit-props-keys": limitPropsKeys,
+          "require-blank-line-between-form-fields":
+            requireBlankLineBetweenFormFields,
         },
       },
+    },
+  },
+
+  // Pure utility functions stay small; React components and test bodies are
+  // intentionally outside this rule's scope.
+  {
+    files: ["src/**/utils/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    rules: {
+      "max-lines-per-function": [
+        "error",
+        { max: 30, skipBlankLines: true, skipComments: true },
+      ],
     },
   },
 

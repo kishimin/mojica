@@ -6,7 +6,11 @@ const AppHeader = () => {
   const { locale, setLocale } = useI18n();
 
   return (
-    <header className={"flex items-center justify-between"}>
+    <header
+      className={
+        "flex h-[var(--layout-header-height)] items-center justify-between px-[var(--layout-header-inline-padding)]"
+      }
+    >
       <Logo />
       <LanguageSwitcher locale={locale} onChange={setLocale} />
     </header>

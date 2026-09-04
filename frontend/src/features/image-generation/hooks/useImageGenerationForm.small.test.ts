@@ -17,14 +17,14 @@ describe("useImageGenerationForm", () => {
     });
   });
 
-  test("exposes the schema validation message for an invalid text value", async () => {
+  test("exposes the schema validation message for whitespace-only text", async () => {
     const { result } = renderHook(() => useImageGenerationForm());
 
     result.current.setValue("text", " ", { shouldValidate: true });
 
     await waitFor(() => {
       expect(result.current.formState.errors.text?.message).toBe(
-        "text.required",
+        "text.whitespaceOnly",
       );
     });
   });

@@ -1,16 +1,22 @@
 import { create } from "axios";
-import type { AxiosError, AxiosRequestConfig } from "axios";
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 export const AXIOS_INSTANCE = create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-export const customInstance = <T>(config: AxiosRequestConfig): Promise<T> => {
-  const promise = AXIOS_INSTANCE({ ...config }).then(
-    ({ data }) => data as Promise<T>,
-  );
+export const customInstance = <T>(
+  config: AxiosRequestConfig,
+): Promise<AxiosResponse<T>> => {
+  const locale = localStorage.getItem("locale") ?? "ja";
 
-  return promise;
+  return AXIOS_INSTANCE<T>({
+    ...config,
+    headers: {
+      ...config.headers,
+      "Accept-Language": locale,
+    },
+  });
 };
 
 export default customInstance;

@@ -2,12 +2,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { generateButtonMessages } from "@/i18n/messages";
-
-type GenerateButtonState =
-  | { kind: "idle" }
-  | { kind: "submitting" }
-  | { kind: "retryable" }
-  | { kind: "cooldown"; remainingSeconds: number };
+import type { GenerateButtonState } from "@/types/generate-button-state";
 
 type GenerateButtonProps = {
   /** Presentation state selected by the image generation form. */
@@ -69,7 +64,11 @@ const GenerateButton = ({ state }: GenerateButtonProps) => {
   );
 
   return (
-    <Button disabled={disabled} aria-busy={isSubmitting}>
+    <Button
+      disabled={disabled}
+      aria-busy={isSubmitting}
+      className={"h-12 w-full px-4 text-sm"}
+    >
       {isSubmitting ? (
         <Loader2 aria-hidden={true} className={"animate-spin"} />
       ) : null}

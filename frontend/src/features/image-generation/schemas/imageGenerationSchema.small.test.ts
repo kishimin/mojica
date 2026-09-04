@@ -69,12 +69,15 @@ describe("imageGenerationSchema validation contract", () => {
       expect(result.success).toBe(false);
       if (result.success) return;
       expect(result.error.issues).toContainEqual(
-        expect.objectContaining({ path: ["text"], message: "text.required" }),
+        expect.objectContaining({
+          path: ["text"],
+          message: "text.whitespaceOnly",
+        }),
       );
       expect(result.error.issues).not.toContainEqual(
         expect.objectContaining({
           path: ["text"],
-          message: "text.controlCharacter",
+          message: "text.required",
         }),
       );
     });
