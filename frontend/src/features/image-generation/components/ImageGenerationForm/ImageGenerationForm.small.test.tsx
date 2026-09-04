@@ -65,59 +65,16 @@ describe("ImageGenerationForm", () => {
   describe("API error banners", () => {
     // ID: IMAGE-GENERATION-FORM-S-007
     // Source: docs/v1/ui/ui.md § 12; docs/v1/ui/components/ImageGenerationForm.md § State model
-    // Given: POST /images returns BAD_REQUEST with a localized API message
+    // Given: POST /images returns an API error with a localized message
     // When: The response is handled by the form
-    // Then: A request-error heading and the API message are displayed in the form-level alert
-    // Error: 400 Bad Request
+    // Then: The API message is displayed in the form-level alert
     // Blocked by: ImageGenerationForm implementation
     // Priority: P1
-    test.todo("displays the request-error banner for BAD_REQUEST");
-
-    // ID: IMAGE-GENERATION-FORM-S-008
-    // Source: docs/v1/ui/ui.md § 12; docs/v1/ui/components/ImageGenerationForm.md § State model
-    // Given: POST /images returns RATE_LIMIT_EXCEEDED with a localized API message
-    // When: The response is handled by the form
-    // Then: A request-limit heading and the API message are displayed in the form-level alert
-    // Error: 429 Too Many Requests
-    // Blocked by: ImageGenerationForm implementation
-    // Priority: P1
-    test.todo("displays the request-limit banner for RATE_LIMIT_EXCEEDED");
-
-    // ID: IMAGE-GENERATION-FORM-S-009
-    // Source: docs/v1/ui/ui.md § 12; docs/v1/ui/components/ImageGenerationForm.md § State model
-    // Given: POST /images returns INTERNAL_SERVER_ERROR with a localized API message
-    // When: The response is handled by the form
-    // Then: A server-error heading and the API message are displayed in the form-level alert without internal details
-    // Error: 500 Internal Server Error
-    // Blocked by: ImageGenerationForm implementation
-    // Priority: P1
-    test.todo("displays the server-error banner for INTERNAL_SERVER_ERROR");
-
-    // ID: IMAGE-GENERATION-FORM-S-010
-    // Source: docs/v1/ui/ui.md § 12; docs/v1/ui/components/ImageGenerationForm.md § State model
-    // Given: POST /images returns IMAGE_GENERATION_FAILED with a localized API message
-    // When: The response is handled by the form
-    // Then: An image-generation-service heading and the API message are displayed in the form-level alert
-    // Error: 502 Bad Gateway
-    // Blocked by: ImageGenerationForm implementation
-    // Priority: P1
-    test.todo(
-      "displays the image-generation-service banner for IMAGE_GENERATION_FAILED",
-    );
-
-    // ID: IMAGE-GENERATION-FORM-S-011
-    // Source: docs/v1/ui/ui.md § 12; docs/v1/ui/components/ImageGenerationForm.md § State model
-    // Given: POST /images returns IMAGE_GENERATION_TIMEOUT with a localized API message
-    // When: The response is handled by the form
-    // Then: A timeout heading and the API message are displayed in the form-level alert
-    // Error: 504 Gateway Timeout
-    // Blocked by: ImageGenerationForm implementation
-    // Priority: P1
-    test.todo("displays the timeout banner for IMAGE_GENERATION_TIMEOUT");
+    test.todo("displays an API error message in a form-level alert");
   });
 
   describe("rate-limit retry behavior", () => {
-    // ID: IMAGE-GENERATION-FORM-S-012
+    // ID: IMAGE-GENERATION-FORM-S-008
     // Source: docs/v1/ui/ui.md § 12 Retry-After; docs/v1/ui/components/ImageGenerationForm.md § State model
     // Given: A 429 response includes a Retry-After duration
     // When: The form receives the response and time advances until the duration expires
@@ -127,7 +84,7 @@ describe("ImageGenerationForm", () => {
     // Priority: P1
     test.todo("enforces Retry-After before allowing a retry");
 
-    // ID: IMAGE-GENERATION-FORM-S-013
+    // ID: IMAGE-GENERATION-FORM-S-009
     // Source: docs/v1/ui/ui.md § 12 Retry-After; docs/v1/ui/components/ImageGenerationForm.md § State model
     // Given: A 429 response has no Retry-After header
     // When: The form receives the response
@@ -139,7 +96,7 @@ describe("ImageGenerationForm", () => {
   });
 
   describe("successful generation", () => {
-    // ID: IMAGE-GENERATION-FORM-S-014
+    // ID: IMAGE-GENERATION-FORM-S-010
     // Source: docs/v1/ui/ui.md § 8, § 10; docs/v1/ui/components/ImageGenerationForm.md § State model
     // Given: POST /images returns a successful PNG response with Content-Disposition
     // When: The form handles the successful response
