@@ -50,6 +50,17 @@ const lintImageMocks = async (source) => {
   );
 };
 
+const lintUtils = async (
+  source,
+  filePath = "src/features/image-generation/utils/toImageGenerationErrorPresentation.ts",
+) => {
+  const [result] = await eslint.lintText(source, { filePath });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/prefer-named-exports-in-utils",
+  );
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -147,6 +158,35 @@ test("allows error responses to use an inline image MSW handler", async () => {
   const messages = await lintImageMocks(`
     http.post("*/images", () => HttpResponse.json({}, { status: 422 }));
   `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects default exports from utility files", async () => {
+  const messages = await lintUtils("export default mapValue;");
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/prefer-named-exports-in-utils",
+        message: "Use named exports in utility files.",
+      },
+    ],
+  );
+});
+
+test("allows named exports from utility files", async () => {
+  const messages = await lintUtils("export const mapValue = () => null;");
+
+  assert.deepEqual(messages, []);
+});
+
+test("allows default exports from component files", async () => {
+  const messages = await lintUtils(
+    "export default Component;",
+    "src/components/Logo/Logo.tsx",
+  );
 
   assert.deepEqual(messages, []);
 });
