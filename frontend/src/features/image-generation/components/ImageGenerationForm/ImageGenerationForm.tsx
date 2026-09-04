@@ -81,7 +81,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
 
   return (
     <form
-      className={"flex flex-col gap-6"}
+      className={"min-w-0 flex flex-col gap-6"}
       onSubmit={(event) => {
         void submitForm(event);
       }}

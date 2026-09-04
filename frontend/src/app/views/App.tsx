@@ -10,7 +10,7 @@ const ImageGenerationScreen = () => {
   const messages = imageGenerationScreenMessages[locale];
 
   return (
-    <main className={"flex-1 px-4 pt-8 md:px-6 md:pt-12"}>
+    <main className={"min-w-0 flex-1 px-4 pt-8 md:px-6 md:pt-12"}>
       <div className={"mx-auto flex w-full max-w-[620px] flex-col gap-7"}>
         <section className={"flex flex-col items-center gap-3 text-center"}>
           <h1 className={"text-2xl font-semibold"}>{messages.heading}</h1>
