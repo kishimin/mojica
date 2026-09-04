@@ -39,8 +39,21 @@ describe("ImageGenerationForm", () => {
     // Blocked by: ImageGenerationForm implementation
     // Priority: P0
     test.todo("blocks submission and displays client validation errors");
+  });
 
+  describe("change validation", () => {
     // ID: IMAGE-GENERATION-FORM-S-005
+    // Source: docs/v1/ui/ui.md § 11; docs/v1/ui/components/ImageGenerationForm.md § Validation schema
+    // Given: The form is rendered with an empty required text field
+    // When: The user enters an invalid value into the text field
+    // Then: The field becomes invalid and exposes the validation message as its accessible error
+    // Blocked by: ImageGenerationForm implementation
+    // Priority: P0
+    test.todo("displays a validation error after an invalid value is entered");
+  });
+
+  describe("submission state", () => {
+    // ID: IMAGE-GENERATION-FORM-S-006
     // Source: docs/v1/ui/ui.md § 9; docs/v1/ui/components/ImageGenerationForm.md § State model
     // Given: A valid submission is in progress
     // When: The user presses the generate-image action again
@@ -51,7 +64,7 @@ describe("ImageGenerationForm", () => {
   });
 
   describe("API validation errors", () => {
-    // ID: IMAGE-GENERATION-FORM-S-006
+    // ID: IMAGE-GENERATION-FORM-S-007
     // Source: docs/v1/ui/ui.md § 11; docs/v1/ui/components/ImageGenerationForm.md § State model
     // Given: POST /images returns 422 with errors[].field entries
     // When: The response is handled by the form
@@ -63,7 +76,7 @@ describe("ImageGenerationForm", () => {
   });
 
   describe("API error banners", () => {
-    // ID: IMAGE-GENERATION-FORM-S-007
+    // ID: IMAGE-GENERATION-FORM-S-008
     // Source: docs/v1/ui/ui.md § 12; docs/v1/ui/components/ImageGenerationForm.md § State model
     // Given: POST /images returns an API error with a localized message
     // When: The response is handled by the form
@@ -74,7 +87,7 @@ describe("ImageGenerationForm", () => {
   });
 
   describe("rate-limit retry behavior", () => {
-    // ID: IMAGE-GENERATION-FORM-S-008
+    // ID: IMAGE-GENERATION-FORM-S-009
     // Source: docs/v1/ui/ui.md § 12 Retry-After; docs/v1/ui/components/ImageGenerationForm.md § State model
     // Given: A 429 response includes a Retry-After duration
     // When: The form receives the response and time advances until the duration expires
@@ -84,7 +97,7 @@ describe("ImageGenerationForm", () => {
     // Priority: P1
     test.todo("enforces Retry-After before allowing a retry");
 
-    // ID: IMAGE-GENERATION-FORM-S-009
+    // ID: IMAGE-GENERATION-FORM-S-010
     // Source: docs/v1/ui/ui.md § 12 Retry-After; docs/v1/ui/components/ImageGenerationForm.md § State model
     // Given: A 429 response has no Retry-After header
     // When: The form receives the response
@@ -96,7 +109,7 @@ describe("ImageGenerationForm", () => {
   });
 
   describe("successful generation", () => {
-    // ID: IMAGE-GENERATION-FORM-S-010
+    // ID: IMAGE-GENERATION-FORM-S-011
     // Source: docs/v1/ui/ui.md § 8, § 10; docs/v1/ui/components/ImageGenerationForm.md § State model
     // Given: POST /images returns a successful PNG response with Content-Disposition
     // When: The form handles the successful response
