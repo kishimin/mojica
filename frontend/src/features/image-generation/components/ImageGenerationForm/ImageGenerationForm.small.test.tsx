@@ -1,4 +1,7 @@
-import { describe, test } from "vitest";
+import { screen } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+import { setupWithI18n } from "@/tests/test-utils";
+import ImageGenerationForm from "./ImageGenerationForm";
 
 describe("ImageGenerationForm", () => {
   describe("initial rendering", () => {
@@ -9,7 +12,31 @@ describe("ImageGenerationForm", () => {
     // Then: The form exposes the required inputs, the standard image type, and the generate-image action with documented empty defaults
     // Blocked by: ImageGenerationForm implementation
     // Priority: P0
-    test.todo("renders the image-generation form in Japanese");
+    test("renders the image-generation form in Japanese", () => {
+      setupWithI18n(<ImageGenerationForm locale={"ja"} />);
+
+      expect(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+      ).toHaveValue("");
+      expect(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+      ).toHaveValue("");
+      expect(screen.getByLabelText("描画に使う文字の色を選択")).toHaveValue(
+        "#000000",
+      );
+      expect(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+      ).toHaveValue("");
+      expect(screen.getByLabelText("敷き詰める文字の色を選択")).toHaveValue(
+        "#ffffff",
+      );
+      expect(
+        screen.getByRole("combobox", { name: "画像タイプ" }),
+      ).toHaveTextContent("標準画像");
+      expect(
+        screen.getByRole("button", { name: "画像を生成する" }),
+      ).toBeEnabled();
+    });
 
     // ID: IMAGE-GENERATION-FORM-S-002
     // Source: docs/v1/ui/ui.md § 13; docs/v1/ui/components/ImageGenerationForm.md § Props
