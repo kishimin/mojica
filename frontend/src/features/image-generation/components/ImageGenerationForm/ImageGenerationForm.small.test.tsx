@@ -1,11 +1,11 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, test, vi } from "vitest";
+import ImageGenerationForm from "./ImageGenerationForm";
 import { worker } from "@/api/mocks/browser";
 import { I18nProvider } from "@/providers/I18nProvider";
 import { setup } from "@/tests/test-utils";
-import ImageGenerationForm from "./ImageGenerationForm";
 
 const setupImageGenerationForm = (locale: "ja" | "en") =>
   setup(

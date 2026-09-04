@@ -78,7 +78,10 @@ export const imageGenerationFormMessages = {
   },
 } satisfies Record<Locale, ImageGenerationFormMessages>;
 
-export const imageGenerationValidationMessages = {
+export const imageGenerationValidationMessages: Record<
+  Locale,
+  Record<string, string>
+> = {
   ja: {
     "text.required": "描画する文字列を入力してください。",
     "text.maxLength": "描画する文字列は64文字以内で入力してください。",
