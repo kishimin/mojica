@@ -189,11 +189,10 @@ describe("ImageGenerationForm", () => {
     // Priority: P0
     test("prevents duplicate submissions while generating", async () => {
       const requests: unknown[] = [];
-      const responseResolver: {
-        resolve: (value?: void | PromiseLike<void>) => void;
-      } = { resolve: () => undefined };
+      const resolveResponse =
+        vi.fn<(value?: void | PromiseLike<void>) => void>();
       const responseReady = new Promise<void>((resolve) => {
-        responseResolver.resolve = resolve;
+        resolveResponse.mockImplementation(resolve);
       });
       worker.use(
         getPostImagesMockHandler(async ({ request }) => {
@@ -226,7 +225,7 @@ describe("ImageGenerationForm", () => {
       await user.click(submittingButton);
       expect(requests).toHaveLength(1);
 
-      responseResolver.resolve();
+      resolveResponse();
     });
   });
 
