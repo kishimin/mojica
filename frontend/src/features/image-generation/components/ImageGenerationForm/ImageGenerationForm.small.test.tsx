@@ -237,7 +237,43 @@ describe("ImageGenerationForm", () => {
     // Error: 422 Unprocessable Entity with field-level errors
     // Blocked by: ImageGenerationForm implementation
     // Priority: P0
-    test.todo("maps 422 field errors to their corresponding inputs");
+    test("maps 422 field errors to their corresponding inputs", async () => {
+      worker.use(
+        http.post("*/images", () =>
+          HttpResponse.json(
+            {
+              code: "VALIDATION_ERROR",
+              message: "入力を確認してください。",
+              errors: [
+                { field: "text", message: "描画する文字列が不正です。" },
+              ],
+            },
+            { status: 422 },
+          ),
+        ),
+      );
+
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("textbox", { name: "描画する文字列" }),
+        ).toHaveAccessibleErrorMessage("描画する文字列が不正です。");
+      });
+    });
   });
 
   describe("API error banners", () => {
