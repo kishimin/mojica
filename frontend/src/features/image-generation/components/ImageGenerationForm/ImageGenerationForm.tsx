@@ -1,4 +1,5 @@
 import { Controller } from "react-hook-form";
+import { usePostImages } from "@/api/endpoints/image/image";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
 import { Button } from "@/components/ui/button";
@@ -18,10 +19,15 @@ type ImageGenerationFormProps = {
 /** Renders the image-generation inputs and their initial values. */
 const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
   const { register, control, handleSubmit } = useImageGenerationForm();
+  const { mutate } = usePostImages();
   const messages = imageGenerationFormMessages[locale];
 
+  const submitForm = handleSubmit((values) => {
+    mutate({ data: values });
+  });
+
   return (
-    <form onSubmit={handleSubmit(() => undefined)}>
+    <form onSubmit={submitForm}>
       <TextField label={messages.text} {...register("text")} />
       <TextField
         label={messages.foregroundCharacter}

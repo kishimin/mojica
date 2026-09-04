@@ -1,10 +1,20 @@
 import { screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, test } from "vitest";
-import { AppProviders } from "@/app/providers/AppProviders";
-import { setup, setupWithI18n } from "@/tests/test-utils";
 import { worker } from "@/api/mocks/browser";
+import { I18nProvider } from "@/providers/I18nProvider";
+import { setup } from "@/tests/test-utils";
 import ImageGenerationForm from "./ImageGenerationForm";
+
+const setupImageGenerationForm = (locale: "ja" | "en") =>
+  setup(
+    <QueryClientProvider client={new QueryClient()}>
+      <I18nProvider initialLocale={locale}>
+        <ImageGenerationForm locale={locale} />
+      </I18nProvider>
+    </QueryClientProvider>,
+  );
 
 describe("ImageGenerationForm", () => {
   describe("initial rendering", () => {
@@ -16,7 +26,7 @@ describe("ImageGenerationForm", () => {
     // Blocked by: ImageGenerationForm implementation
     // Priority: P0
     test("renders the image-generation form in Japanese", () => {
-      setupWithI18n(<ImageGenerationForm locale={"ja"} />);
+      setupImageGenerationForm("ja");
 
       expect(
         screen.getByRole("textbox", { name: "描画する文字列" }),
@@ -49,7 +59,7 @@ describe("ImageGenerationForm", () => {
     // Blocked by: ImageGenerationForm implementation and English i18n messages
     // Priority: P1
     test("renders the image-generation form in English", () => {
-      setupWithI18n(<ImageGenerationForm locale={"en"} />, "en");
+      setupImageGenerationForm("en");
 
       expect(
         screen.getByRole("textbox", { name: "Text to render" }),
@@ -94,11 +104,7 @@ describe("ImageGenerationForm", () => {
         }),
       );
 
-      const { user } = setup(
-        <AppProviders>
-          <ImageGenerationForm locale={"ja"} />
-        </AppProviders>,
-      );
+      const { user } = setupImageGenerationForm("ja");
 
       await user.type(
         screen.getByRole("textbox", { name: "描画する文字列" }),
