@@ -90,10 +90,6 @@ export default defineConfig([
       "local/prefer-named-exports-in-utils": "error",
       "local/limit-props-keys": "error",
       "max-params": ["error", 5],
-      "max-lines-per-function": [
-        "warn",
-        { max: 30, skipBlankLines: true, skipComments: true },
-      ],
       "no-console": "warn",
       "no-restricted-syntax": [
         "error",
@@ -146,6 +142,19 @@ export default defineConfig([
           "limit-props-keys": limitPropsKeys,
         },
       },
+    },
+  },
+
+  // Pure utility functions stay small; React components and test bodies are
+  // intentionally outside this rule's scope.
+  {
+    files: ["src/**/utils/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    rules: {
+      "max-lines-per-function": [
+        "warn",
+        { max: 30, skipBlankLines: true, skipComments: true },
+      ],
     },
   },
 

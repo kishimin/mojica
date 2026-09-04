@@ -81,7 +81,8 @@ const lintFunctionParameters = async (source) => {
 
 const lintFunctionLength = async (source) => {
   const [result] = await eslint.lintText(source, {
-    filePath: "src/components/Logo/Logo.tsx",
+    filePath:
+      "src/features/image-generation/utils/toImageGenerationErrorPresentation.ts",
   });
 
   return result.messages.filter(
