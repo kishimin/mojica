@@ -334,6 +334,8 @@ describe("ImageGenerationForm", () => {
     // Blocked by: ImageGenerationForm implementation
     // Priority: P1
     test("enforces Retry-After before allowing a retry", async () => {
+      // Do not fake setTimeout; userEvent and MSW rely on native scheduling.
+      // Do not fake unrelated APIs; the countdown only uses Date and intervals.
       vi.useFakeTimers({ toFake: ["Date", "setInterval", "clearInterval"] });
       worker.use(
         http.post("*/images", () =>
