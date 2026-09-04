@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   generateButtonMessages,
   imageGenerationFormMessages,
+  imageGenerationValidationMessages,
 } from "@/i18n/messages";
 import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
@@ -18,7 +19,12 @@ type ImageGenerationFormProps = {
 
 /** Renders the image-generation inputs and their initial values. */
 const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
-  const { register, control, handleSubmit } = useImageGenerationForm();
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useImageGenerationForm();
   const { mutate } = usePostImages();
   const messages = imageGenerationFormMessages[locale];
 
@@ -26,11 +32,19 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     mutate({ data: values });
   });
 
+  const getErrorMessage = (message: string | undefined) =>
+    message ? imageGenerationValidationMessages[locale][message] : undefined;
+
   return (
     <form onSubmit={submitForm}>
-      <TextField label={messages.text} {...register("text")} />
+      <TextField
+        label={messages.text}
+        errorMessage={getErrorMessage(errors.text?.message)}
+        {...register("text")}
+      />
       <TextField
         label={messages.foregroundCharacter}
+        errorMessage={getErrorMessage(errors.foregroundCharacter?.message)}
         {...register("foregroundCharacter")}
       />
       <Controller
@@ -42,11 +56,13 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
             colorPickerLabel={messages.foregroundColorPicker}
             value={field.value}
             onChange={field.onChange}
+            errorMessage={getErrorMessage(errors.foregroundColor?.message)}
           />
         )}
       />
       <TextField
         label={messages.backgroundCharacter}
+        errorMessage={getErrorMessage(errors.backgroundCharacter?.message)}
         {...register("backgroundCharacter")}
       />
       <Controller
@@ -58,6 +74,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
             colorPickerLabel={messages.backgroundColorPicker}
             value={field.value}
             onChange={field.onChange}
+            errorMessage={getErrorMessage(errors.backgroundColor?.message)}
           />
         )}
       />
@@ -65,7 +82,11 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         name="type"
         control={control}
         render={({ field }) => (
-          <ImageTypeSelect value={field.value} onChange={field.onChange} />
+          <ImageTypeSelect
+            value={field.value}
+            onChange={field.onChange}
+            errorMessage={getErrorMessage(errors.type?.message)}
+          />
         )}
       />
       <Button type="submit">{generateButtonMessages[locale].idle}</Button>
