@@ -82,6 +82,36 @@ export const ValidationError: Story = {
   },
 };
 
+export const TextTooLong: Story = {
+  args: { locale: "ja" },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const textField = canvas.getByRole("textbox", {
+      name: "描画する文字列",
+    });
+
+    await userEvent.type(textField, "a".repeat(65));
+    await expect(textField).toHaveAccessibleErrorMessage(
+      "描画する文字列は64文字以内で入力してください。",
+    );
+  },
+};
+
+export const RenderingCharacterTooLong: Story = {
+  args: { locale: "ja" },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const characterField = canvas.getByRole("textbox", {
+      name: "描画に使う文字",
+    });
+
+    await userEvent.type(characterField, "a".repeat(129));
+    await expect(characterField).toHaveAccessibleErrorMessage(
+      "描画に使う文字は128文字以内で入力してください。",
+    );
+  },
+};
+
 export const Submitting: Story = {
   args: { locale: "ja" },
   parameters: {
@@ -123,9 +153,9 @@ export const BadRequest: Story = {
   play: async ({ canvasElement }) => {
     await fillRequiredFields(canvasElement);
     await submitForm(canvasElement);
-    await expect(within(canvasElement).getByRole("alert")).toHaveTextContent(
-      "リクエストエラー",
-    );
+    await expect(
+      within(canvasElement).findByRole("alert"),
+    ).resolves.toHaveTextContent("リクエストエラー");
   },
 };
 
@@ -149,9 +179,9 @@ export const RateLimitExceeded: Story = {
   play: async ({ canvasElement }) => {
     await fillRequiredFields(canvasElement);
     await submitForm(canvasElement);
-    await expect(within(canvasElement).getByRole("alert")).toHaveTextContent(
-      "リクエスト制限",
-    );
+    await expect(
+      within(canvasElement).findByRole("alert"),
+    ).resolves.toHaveTextContent("リクエスト制限");
   },
 };
 
@@ -165,9 +195,9 @@ export const InternalServerError: Story = {
   play: async ({ canvasElement }) => {
     await fillRequiredFields(canvasElement);
     await submitForm(canvasElement);
-    await expect(within(canvasElement).getByRole("alert")).toHaveTextContent(
-      "サーバーエラー",
-    );
+    await expect(
+      within(canvasElement).findByRole("alert"),
+    ).resolves.toHaveTextContent("サーバーエラー");
   },
 };
 
@@ -187,9 +217,9 @@ export const ImageGenerationServiceError: Story = {
   play: async ({ canvasElement }) => {
     await fillRequiredFields(canvasElement);
     await submitForm(canvasElement);
-    await expect(within(canvasElement).getByRole("alert")).toHaveTextContent(
-      "画像生成サービスエラー",
-    );
+    await expect(
+      within(canvasElement).findByRole("alert"),
+    ).resolves.toHaveTextContent("画像生成サービスエラー");
   },
 };
 
@@ -209,8 +239,8 @@ export const Timeout: Story = {
   play: async ({ canvasElement }) => {
     await fillRequiredFields(canvasElement);
     await submitForm(canvasElement);
-    await expect(within(canvasElement).getByRole("alert")).toHaveTextContent(
-      "タイムアウト",
-    );
+    await expect(
+      within(canvasElement).findByRole("alert"),
+    ).resolves.toHaveTextContent("タイムアウト");
   },
 };
