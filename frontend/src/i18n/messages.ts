@@ -84,6 +84,7 @@ export const imageGenerationValidationMessages: Record<
 > = {
   ja: {
     "text.required": "描画する文字列を入力してください。",
+    "text.whitespaceOnly": "空白以外の文字を入力してください。",
     "text.maxLength": "描画する文字列は64文字以内で入力してください。",
     "text.controlCharacter":
       "描画する文字列には表示可能な文字を含めてください。",
@@ -103,6 +104,7 @@ export const imageGenerationValidationMessages: Record<
   },
   en: {
     "text.required": "Enter the text to render.",
+    "text.whitespaceOnly": "Enter a character other than whitespace.",
     "text.maxLength": "The text to render must be 64 characters or fewer.",
     "text.controlCharacter":
       "The text to render must contain a visible character.",
