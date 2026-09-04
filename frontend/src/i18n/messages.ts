@@ -46,3 +46,28 @@ export const imageTypeSelectMessages = {
     },
   },
 } satisfies Record<Locale, ImageTypeSelectMessages>;
+
+type ImageGenerationFormMessages = {
+  text: string;
+  foregroundCharacter: string;
+  foregroundColor: string;
+  backgroundCharacter: string;
+  backgroundColor: string;
+};
+
+export const imageGenerationFormMessages = {
+  ja: {
+    text: "描画する文字列",
+    foregroundCharacter: "描画に使う文字",
+    foregroundColor: "描画に使う文字の色",
+    backgroundCharacter: "敷き詰める文字",
+    backgroundColor: "敷き詰める文字の色",
+  },
+  en: {
+    text: "Text to render",
+    foregroundCharacter: "Character used to render text",
+    foregroundColor: "Foreground character color",
+    backgroundCharacter: "Background character",
+    backgroundColor: "Background character color",
+  },
+} satisfies Record<Locale, ImageGenerationFormMessages>;
