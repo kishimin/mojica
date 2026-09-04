@@ -112,6 +112,21 @@ export const RenderingCharacterTooLong: Story = {
   },
 };
 
+export const BackgroundCharacterTooLong: Story = {
+  args: { locale: "ja" },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const characterField = canvas.getByRole("textbox", {
+      name: "敷き詰める文字",
+    });
+
+    await userEvent.type(characterField, "a".repeat(129));
+    await expect(characterField).toHaveAccessibleErrorMessage(
+      "敷き詰める文字は128文字以内で入力してください。",
+    );
+  },
+};
+
 export const Submitting: Story = {
   args: { locale: "ja" },
   parameters: {
