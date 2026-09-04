@@ -67,7 +67,7 @@ const GenerateButton = ({ state }: GenerateButtonProps) => {
     <Button
       disabled={disabled}
       aria-busy={isSubmitting}
-      className={"h-14 w-full px-6 text-base"}
+      className={"h-12 w-full px-4 text-sm"}
     >
       {isSubmitting ? (
         <Loader2 aria-hidden={true} className={"animate-spin"} />
