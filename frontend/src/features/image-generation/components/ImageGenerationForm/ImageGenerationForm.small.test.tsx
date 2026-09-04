@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { describe, expect, test, vi } from "vitest";
 import ImageGenerationForm from "./ImageGenerationForm";
@@ -318,7 +318,9 @@ describe("ImageGenerationForm", () => {
       await user.click(screen.getByRole("button", { name: "画像を生成する" }));
 
       const alert = await screen.findByRole("alert");
-      expect(alert).toHaveTextContent("リクエストを確認してください。");
+      expect(
+        within(alert).getByText("リクエストを確認してください。"),
+      ).toBeVisible();
     });
   });
 
