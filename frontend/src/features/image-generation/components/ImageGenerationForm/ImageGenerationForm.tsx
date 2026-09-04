@@ -16,7 +16,6 @@ import {
 } from "@/api/endpoints/image/image";
 import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
-import Paper from "@/components/Paper/Paper";
 import TextField from "@/components/TextField/TextField";
 import {
   imageGenerationFormMessages,
@@ -81,99 +80,93 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
       : undefined;
 
   return (
-    <Paper
-      className={
-        "min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)]"
-      }
+    <form
+      className={"min-w-0 flex flex-col gap-6"}
+      onSubmit={(event) => {
+        void submitForm(event);
+      }}
     >
-      <form
-        className={"min-w-0 flex flex-col gap-6"}
-        onSubmit={(event) => {
-          void submitForm(event);
-        }}
-      >
-        {apiError ? (
-          <AlertBanner
-            title={apiError.title}
-            description={apiError.description}
+      {apiError ? (
+        <AlertBanner
+          title={apiError.title}
+          description={apiError.description}
+        />
+      ) : null}
+
+      <TextField
+        label={messages.text}
+        helperText={screenMessages.textHelper}
+        errorMessage={getErrorMessage(errors.text?.message)}
+        {...register("text")}
+      />
+
+      <TextField
+        label={messages.foregroundCharacter}
+        helperText={screenMessages.characterHelper}
+        errorMessage={getErrorMessage(errors.foregroundCharacter?.message)}
+        {...register("foregroundCharacter")}
+      />
+
+      <Controller
+        name={"foregroundColor"}
+        control={control}
+        render={({ field }) => (
+          <ColorPickerField
+            label={messages.foregroundColor}
+            colorPickerLabel={messages.foregroundColorPicker}
+            value={field.value}
+            onChange={field.onChange}
+            errorMessage={getErrorMessage(errors.foregroundColor?.message)}
           />
-        ) : null}
+        )}
+      />
 
-        <TextField
-          label={messages.text}
-          helperText={screenMessages.textHelper}
-          errorMessage={getErrorMessage(errors.text?.message)}
-          {...register("text")}
-        />
+      <TextField
+        label={messages.backgroundCharacter}
+        helperText={screenMessages.characterHelper}
+        errorMessage={getErrorMessage(errors.backgroundCharacter?.message)}
+        {...register("backgroundCharacter")}
+      />
 
-        <TextField
-          label={messages.foregroundCharacter}
-          helperText={screenMessages.characterHelper}
-          errorMessage={getErrorMessage(errors.foregroundCharacter?.message)}
-          {...register("foregroundCharacter")}
-        />
+      <Controller
+        name={"backgroundColor"}
+        control={control}
+        render={({ field }) => (
+          <ColorPickerField
+            label={messages.backgroundColor}
+            colorPickerLabel={messages.backgroundColorPicker}
+            value={field.value}
+            onChange={field.onChange}
+            errorMessage={getErrorMessage(errors.backgroundColor?.message)}
+          />
+        )}
+      />
 
-        <Controller
-          name={"foregroundColor"}
-          control={control}
-          render={({ field }) => (
-            <ColorPickerField
-              label={messages.foregroundColor}
-              colorPickerLabel={messages.foregroundColorPicker}
-              value={field.value}
-              onChange={field.onChange}
-              errorMessage={getErrorMessage(errors.foregroundColor?.message)}
-            />
-          )}
-        />
+      <Controller
+        name={"type"}
+        control={control}
+        render={({ field }) => (
+          <ImageTypeSelect
+            value={field.value}
+            onChange={field.onChange}
+            errorMessage={getErrorMessage(errors.type?.message)}
+          />
+        )}
+      />
 
-        <TextField
-          label={messages.backgroundCharacter}
-          helperText={screenMessages.characterHelper}
-          errorMessage={getErrorMessage(errors.backgroundCharacter?.message)}
-          {...register("backgroundCharacter")}
-        />
+      <GenerateButton
+        state={toGenerateButtonState({
+          isPending,
+          isSubmitting,
+          remainingRetryAfterSeconds,
+          hasApiError: apiError !== undefined,
+        })}
+      />
 
-        <Controller
-          name={"backgroundColor"}
-          control={control}
-          render={({ field }) => (
-            <ColorPickerField
-              label={messages.backgroundColor}
-              colorPickerLabel={messages.backgroundColorPicker}
-              value={field.value}
-              onChange={field.onChange}
-              errorMessage={getErrorMessage(errors.backgroundColor?.message)}
-            />
-          )}
-        />
-
-        <Controller
-          name={"type"}
-          control={control}
-          render={({ field }) => (
-            <ImageTypeSelect
-              value={field.value}
-              onChange={field.onChange}
-              errorMessage={getErrorMessage(errors.type?.message)}
-            />
-          )}
-        />
-
-        <GenerateButton
-          state={toGenerateButtonState({
-            isPending,
-            isSubmitting,
-            remainingRetryAfterSeconds,
-            hasApiError: apiError !== undefined,
-          })}
-        />
-
-        <p className={"text-center text-xs text-helper-foreground"}>
-          {screenMessages.downloadHelper}
-        </p>
-      </form>
-    </Paper>
+      <p className={"text-center text-xs text-helper-foreground"}>
+        {screenMessages.downloadHelper}
+      </p>
+    </form>
   );
 };
 

@@ -1,4 +1,5 @@
 import ImageGenerationForm from "../components/ImageGenerationForm/ImageGenerationForm";
+import Paper from "@/components/Paper/Paper";
 import { useI18n } from "@/hooks/use-i18n";
 import { imageGenerationScreenMessages } from "@/i18n/messages";
 
@@ -16,7 +17,13 @@ const ImageGenerationScreen = () => {
             {messages.description}
           </p>
         </section>
-        <ImageGenerationForm locale={locale} />
+        <Paper
+          className={
+            "min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)]"
+          }
+        >
+          <ImageGenerationForm locale={locale} />
+        </Paper>
       </div>
     </main>
   );
