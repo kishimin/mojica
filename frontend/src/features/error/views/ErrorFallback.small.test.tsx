@@ -1,4 +1,7 @@
-import { describe, test } from "vitest";
+import { screen } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+import { setup } from "@/tests/test-utils";
+import ErrorFallback from "./ErrorFallback";
 
 describe("ErrorFallback", () => {
   describe("localized fallback content", () => {
@@ -9,7 +12,19 @@ describe("ErrorFallback", () => {
     // Then: The Japanese heading, recovery description, and reload action are available to the user
     // Blocked by: ErrorFallback implementation
     // Priority: P0
-    test.todo("renders the Japanese unexpected-error recovery content");
+    test("renders the Japanese unexpected-error recovery content", () => {
+      localStorage.clear();
+      Object.defineProperty(navigator, "languages", {
+        configurable: true,
+        value: ["ja"],
+      });
+
+      setup(<ErrorFallback />);
+
+      expect(
+        screen.getByRole("heading", { name: "エラーが発生しました" }),
+      ).toBeVisible();
+    });
 
     // ID: ERROR-FALLBACK-S-002
     // Source: docs/v1/ui/ui.md § 20; docs/v1/ui/components/ErrorFallback.md § i18n
