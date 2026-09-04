@@ -118,3 +118,32 @@ export const imageGenerationValidationMessages = {
     "imageType.invalid": "Select an image type.",
   },
 } satisfies Record<Locale, Record<string, string>>;
+
+type ImageGenerationErrorMessages = Record<
+  | "requestError"
+  | "requestLimit"
+  | "serverError"
+  | "imageGenerationServiceError"
+  | "timeout"
+  | "fallback",
+  string
+>;
+
+export const imageGenerationErrorMessages = {
+  ja: {
+    requestError: "リクエストエラー",
+    requestLimit: "リクエスト制限",
+    serverError: "サーバーエラー",
+    imageGenerationServiceError: "画像生成サービスエラー",
+    timeout: "タイムアウト",
+    fallback: "画像生成エラー",
+  },
+  en: {
+    requestError: "Request error",
+    requestLimit: "Request limit",
+    serverError: "Server error",
+    imageGenerationServiceError: "Image-generation service error",
+    timeout: "Timeout",
+    fallback: "Image-generation error",
+  },
+} satisfies Record<Locale, ImageGenerationErrorMessages>;

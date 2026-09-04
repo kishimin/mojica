@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { usePostImages } from "@/api/endpoints/image/image";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
 import {
+  imageGenerationErrorMessages,
   imageGenerationFormMessages,
   imageGenerationValidationMessages,
 } from "@/i18n/messages";
+import AlertBanner from "@/components/AlertBanner/AlertBanner";
+import { toImageGenerationErrorPresentation } from "../../utils/toImageGenerationErrorPresentation";
 import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
 import GenerateButton from "../GenerateButton/GenerateButton";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
@@ -18,6 +22,10 @@ type ImageGenerationFormProps = {
 
 /** Renders the image-generation inputs and their initial values. */
 const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
+  const [apiError, setApiError] = useState<{
+    title: string;
+    description: string;
+  }>();
   const {
     register,
     control,
@@ -53,12 +61,23 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
               break;
           }
         }
+
+        if ((fieldErrors ?? []).length === 0) {
+          const presentation = toImageGenerationErrorPresentation(
+            response?.code,
+          );
+          setApiError({
+            title: imageGenerationErrorMessages[locale][presentation],
+            description: response?.message ?? "",
+          });
+        }
       },
     },
   });
   const messages = imageGenerationFormMessages[locale];
 
   const submitForm = handleSubmit((values) => {
+    setApiError(undefined);
     mutate({ data: values });
   });
 
@@ -69,6 +88,12 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
 
   return (
     <form onSubmit={submitForm}>
+      {apiError ? (
+        <AlertBanner
+          title={apiError.title}
+          description={apiError.description}
+        />
+      ) : null}
       <TextField
         label={messages.text}
         errorMessage={getErrorMessage(errors.text?.message)}
