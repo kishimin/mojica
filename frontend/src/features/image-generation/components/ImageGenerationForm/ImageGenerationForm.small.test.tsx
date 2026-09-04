@@ -115,6 +115,14 @@ describe("ImageGenerationForm", () => {
       });
     });
 
+    // ID: IMAGE-GENERATION-FORM-S-013
+    // Source: docs/v1/ui/components/ImageGenerationForm.md § State model; docs/v1/ui/ui.md §10, §12
+    // Given: A valid form submission receives a PNG response with a Content-Disposition filename
+    // When: The image-generation request succeeds
+    // Then: The generated image is automatically offered for download with the server-provided filename
+    // Priority: P0
+    test.todo("downloads a successful PNG response with its server filename");
+
     test("blocks submission and displays client validation errors", async () => {
       const { user } = setupImageGenerationForm("ja");
 
@@ -285,6 +293,35 @@ describe("ImageGenerationForm", () => {
         within(alert).getByText("リクエストを確認してください。"),
       ).toBeVisible();
     });
+
+    // ID: IMAGE-GENERATION-FORM-S-014
+    // Source: docs/v1/ui/components/ImageGenerationForm.md § State model; docs/v1/ui/ui.md §12
+    // Given: POST /images returns INTERNAL_SERVER_ERROR with a localized API message
+    // When: A valid form submission is handled
+    // Then: The form-level alert displays the server-error heading and API message
+    // Error: 500 Internal Server Error
+    // Priority: P1
+    test.todo("displays the server-error banner for INTERNAL_SERVER_ERROR");
+
+    // ID: IMAGE-GENERATION-FORM-S-015
+    // Source: docs/v1/ui/components/ImageGenerationForm.md § State model; docs/v1/ui/ui.md §12
+    // Given: POST /images returns IMAGE_GENERATION_FAILED with a localized API message
+    // When: A valid form submission is handled
+    // Then: The form-level alert displays the image-generation-service heading and API message
+    // Error: 502 Bad Gateway
+    // Priority: P1
+    test.todo(
+      "displays the image-generation-service banner for IMAGE_GENERATION_FAILED",
+    );
+
+    // ID: IMAGE-GENERATION-FORM-S-016
+    // Source: docs/v1/ui/components/ImageGenerationForm.md § State model; docs/v1/ui/ui.md §12
+    // Given: POST /images returns IMAGE_GENERATION_TIMEOUT with a localized API message
+    // When: A valid form submission is handled
+    // Then: The form-level alert displays the timeout heading and API message
+    // Error: 504 Gateway Timeout
+    // Priority: P1
+    test.todo("displays the timeout banner for IMAGE_GENERATION_TIMEOUT");
   });
 
   describe("rate-limit retry behavior", () => {
