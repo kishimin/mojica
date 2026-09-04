@@ -173,7 +173,7 @@ describe("ImageGenerationForm", () => {
 
       await waitFor(() => {
         expect(textField).toHaveAccessibleErrorMessage(
-          "描画する文字列を入力してください。",
+          "空白以外の文字を入力してください。",
         );
       });
     });
