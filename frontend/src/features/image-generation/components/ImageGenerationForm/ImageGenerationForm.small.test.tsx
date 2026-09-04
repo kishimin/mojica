@@ -294,34 +294,110 @@ describe("ImageGenerationForm", () => {
       ).toBeVisible();
     });
 
-    // ID: IMAGE-GENERATION-FORM-S-014
-    // Source: docs/v1/ui/components/ImageGenerationForm.md § State model; docs/v1/ui/ui.md §12
-    // Given: POST /images returns INTERNAL_SERVER_ERROR with a localized API message
-    // When: A valid form submission is handled
-    // Then: The form-level alert displays the server-error heading and API message
-    // Error: 500 Internal Server Error
-    // Priority: P1
-    test.todo("displays the server-error banner for INTERNAL_SERVER_ERROR");
+    test("displays the server-error banner for INTERNAL_SERVER_ERROR", async () => {
+      worker.use(
+        http.post("*/images", () =>
+          HttpResponse.json(
+            {
+              code: "INTERNAL_SERVER_ERROR",
+              message: "内部エラーが発生しました。",
+            },
+            { status: 500 },
+          ),
+        ),
+      );
 
-    // ID: IMAGE-GENERATION-FORM-S-015
-    // Source: docs/v1/ui/components/ImageGenerationForm.md § State model; docs/v1/ui/ui.md §12
-    // Given: POST /images returns IMAGE_GENERATION_FAILED with a localized API message
-    // When: A valid form submission is handled
-    // Then: The form-level alert displays the image-generation-service heading and API message
-    // Error: 502 Bad Gateway
-    // Priority: P1
-    test.todo(
-      "displays the image-generation-service banner for IMAGE_GENERATION_FAILED",
-    );
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
 
-    // ID: IMAGE-GENERATION-FORM-S-016
-    // Source: docs/v1/ui/components/ImageGenerationForm.md § State model; docs/v1/ui/ui.md §12
-    // Given: POST /images returns IMAGE_GENERATION_TIMEOUT with a localized API message
-    // When: A valid form submission is handled
-    // Then: The form-level alert displays the timeout heading and API message
-    // Error: 504 Gateway Timeout
-    // Priority: P1
-    test.todo("displays the timeout banner for IMAGE_GENERATION_TIMEOUT");
+      const alert = await screen.findByRole("alert");
+      expect(within(alert).getByText("サーバーエラー")).toBeVisible();
+      expect(
+        within(alert).getByText("内部エラーが発生しました。"),
+      ).toBeVisible();
+    });
+
+    test("displays the image-generation-service banner for IMAGE_GENERATION_FAILED", async () => {
+      worker.use(
+        http.post("*/images", () =>
+          HttpResponse.json(
+            {
+              code: "IMAGE_GENERATION_FAILED",
+              message: "画像生成サービスでエラーが発生しました。",
+            },
+            { status: 502 },
+          ),
+        ),
+      );
+
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      const alert = await screen.findByRole("alert");
+      expect(within(alert).getByText("画像生成サービスエラー")).toBeVisible();
+      expect(
+        within(alert).getByText("画像生成サービスでエラーが発生しました。"),
+      ).toBeVisible();
+    });
+
+    test("displays the timeout banner for IMAGE_GENERATION_TIMEOUT", async () => {
+      worker.use(
+        http.post("*/images", () =>
+          HttpResponse.json(
+            {
+              code: "IMAGE_GENERATION_TIMEOUT",
+              message: "画像生成がタイムアウトしました。",
+            },
+            { status: 504 },
+          ),
+        ),
+      );
+
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      const alert = await screen.findByRole("alert");
+      expect(within(alert).getByText("タイムアウト")).toBeVisible();
+      expect(
+        within(alert).getByText("画像生成がタイムアウトしました。"),
+      ).toBeVisible();
+    });
   });
 
   describe("rate-limit retry behavior", () => {
