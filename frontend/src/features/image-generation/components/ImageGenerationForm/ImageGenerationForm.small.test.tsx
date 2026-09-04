@@ -1,7 +1,7 @@
-import { screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { worker } from "@/api/mocks/browser";
 import { I18nProvider } from "@/providers/I18nProvider";
 import { setup } from "@/tests/test-utils";
@@ -326,7 +326,48 @@ describe("ImageGenerationForm", () => {
     // Error: 429 Too Many Requests with Retry-After
     // Blocked by: ImageGenerationForm implementation
     // Priority: P1
-    test.todo("enforces Retry-After before allowing a retry");
+    test("enforces Retry-After before allowing a retry", async () => {
+      vi.useFakeTimers({ toFake: ["Date", "setInterval", "clearInterval"] });
+      worker.use(
+        http.post("*/images", () =>
+          HttpResponse.json(
+            {
+              code: "RATE_LIMIT_EXCEEDED",
+              message: "しばらくお待ちください。",
+            },
+            { status: 429, headers: { "Retry-After": "5" } },
+          ),
+        ),
+      );
+
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      const cooldownButton = await screen.findByRole("button", {
+        name: "5秒後に再試行できます",
+      });
+      expect(cooldownButton).toBeDisabled();
+
+      act(() => {
+        vi.advanceTimersByTime(5000);
+      });
+      expect(
+        screen.getByRole("button", { name: "画像を生成する" }),
+      ).toBeEnabled();
+      vi.useRealTimers();
+    });
 
     // ID: IMAGE-GENERATION-FORM-S-010
     // Source: docs/v1/ui/ui.md § 12 Retry-After; docs/v1/ui/components/ImageGenerationForm.md § State model

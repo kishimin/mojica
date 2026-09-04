@@ -13,6 +13,7 @@ import { toImageGenerationErrorPresentation } from "../../utils/toImageGeneratio
 import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
 import GenerateButton from "../GenerateButton/GenerateButton";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
+import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
 import type { Locale } from "@/types/i18n";
 
 type ImageGenerationFormProps = {
@@ -26,6 +27,8 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     title: string;
     description: string;
   }>();
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState(0);
+  const remainingRetryAfterSeconds = useRetryAfterCountdown(retryAfterSeconds);
   const {
     register,
     control,
@@ -70,6 +73,12 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
             title: imageGenerationErrorMessages[locale][presentation],
             description: response?.message ?? "",
           });
+
+          const retryAfterHeader = error.response?.headers.get("Retry-After");
+          const retryAfter = retryAfterHeader
+            ? Number.parseInt(retryAfterHeader, 10)
+            : 0;
+          setRetryAfterSeconds(Number.isFinite(retryAfter) ? retryAfter : 0);
         }
       },
     },
@@ -78,6 +87,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
 
   const submitForm = handleSubmit((values) => {
     setApiError(undefined);
+    setRetryAfterSeconds(0);
     mutate({ data: values });
   });
 
@@ -148,7 +158,16 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
       />
       <GenerateButton
         state={
-          isPending || isSubmitting ? { kind: "submitting" } : { kind: "idle" }
+          isPending || isSubmitting
+            ? { kind: "submitting" }
+            : remainingRetryAfterSeconds > 0
+              ? {
+                  kind: "cooldown",
+                  remainingSeconds: remainingRetryAfterSeconds,
+                }
+              : apiError
+                ? { kind: "retryable" }
+                : { kind: "idle" }
         }
       />
     </form>
