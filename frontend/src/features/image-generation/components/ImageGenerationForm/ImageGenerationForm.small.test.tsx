@@ -284,7 +284,37 @@ describe("ImageGenerationForm", () => {
     // Then: The API message is displayed in the form-level alert
     // Blocked by: ImageGenerationForm implementation
     // Priority: P1
-    test.todo("displays an API error message in a form-level alert");
+    test("displays an API error message in a form-level alert", async () => {
+      worker.use(
+        http.post("*/images", () =>
+          HttpResponse.json(
+            {
+              code: "BAD_REQUEST",
+              message: "リクエストを確認してください。",
+            },
+            { status: 400 },
+          ),
+        ),
+      );
+
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(
+        screen.getByRole("textbox", { name: "描画する文字列" }),
+        "KA",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "描画に使う文字" }),
+        "🌻",
+      );
+      await user.type(
+        screen.getByRole("textbox", { name: "敷き詰める文字" }),
+        "☀",
+      );
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      const alert = await screen.findByRole("alert");
+      expect(alert).toHaveTextContent("リクエストを確認してください。");
+    });
   });
 
   describe("rate-limit retry behavior", () => {
