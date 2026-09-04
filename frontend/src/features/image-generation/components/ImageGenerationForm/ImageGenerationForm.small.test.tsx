@@ -45,7 +45,33 @@ describe("ImageGenerationForm", () => {
     // Then: The form exposes English labels, options, and action text
     // Blocked by: ImageGenerationForm implementation and English i18n messages
     // Priority: P1
-    test.todo("renders the image-generation form in English");
+    test("renders the image-generation form in English", () => {
+      setupWithI18n(<ImageGenerationForm locale={"en"} />, "en");
+
+      expect(
+        screen.getByRole("textbox", { name: "Text to render" }),
+      ).toHaveValue("");
+      expect(
+        screen.getByRole("textbox", {
+          name: "Character used to render text",
+        }),
+      ).toHaveValue("");
+      expect(
+        screen.getByLabelText("Choose foreground character color"),
+      ).toHaveValue("#000000");
+      expect(
+        screen.getByRole("textbox", { name: "Background character" }),
+      ).toHaveValue("");
+      expect(
+        screen.getByLabelText("Choose background character color"),
+      ).toHaveValue("#ffffff");
+      expect(
+        screen.getByRole("combobox", { name: "Image type" }),
+      ).toHaveTextContent("Standard image");
+      expect(
+        screen.getByRole("button", { name: "Generate image" }),
+      ).toBeEnabled();
+    });
   });
 
   describe("client submission", () => {

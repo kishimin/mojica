@@ -51,8 +51,10 @@ type ImageGenerationFormMessages = {
   text: string;
   foregroundCharacter: string;
   foregroundColor: string;
+  foregroundColorPicker: string;
   backgroundCharacter: string;
   backgroundColor: string;
+  backgroundColorPicker: string;
 };
 
 export const imageGenerationFormMessages = {
@@ -60,14 +62,18 @@ export const imageGenerationFormMessages = {
     text: "描画する文字列",
     foregroundCharacter: "描画に使う文字",
     foregroundColor: "描画に使う文字の色",
+    foregroundColorPicker: "描画に使う文字の色を選択",
     backgroundCharacter: "敷き詰める文字",
     backgroundColor: "敷き詰める文字の色",
+    backgroundColorPicker: "敷き詰める文字の色を選択",
   },
   en: {
     text: "Text to render",
     foregroundCharacter: "Character used to render text",
     foregroundColor: "Foreground character color",
+    foregroundColorPicker: "Choose foreground character color",
     backgroundCharacter: "Background character",
     backgroundColor: "Background character color",
+    backgroundColorPicker: "Choose background character color",
   },
 } satisfies Record<Locale, ImageGenerationFormMessages>;

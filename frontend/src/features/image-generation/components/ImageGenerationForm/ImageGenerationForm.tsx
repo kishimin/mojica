@@ -2,7 +2,10 @@ import { Controller } from "react-hook-form";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
 import { Button } from "@/components/ui/button";
-import { imageGenerationFormMessages } from "@/i18n/messages";
+import {
+  generateButtonMessages,
+  imageGenerationFormMessages,
+} from "@/i18n/messages";
 import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
 import type { Locale } from "@/types/i18n";
@@ -30,7 +33,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         render={({ field }) => (
           <ColorPickerField
             label={messages.foregroundColor}
-            colorPickerLabel={`${messages.foregroundColor}を選択`}
+            colorPickerLabel={messages.foregroundColorPicker}
             value={field.value}
             onChange={field.onChange}
           />
@@ -46,7 +49,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         render={({ field }) => (
           <ColorPickerField
             label={messages.backgroundColor}
-            colorPickerLabel={`${messages.backgroundColor}を選択`}
+            colorPickerLabel={messages.backgroundColorPicker}
             value={field.value}
             onChange={field.onChange}
           />
@@ -59,7 +62,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
           <ImageTypeSelect value={field.value} onChange={field.onChange} />
         )}
       />
-      <Button type="submit">画像を生成する</Button>
+      <Button type="submit">{generateButtonMessages[locale].idle}</Button>
     </form>
   );
 };
