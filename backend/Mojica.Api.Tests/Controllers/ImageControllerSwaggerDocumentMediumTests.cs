@@ -62,6 +62,21 @@ public sealed class ImageControllerSwaggerDocumentMediumTests : IClassFixture<Im
         Assert.Contains("#/components/schemas/ApiValidationErrorResponse", referencedSchemas);
         Assert.Contains("#/components/schemas/ApiErrorResponse", referencedSchemas);
     }
+
+    [Fact]
+    public void SwaggerDocument_ForPostImages_DeclaresPngBinarySuccessResponse()
+    {
+        var response = operation
+            .GetProperty("responses")
+            .GetProperty("200")
+            .GetProperty("content")
+            .GetProperty("image/png");
+
+        var schema = response.GetProperty("schema");
+
+        Assert.Equal("string", schema.GetProperty("type").GetString());
+        Assert.Equal("binary", schema.GetProperty("format").GetString());
+    }
 }
 
 public sealed class ImageControllerSwaggerDocumentFixture : IAsyncLifetime

@@ -19,7 +19,7 @@ public sealed class ImageController(
     [HttpPost("/images")]
     [EnableRateLimiting(ImageGenerationRateLimiterPolicy.PolicyName)]
     [SwaggerRequestBodyType(typeof(ImageGenerationRequestDto))]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK, "image/png")]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest, "application/json")]
     [ProducesResponseType(typeof(ApiValidationErrorResponse), StatusCodes.Status422UnprocessableEntity, "application/json")]
     [SwaggerResponseOneOf(
