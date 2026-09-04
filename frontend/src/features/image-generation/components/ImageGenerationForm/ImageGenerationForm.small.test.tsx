@@ -141,7 +141,17 @@ describe("ImageGenerationForm", () => {
     // Then: The corresponding validation message is displayed and POST /images is not called
     // Blocked by: ImageGenerationForm implementation
     // Priority: P0
-    test.todo("blocks submission and displays client validation errors");
+    test("blocks submission and displays client validation errors", async () => {
+      const { user } = setupImageGenerationForm("ja");
+
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("textbox", { name: "描画する文字列" }),
+        ).toHaveAccessibleErrorMessage("描画する文字列を入力してください。");
+      });
+    });
   });
 
   describe("change validation", () => {
