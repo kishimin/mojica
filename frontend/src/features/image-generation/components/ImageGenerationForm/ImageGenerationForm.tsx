@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
 import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
-import { toImageGenerationErrorPresentation } from "../../utils/toImageGenerationErrorPresentation";
+import applyImageGenerationFieldErrors from "../../utils/applyImageGenerationFieldErrors";
+import toImageGenerationApiError from "../../utils/toImageGenerationApiError";
+import toRetryAfterSeconds from "../../utils/toRetryAfterSeconds";
 import GenerateButton from "../GenerateButton/GenerateButton";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
 import {
@@ -13,7 +15,6 @@ import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
 import {
-  imageGenerationErrorMessages,
   imageGenerationFormMessages,
   imageGenerationValidationMessages,
 } from "@/i18n/messages";
@@ -46,50 +47,11 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         const fieldErrors =
           response && "errors" in response ? response.errors : undefined;
 
-        for (const fieldError of fieldErrors ?? []) {
-          if (!fieldError.field || !fieldError.message) {
-            continue;
-          }
-
-          switch (fieldError.field) {
-            case "text":
-            case "foregroundCharacter":
-            case "foregroundColor":
-            case "backgroundCharacter":
-            case "backgroundColor":
-            case "type":
-              setError(fieldError.field, {
-                type: "server",
-                message: fieldError.message,
-              });
-              break;
-            default:
-              break;
-          }
-        }
+        applyImageGenerationFieldErrors(fieldErrors, setError);
 
         if ((fieldErrors ?? []).length === 0) {
-          const presentation = toImageGenerationErrorPresentation(
-            response?.code,
-          );
-          setApiError({
-            title: imageGenerationErrorMessages[locale][presentation],
-            description: response?.message ?? "",
-          });
-
-          const headers = error.response?.headers;
-          const retryAfterHeader =
-            headers &&
-            typeof headers !== "string" &&
-            "get" in headers &&
-            typeof headers.get === "function"
-              ? headers.get("Retry-After")
-              : undefined;
-          const retryAfter =
-            typeof retryAfterHeader === "string"
-              ? Number.parseInt(retryAfterHeader, 10)
-              : 0;
-          setRetryAfterSeconds(Number.isFinite(retryAfter) ? retryAfter : 0);
+          setApiError(toImageGenerationApiError(response, locale));
+          setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
         }
       },
     },

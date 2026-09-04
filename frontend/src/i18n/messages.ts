@@ -124,7 +124,7 @@ export const imageGenerationValidationMessages: Record<
   },
 } satisfies Record<Locale, Record<string, string>>;
 
-type ImageGenerationErrorMessages = Record<
+export type ImageGenerationErrorMessages = Record<
   | "requestError"
   | "requestLimit"
   | "serverError"
