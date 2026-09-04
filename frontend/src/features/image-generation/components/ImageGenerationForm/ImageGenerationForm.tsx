@@ -4,11 +4,11 @@ import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
 import { Button } from "@/components/ui/button";
 import {
-  generateButtonMessages,
   imageGenerationFormMessages,
   imageGenerationValidationMessages,
 } from "@/i18n/messages";
 import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
+import GenerateButton from "../GenerateButton/GenerateButton";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
 import type { Locale } from "@/types/i18n";
 
@@ -23,9 +23,9 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useImageGenerationForm();
-  const { mutate } = usePostImages();
+  const { isPending, mutate } = usePostImages();
   const messages = imageGenerationFormMessages[locale];
 
   const submitForm = handleSubmit((values) => {
@@ -89,7 +89,11 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
           />
         )}
       />
-      <Button type="submit">{generateButtonMessages[locale].idle}</Button>
+      <GenerateButton
+        state={
+          isPending || isSubmitting ? { kind: "submitting" } : { kind: "idle" }
+        }
+      />
     </form>
   );
 };
