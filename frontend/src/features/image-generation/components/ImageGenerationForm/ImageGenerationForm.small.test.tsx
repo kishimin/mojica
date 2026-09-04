@@ -3,6 +3,7 @@ import { act, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { describe, expect, test, vi } from "vitest";
 import ImageGenerationForm from "./ImageGenerationForm";
+import { getPostImagesMockHandler } from "@/api/endpoints/image/image.msw";
 import { worker } from "@/api/mocks/browser";
 import { setupWithI18n } from "@/tests/test-utils";
 import type { Locale } from "@/types/i18n";
@@ -97,9 +98,8 @@ describe("ImageGenerationForm", () => {
     test("submits a valid image-generation request once", async () => {
       const requests: unknown[] = [];
       worker.use(
-        http.post("*/images", async ({ request }) => {
+        getPostImagesMockHandler(async ({ request }) => {
           requests.push(await request.json());
-          return new HttpResponse(null, { status: 200 });
         }),
       );
 
@@ -192,10 +192,9 @@ describe("ImageGenerationForm", () => {
         resolveResponse = resolve;
       });
       worker.use(
-        http.post("*/images", async ({ request }) => {
+        getPostImagesMockHandler(async ({ request }) => {
           requests.push(await request.json());
           await responseReady;
-          return new HttpResponse(null, { status: 200 });
         }),
       );
 

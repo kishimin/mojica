@@ -29,6 +29,17 @@ const lintTypeScript = async (source) => {
   );
 };
 
+const lintImageMocks = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath:
+      "src/features/image-generation/components/ImageGenerationForm/ImageGenerationForm.small.test.tsx",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/prefer-generated-image-msw-handler",
+  );
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -82,6 +93,31 @@ test("allows object-derived string unions", async () => {
     } as const;
     type ImageType =
       (typeof imageTypeDefinitions)[keyof typeof imageTypeDefinitions];
+  `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects successful inline image MSW handlers", async () => {
+  const messages = await lintImageMocks(`
+    http.post("*/images", () => new HttpResponse(null, { status: 200 }));
+  `);
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/prefer-generated-image-msw-handler",
+        message:
+          "Use the generated image MSW handler for successful POST /images mocks.",
+      },
+    ],
+  );
+});
+
+test("allows error responses to use an inline image MSW handler", async () => {
+  const messages = await lintImageMocks(`
+    http.post("*/images", () => HttpResponse.json({}, { status: 422 }));
   `);
 
   assert.deepEqual(messages, []);

@@ -14,6 +14,7 @@ import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import preferObjectDerivedUnion from "./eslint-rules/prefer-object-derived-union.mjs";
+import preferGeneratedImageMswHandler from "./eslint-rules/prefer-generated-image-msw-handler.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -83,6 +84,7 @@ export default defineConfig([
     },
     rules: {
       "local/prefer-object-derived-union": "error",
+      "local/prefer-generated-image-msw-handler": "error",
       "no-console": "warn",
       "no-restricted-syntax": [
         "error",
@@ -126,6 +128,7 @@ export default defineConfig([
       local: {
         rules: {
           "prefer-object-derived-union": preferObjectDerivedUnion,
+          "prefer-generated-image-msw-handler": preferGeneratedImageMswHandler,
         },
       },
     },
