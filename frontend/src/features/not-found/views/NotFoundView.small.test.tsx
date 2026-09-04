@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-import { setupWithI18n } from "@/app/tests/test-utils";
 import NotFoundView from "./NotFoundView";
+import { setupWithI18n } from "@/tests/test-utils";
 
 describe("NotFoundView", () => {
   describe("Japanese locale", () => {
@@ -20,7 +20,9 @@ describe("NotFoundView", () => {
         screen.getByRole("heading", { name: "ページが見つかりません" }),
       ).toBeVisible();
       expect(
-        screen.getByText("URLが正しいか確認するか、トップページへ戻ってください。"),
+        screen.getByText(
+          "URLが正しいか確認するか、トップページへ戻ってください。",
+        ),
       ).toBeVisible();
     });
   });
@@ -33,7 +35,17 @@ describe("NotFoundView", () => {
     // Then: The 404 status, English heading, and explanation are visible
     // Blocked by: NotFoundView implementation and locale integration
     // Priority: P1
-    test.todo("renders the English not-found status and message");
+    test("renders the English not-found status and message", () => {
+      setupWithI18n(<NotFoundView />, "en");
+
+      expect(screen.getByRole("heading", { name: "404" })).toBeVisible();
+      expect(
+        screen.getByRole("heading", { name: "Page not found" }),
+      ).toBeVisible();
+      expect(
+        screen.getByText("Please check the URL or return to the homepage."),
+      ).toBeVisible();
+    });
   });
 
   describe("home navigation", () => {
@@ -44,7 +56,13 @@ describe("NotFoundView", () => {
     // Then: A localized link back to the home page points to "/"
     // Blocked by: NotFoundView implementation and router link integration
     // Priority: P0
-    test.todo("provides an accessible link back to the home page");
+    test("provides an accessible link back to the home page", () => {
+      setupWithI18n(<NotFoundView />);
+
+      expect(
+        screen.getByRole("link", { name: "トップページへ戻る" }),
+      ).toHaveAttribute("href", "/");
+    });
   });
 
   describe("accessible structure", () => {
@@ -55,6 +73,14 @@ describe("NotFoundView", () => {
     // Then: The not-found message has a heading and the recovery action has an accessible name
     // Blocked by: NotFoundView implementation
     // Priority: P1
-    test.todo("exposes the not-found content through accessible landmarks");
+    test("exposes the not-found content through accessible headings and links", () => {
+      setupWithI18n(<NotFoundView />);
+
+      expect(screen.getByRole("main")).toBeVisible();
+      expect(screen.getByRole("heading", { name: "404" })).toBeVisible();
+      expect(
+        screen.getByRole("link", { name: "トップページへ戻る" }),
+      ).toBeVisible();
+    });
   });
 });

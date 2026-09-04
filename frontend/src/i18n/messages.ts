@@ -105,6 +105,28 @@ export const imageGenerationScreenMessages = {
   },
 } satisfies Record<Locale, ImageGenerationScreenMessages>;
 
+type NotFoundViewMessages = {
+  status: string;
+  heading: string;
+  description: string;
+  homeLink: string;
+};
+
+export const notFoundViewMessages = {
+  ja: {
+    status: "404",
+    heading: "ページが見つかりません",
+    description: "URLが正しいか確認するか、トップページへ戻ってください。",
+    homeLink: "トップページへ戻る",
+  },
+  en: {
+    status: "404",
+    heading: "Page not found",
+    description: "Please check the URL or return to the homepage.",
+    homeLink: "Back to Home",
+  },
+} satisfies Record<Locale, NotFoundViewMessages>;
+
 export const imageGenerationValidationMessages: Record<
   Locale,
   Record<string, string>
