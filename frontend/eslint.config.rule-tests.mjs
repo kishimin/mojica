@@ -61,6 +61,24 @@ const lintUtils = async (
   );
 };
 
+const lintProps = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "src/components/AlertBanner/AlertBanner.tsx",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/limit-props-keys",
+  );
+};
+
+const lintFunctionParameters = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "src/components/Logo/Logo.tsx",
+  });
+
+  return result.messages.filter(({ ruleId }) => ruleId === "max-params");
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -187,6 +205,54 @@ test("allows default exports from component files", async () => {
     "export default Component;",
     "src/components/Logo/Logo.tsx",
   );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects functions with more than five parameters", async () => {
+  const messages = await lintFunctionParameters(
+    "const render = (one, two, three, four, five, six) => null;",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["max-params"],
+  );
+});
+
+test("rejects Props definitions with more than five keys", async () => {
+  const messages = await lintProps(`
+    type ExampleProps = {
+      one: string;
+      two: string;
+      three: string;
+      four: string;
+      five: string;
+      six: string;
+    };
+  `);
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/limit-props-keys",
+        message: "Keep Props definitions to five keys or fewer.",
+      },
+    ],
+  );
+});
+
+test("allows Props definitions with five keys", async () => {
+  const messages = await lintProps(`
+    interface ExampleProps {
+      one: string;
+      two: string;
+      three: string;
+      four: string;
+      five: string;
+    }
+  `);
 
   assert.deepEqual(messages, []);
 });

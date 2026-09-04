@@ -16,6 +16,7 @@ import tseslint from "typescript-eslint";
 import preferObjectDerivedUnion from "./eslint-rules/prefer-object-derived-union.mjs";
 import preferGeneratedImageMswHandler from "./eslint-rules/prefer-generated-image-msw-handler.mjs";
 import preferNamedExportsInUtils from "./eslint-rules/prefer-named-exports-in-utils.mjs";
+import limitPropsKeys from "./eslint-rules/limit-props-keys.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -87,6 +88,8 @@ export default defineConfig([
       "local/prefer-object-derived-union": "error",
       "local/prefer-generated-image-msw-handler": "error",
       "local/prefer-named-exports-in-utils": "error",
+      "local/limit-props-keys": "error",
+      "max-params": ["error", 5],
       "no-console": "warn",
       "no-restricted-syntax": [
         "error",
@@ -136,6 +139,7 @@ export default defineConfig([
           "prefer-object-derived-union": preferObjectDerivedUnion,
           "prefer-generated-image-msw-handler": preferGeneratedImageMswHandler,
           "prefer-named-exports-in-utils": preferNamedExportsInUtils,
+          "limit-props-keys": limitPropsKeys,
         },
       },
     },
