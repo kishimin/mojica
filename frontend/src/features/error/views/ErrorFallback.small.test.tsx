@@ -33,7 +33,26 @@ describe("ErrorFallback", () => {
     // Then: The English heading, recovery description, and reload action are available to the user
     // Blocked by: ErrorFallback implementation
     // Priority: P1
-    test.todo("renders the English unexpected-error recovery content");
+    test("renders the English unexpected-error recovery content", () => {
+      Object.defineProperty(navigator, "languages", {
+        configurable: true,
+        value: ["en-US"],
+      });
+
+      setup(<ErrorFallback />);
+
+      expect(
+        screen.getByRole("heading", { name: "An error occurred" }),
+      ).toBeVisible();
+      expect(
+        screen.getByText(
+          "Something unexpected happened. Please reload the page and try again.",
+        ),
+      ).toBeVisible();
+      expect(
+        screen.getByRole("button", { name: "Reload page" }),
+      ).toBeEnabled();
+    });
   });
 
   describe("locale resolution", () => {
@@ -44,7 +63,19 @@ describe("ErrorFallback", () => {
     // Then: The stored supported locale determines the displayed copy
     // Blocked by: ErrorFallback implementation
     // Priority: P0
-    test.todo("prefers the stored supported locale over the browser locale");
+    test("prefers the stored supported locale over the browser locale", () => {
+      localStorage.setItem("locale", "en");
+      Object.defineProperty(navigator, "languages", {
+        configurable: true,
+        value: ["ja"],
+      });
+
+      setup(<ErrorFallback />);
+
+      expect(
+        screen.getByRole("heading", { name: "An error occurred" }),
+      ).toBeVisible();
+    });
 
     // ID: ERROR-FALLBACK-S-004
     // Source: docs/v1/ui/ui.md § 20; docs/v1/ui/components/ErrorFallback.md § i18n
