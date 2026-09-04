@@ -2,7 +2,6 @@ import { Controller } from "react-hook-form";
 import { usePostImages } from "@/api/endpoints/image/image";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
-import { Button } from "@/components/ui/button";
 import {
   imageGenerationFormMessages,
   imageGenerationValidationMessages,
@@ -23,9 +22,40 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     register,
     control,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useImageGenerationForm();
-  const { isPending, mutate } = usePostImages();
+  const { isPending, mutate } = usePostImages({
+    mutation: {
+      onError: (error) => {
+        const response = error.response?.data;
+        const fieldErrors =
+          response && "errors" in response ? response.errors : undefined;
+
+        for (const fieldError of fieldErrors ?? []) {
+          if (!fieldError.field || !fieldError.message) {
+            continue;
+          }
+
+          switch (fieldError.field) {
+            case "text":
+            case "foregroundCharacter":
+            case "foregroundColor":
+            case "backgroundCharacter":
+            case "backgroundColor":
+            case "type":
+              setError(fieldError.field, {
+                type: "server",
+                message: fieldError.message,
+              });
+              break;
+            default:
+              break;
+          }
+        }
+      },
+    },
+  });
   const messages = imageGenerationFormMessages[locale];
 
   const submitForm = handleSubmit((values) => {
@@ -33,7 +63,9 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
   });
 
   const getErrorMessage = (message: string | undefined) =>
-    message ? imageGenerationValidationMessages[locale][message] : undefined;
+    message
+      ? (imageGenerationValidationMessages[locale][message] ?? message)
+      : undefined;
 
   return (
     <form onSubmit={submitForm}>
