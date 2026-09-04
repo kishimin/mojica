@@ -4,7 +4,7 @@ import { worker } from "../mocks/browser";
 import { customInstance } from "./custom-instance";
 
 describe("customInstance HTTP contract", () => {
-  test("returns the response body for a successful request", async () => {
+  test("returns the Axios response for a successful request", async () => {
     worker.use(
       http.get("*/custom-instance/success", () =>
         HttpResponse.json({ message: "ok" }),
@@ -16,7 +16,8 @@ describe("customInstance HTTP contract", () => {
       url: "/custom-instance/success",
     });
 
-    expect(result).toEqual({ message: "ok" });
+    expect(result.data).toEqual({ message: "ok" });
+    expect(result.status).toBe(200);
   });
 
   test("sends the request method, URL parameters, and body", async () => {

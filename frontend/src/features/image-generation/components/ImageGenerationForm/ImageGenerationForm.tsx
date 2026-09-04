@@ -3,6 +3,7 @@ import { Controller } from "react-hook-form";
 import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
 import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
 import { applyImageGenerationFieldErrors } from "../../utils/applyImageGenerationFieldErrors";
+import { downloadGeneratedImage } from "../../utils/downloadGeneratedImage";
 import { toGenerateButtonState } from "../../utils/toGenerateButtonState";
 import { toImageGenerationApiError } from "../../utils/toImageGenerationApiError";
 import { toRetryAfterSeconds } from "../../utils/toRetryAfterSeconds";
@@ -43,6 +44,9 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
   } = useImageGenerationForm();
   const { isPending, mutate } = usePostImages<PostImagesMutationError>({
     mutation: {
+      onSuccess: (response) => {
+        downloadGeneratedImage(response);
+      },
       onError: (error) => {
         const response = error.response?.data;
         const fieldErrors =
