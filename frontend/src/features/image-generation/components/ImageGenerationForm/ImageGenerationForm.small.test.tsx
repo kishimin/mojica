@@ -5,8 +5,9 @@ import { describe, expect, test, vi } from "vitest";
 import ImageGenerationForm from "./ImageGenerationForm";
 import { worker } from "@/api/mocks/browser";
 import { setupWithI18n } from "@/tests/test-utils";
+import type { Locale } from "@/types/i18n";
 
-const setupImageGenerationForm = (locale: "ja" | "en") =>
+const setupImageGenerationForm = (locale: Locale) =>
   setupWithI18n(
     <QueryClientProvider client={new QueryClient()}>
       <ImageGenerationForm locale={locale} />
