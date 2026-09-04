@@ -334,10 +334,7 @@ describe("ImageGenerationForm", () => {
     // Blocked by: ImageGenerationForm implementation
     // Priority: P1
     test("enforces Retry-After before allowing a retry", async () => {
-      // Do not fake setTimeout; userEvent and MSW rely on native scheduling.
-      // Do not use a native setInterval; the countdown must advance only when the test advances time.
-      // Do not use a native clearInterval; the countdown must stop deterministically at zero.
-      // Do not use the real clock; remaining seconds are derived from Date.now().
+      // Do not use real timers; the countdown needs a deterministic clock while userEvent and MSW need native setTimeout.
       vi.useFakeTimers({ toFake: ["Date", "setInterval", "clearInterval"] });
       worker.use(
         http.post("*/images", () =>
