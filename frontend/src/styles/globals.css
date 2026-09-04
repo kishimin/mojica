@@ -106,7 +106,6 @@
     }
 
     body {
-        min-width: 20rem;
         margin: 0;
         @apply bg-background text-foreground;
     }
