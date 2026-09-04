@@ -42,6 +42,9 @@ describe("ImageGenerationForm", () => {
       expect(
         screen.getByRole("button", { name: "画像を生成する" }),
       ).toBeEnabled();
+      expect(
+        screen.getByText("生成したPNG画像は自動でダウンロードされます。"),
+      ).toBeVisible();
     });
 
     test("renders the image-generation form in English", () => {
@@ -70,6 +73,11 @@ describe("ImageGenerationForm", () => {
       expect(
         screen.getByRole("button", { name: "Generate image" }),
       ).toBeEnabled();
+      expect(
+        screen.getByText(
+          "The generated PNG image will download automatically.",
+        ),
+      ).toBeVisible();
     });
   });
 
@@ -140,6 +148,22 @@ describe("ImageGenerationForm", () => {
       await waitFor(() => {
         expect(textField).toHaveAccessibleErrorMessage(
           "空白以外の文字を入力してください。",
+        );
+      });
+    });
+
+    test("displays a validation error after an invalid color is entered", async () => {
+      const { user } = setupImageGenerationForm("ja");
+      const colorField = screen.getByRole("textbox", {
+        name: "描画に使う文字の色",
+      });
+
+      await user.clear(colorField);
+      await user.type(colorField, "#GGGGGG");
+
+      await waitFor(() => {
+        expect(colorField).toHaveAccessibleErrorMessage(
+          "描画に使う文字の色をHEXカラー形式（#RRGGBB）で指定してください。",
         );
       });
     });
