@@ -1,8 +1,17 @@
 import { screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, test } from "vitest";
 import ImageGenerationScreen from "./ImageGenerationScreen";
-import { AppProviders } from "@/app/providers/AppProviders";
-import { setup } from "@/tests/test-utils";
+import { setupWithI18n } from "@/tests/test-utils";
+import type { Locale } from "@/types/i18n";
+
+const renderScreen = (locale: Locale) =>
+  setupWithI18n(
+    <QueryClientProvider client={new QueryClient()}>
+      <ImageGenerationScreen />
+    </QueryClientProvider>,
+    locale,
+  );
 
 describe("ImageGenerationScreen", () => {
   describe("Japanese copy", () => {
@@ -14,11 +23,7 @@ describe("ImageGenerationScreen", () => {
     // Blocked by: ImageGenerationScreen implementation
     // Priority: P0
     test("renders the Japanese image-generation heading", () => {
-      setup(
-        <AppProviders>
-          <ImageGenerationScreen />
-        </AppProviders>,
-      );
+      renderScreen("ja");
 
       expect(
         screen.getByRole("heading", { name: "文字で、文字を描く。" }),
@@ -32,7 +37,15 @@ describe("ImageGenerationScreen", () => {
     // Then: The localized description from imageGenerationScreenMessages.description is available to the user
     // Blocked by: ImageGenerationScreen implementation
     // Priority: P0
-    test.todo("renders the Japanese image-generation description");
+    test("renders the Japanese image-generation description", () => {
+      renderScreen("ja");
+
+      expect(
+        screen.getByText(
+          "好きな文字と2つの色を組み合わせて、文字アート画像を生成します。",
+        ),
+      ).toBeVisible();
+    });
   });
 
   describe("English copy", () => {
@@ -43,7 +56,13 @@ describe("ImageGenerationScreen", () => {
     // Then: The localized heading from imageGenerationScreenMessages.heading is available to the user
     // Blocked by: ImageGenerationScreen implementation
     // Priority: P1
-    test.todo("renders the English image-generation heading");
+    test("renders the English image-generation heading", () => {
+      renderScreen("en");
+
+      expect(
+        screen.getByRole("heading", { name: "Draw letters with letters." }),
+      ).toBeVisible();
+    });
 
     // ID: IMAGE-GENERATION-SCREEN-S-004
     // Source: docs/v1/ui/ui.md § 4
@@ -52,7 +71,15 @@ describe("ImageGenerationScreen", () => {
     // Then: The localized description from imageGenerationScreenMessages.description is available to the user
     // Blocked by: ImageGenerationScreen implementation
     // Priority: P1
-    test.todo("renders the English image-generation description");
+    test("renders the English image-generation description", () => {
+      renderScreen("en");
+
+      expect(
+        screen.getByText(
+          "Combine your favorite characters and two colors to generate text art.",
+        ),
+      ).toBeVisible();
+    });
   });
 
   // ID: IMAGE-GENERATION-SCREEN-S-005
@@ -62,5 +89,11 @@ describe("ImageGenerationScreen", () => {
   // Then: The image-generation form is available to the user
   // Blocked by: ImageGenerationScreen implementation
   // Priority: P0
-  test.todo("renders the image-generation form in the page body");
+  test("renders the image-generation form in the page body", () => {
+    renderScreen("ja");
+
+    expect(
+      screen.getByRole("textbox", { name: "描画する文字列" }),
+    ).toBeVisible();
+  });
 });
