@@ -26,7 +26,7 @@ const ImageGenerationScreen = () => {
 
 const App = () => (
   <AppProviders>
-    <div className={"flex min-h-screen flex-col"}>
+    <div className={"flex min-h-screen flex-col overflow-x-clip"}>
       <AppHeader />
       <ImageGenerationScreen />
       <AppFooter />
