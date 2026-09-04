@@ -1,4 +1,7 @@
-import { describe, test } from "vitest";
+import { screen } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+import { setupWithI18n } from "@/app/tests/test-utils";
+import NotFoundView from "./NotFoundView";
 
 describe("NotFoundView", () => {
   describe("Japanese locale", () => {
@@ -9,7 +12,17 @@ describe("NotFoundView", () => {
     // Then: The 404 status, Japanese heading, and explanation are visible
     // Blocked by: NotFoundView implementation and locale integration
     // Priority: P0
-    test.todo("renders the Japanese not-found status and message");
+    test("renders the Japanese not-found status and message", () => {
+      setupWithI18n(<NotFoundView />);
+
+      expect(screen.getByRole("heading", { name: "404" })).toBeVisible();
+      expect(
+        screen.getByRole("heading", { name: "ページが見つかりません" }),
+      ).toBeVisible();
+      expect(
+        screen.getByText("URLが正しいか確認するか、トップページへ戻ってください。"),
+      ).toBeVisible();
+    });
   });
 
   describe("English locale", () => {
