@@ -4,8 +4,11 @@ import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
-import { defineConfig } from "vite";
-import { configDefaults, coverageConfigDefaults } from "vitest/config";
+import {
+  configDefaults,
+  coverageConfigDefaults,
+  defineConfig,
+} from "vitest/config";
 const dirname =
   typeof __dirname !== "undefined"
     ? __dirname
@@ -19,7 +22,20 @@ export default defineConfig({
       "@": path.resolve(dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: [
+      "@tanstack/react-query",
+      "aria-query",
+      "axios",
+      "lucide-react",
+      "lz-string",
+      "pretty-format",
+    ],
+  },
   test: {
+    env: {
+      VITE_API_URL: "http://localhost:5063",
+    },
     reporters: process.env.GITHUB_ACTIONS
       ? ["dot", "github-actions", "json"]
       : ["dot"],
@@ -40,8 +56,10 @@ export default defineConfig({
       exclude: [
         ...coverageConfigDefaults.exclude,
         "src/api/endpoints/**",
+        "src/components/ui/**",
         "src/gen/**",
         "src/models/**",
+        "src/main.tsx",
         "**/*.stories.{ts,tsx}",
         ".storybook/**",
         "src/tests/**",
@@ -60,6 +78,7 @@ export default defineConfig({
             provider: playwright(),
             instances: [{ browser: "chromium" }],
           },
+          exclude: ["**/*.stories.{ts,tsx}"],
         },
       },
       {
@@ -84,7 +103,6 @@ export default defineConfig({
       ...configDefaults.exclude,
       "**/e2e/**",
       "src/**/*.spec.ts",
-      "**/*.stories.{ts,tsx}",
       "**/.storybook/**",
     ],
   },

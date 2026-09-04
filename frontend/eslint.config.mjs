@@ -13,6 +13,7 @@ import testingLibrary from "eslint-plugin-testing-library";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+import preferObjectDerivedUnion from "./eslint-rules/prefer-object-derived-union.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -22,6 +23,8 @@ export default defineConfig([
     "storybook-static/**",
     "public/mockServiceWorker.js",
     "src/api/endpoints/**",
+    "src/components/ui/*.tsx",
+    "!src/components/ui/*.stories.tsx",
     "src/models/**",
     "src/gen/**",
     ".stryker-tmp/**",
@@ -73,15 +76,32 @@ export default defineConfig([
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
-      parserOptions: { projectService: true },
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     rules: {
+      "local/prefer-object-derived-union": "error",
       "no-console": "warn",
       "no-restricted-syntax": [
         "error",
         {
           selector: "FunctionDeclaration, FunctionExpression",
           message: "Use an arrow function instead.",
+        },
+        {
+          selector: "MemberExpression[object.name='React']",
+          message:
+            "Import React APIs directly instead of using the React namespace.",
+        },
+        {
+          selector: "JSXAttribute[value.type='Literal']",
+          message: "Wrap JSX string attributes in braces.",
+        },
+        {
+          selector: "JSXText[value=/\\S/]",
+          message: "Wrap JSX text in braces.",
         },
       ],
       camelcase: ["warn", { properties: "never" }],
@@ -95,11 +115,39 @@ export default defineConfig([
             order: "asc",
             caseInsensitive: true,
           },
+          "newlines-between": "never",
         },
       ],
       "react/jsx-key": ["error", { checkFragmentShorthand: true }],
       "react/react-in-jsx-scope": 0,
       "react/jsx-uses-react": 0,
+    },
+    plugins: {
+      local: {
+        rules: {
+          "prefer-object-derived-union": preferObjectDerivedUnion,
+        },
+      },
+    },
+  },
+
+  // Feature UI components consume UI-owned types; generated API models stay at
+  // the feature boundary where request mapping is performed.
+  {
+    files: ["src/features/*/components/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/models/*"],
+              message:
+                "UI components must use UI-owned types instead of generated API models.",
+            },
+          ],
+        },
+      ],
     },
   },
 
@@ -193,6 +241,7 @@ export default defineConfig([
       ],
       "vitest/no-focused-tests": "error",
       "vitest/no-disabled-tests": "warn",
+      "vitest/require-mock-type-parameters": "error",
     },
     settings: {
       vitest: { typecheck: true },
@@ -240,7 +289,11 @@ export default defineConfig([
 
   // Disable type-checked rules for config/tooling files
   {
-    files: ["*.config.{js,mjs,ts,mts}", ".storybook/main.ts", "vitest.setup.ts"],
+    files: [
+      "*.config.{js,mjs,ts,mts}",
+      ".storybook/main.ts",
+      "vitest.setup.ts",
+    ],
     extends: [tseslint.configs.disableTypeChecked],
     languageOptions: {
       globals: globals.node,

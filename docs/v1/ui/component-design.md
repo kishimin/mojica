@@ -27,11 +27,17 @@ src/
 │   │   └── views/ImageGenerationScreen.tsx
 │   ├── not-found/views/NotFoundView.tsx
 │   └── error/views/ErrorFallback.tsx
-├── gen/api/                        # Orval generated; do not edit
+├── api/
+│   ├── endpoints/                  # Orval-generated React Query clients and MSW handlers; do not edit
+│   └── mutator/                    # Hand-written Axios boundary used by Orval
+├── gen/endpoints/                  # Orval-generated Zod schemas; do not edit
+├── models/                         # Orval-generated TypeScript models; do not edit
 ├── lib/{queryClient,router}.ts
 ├── routes/{__root,index}.tsx
 └── routeTree.gen.ts                # generated; do not edit
 ```
+
+Orval output is split by responsibility: React Query clients and their mocks are generated under `api/endpoints/`, Zod schemas under `gen/endpoints/`, and shared TypeScript models under `models/`. The `orval.config.ts` definitions are the source of truth for these paths; generated files must be regenerated from OpenAPI rather than edited manually.
 
 Each component's contract is defined under [components](./components/). Colocate its implementation, story, and Small test. Keep generated shadcn primitives under `components/ui/` and follow [ShadcnUiWrappers.md](./components/ShadcnUiWrappers.md).
 
@@ -48,7 +54,7 @@ There is no initial query and therefore no Suspense boundary. `POST /images` is 
 # 4. Effects on i18n, accessibility, and responsive behavior
 
 - **i18n**: Render labels, buttons, options, and client validation through translations. The server localizes API `message` according to `Accept-Language`; use only `code` and `errors[].field` for UI decisions and display `message` unchanged (ui.md §13).
-- **Accessibility**: Associate fields and `FieldError` with `aria-describedby`; use empty `alt` for the logo image duplicated by its wordmark; mark decorative icons `aria-hidden="true"`; use `role="alert"` for `AlertBanner`; and communicate pending state with both `aria-busy` and visible copy.
+- **Accessibility**: Associate caller-provided field guidance with `aria-describedby`. When validation has produced an error, set `aria-invalid="true"` and associate `FieldError` through `aria-errormessage`; do not merge the error into the guidance description. Use empty `alt` for the logo image duplicated by its wordmark; mark decorative icons `aria-hidden="true"`; use `role="alert"` for `AlertBanner`; and communicate pending state with both `aria-busy` and visible copy.
 - **Responsive behavior**: Use one form column. `ImageGenerationScreen` owns centering and maximum width. Shared controls normally use `w-full` and must not introduce horizontal scrolling.
 
 # 5. Effects on the existing API contract
