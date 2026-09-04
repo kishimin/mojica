@@ -162,7 +162,20 @@ describe("ImageGenerationForm", () => {
     // Then: The field becomes invalid and exposes the validation message as its accessible error
     // Blocked by: ImageGenerationForm implementation
     // Priority: P0
-    test.todo("displays a validation error after an invalid value is entered");
+    test("displays a validation error after an invalid value is entered", async () => {
+      const { user } = setupImageGenerationForm("ja");
+      const textField = screen.getByRole("textbox", {
+        name: "描画する文字列",
+      });
+
+      await user.type(textField, " ");
+
+      await waitFor(() => {
+        expect(textField).toHaveAccessibleErrorMessage(
+          "描画する文字列を入力してください。",
+        );
+      });
+    });
   });
 
   describe("submission state", () => {
