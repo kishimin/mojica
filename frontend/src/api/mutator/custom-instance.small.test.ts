@@ -55,6 +55,21 @@ describe("customInstance HTTP contract", () => {
     ]);
   });
 
+  test("sends the persisted locale as the API language preference", async () => {
+    const requestHeaders: string[] = [];
+    localStorage.setItem("locale", "en");
+    worker.use(
+      http.get("*/custom-instance/locale", ({ request }) => {
+        requestHeaders.push(request.headers.get("Accept-Language") ?? "");
+        return HttpResponse.json({ accepted: true });
+      }),
+    );
+
+    await customInstance({ method: "GET", url: "/custom-instance/locale" });
+
+    expect(requestHeaders).toEqual(["en"]);
+  });
+
   test("rejects when the API returns a non-success response", async () => {
     worker.use(
       http.get("*/custom-instance/error", () =>

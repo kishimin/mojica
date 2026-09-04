@@ -7,7 +7,17 @@ export const AXIOS_INSTANCE = create({
 
 export const customInstance = <T>(
   config: AxiosRequestConfig,
-): Promise<AxiosResponse<T>> => AXIOS_INSTANCE<T>({ ...config });
+): Promise<AxiosResponse<T>> => {
+  const locale = localStorage.getItem("locale") ?? "ja";
+
+  return AXIOS_INSTANCE<T>({
+    ...config,
+    headers: {
+      ...config.headers,
+      "Accept-Language": locale,
+    },
+  });
+};
 
 export default customInstance;
 
