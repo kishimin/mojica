@@ -1,4 +1,5 @@
 import type { Preview } from "@storybook/react-vite";
+import { mswLoader } from "msw-storybook-addon/csf3";
 import { AppProviders } from "../src/app/providers/AppProviders";
 import "../src/styles/globals.css";
 
@@ -10,6 +11,7 @@ const preview: Preview = {
       </AppProviders>
     ),
   ],
+  loaders: [mswLoader()],
   // Generates a docs page for every story unless a story opts out with `tags: ['!autodocs']`.
   tags: ["autodocs"],
   parameters: {
