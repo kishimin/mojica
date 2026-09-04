@@ -19,11 +19,27 @@ const defaultLocale: SupportedLocale = "ja";
 const isSupportedLocale = (value: string): value is SupportedLocale =>
   Object.hasOwn(messages, value);
 
-const resolveLocale = (): SupportedLocale => {
-  const candidate = navigator.languages[0]?.toLowerCase();
-  const language = candidate?.split("-")[0];
+const readStoredLocale = () => {
+  try {
+    return localStorage.getItem("locale");
+  } catch {
+    return null;
+  }
+};
 
-  return language && isSupportedLocale(language) ? language : defaultLocale;
+const resolveLocale = (): SupportedLocale => {
+  const candidates = [readStoredLocale(), ...navigator.languages];
+
+  for (const candidate of candidates) {
+    const normalized = candidate?.toLowerCase();
+    const language = normalized?.split("-")[0];
+
+    if (language && isSupportedLocale(language)) {
+      return language;
+    }
+  }
+
+  return defaultLocale;
 };
 
 const ErrorFallback = () => {
