@@ -17,7 +17,11 @@ const ErrorFallback = () => {
         <p className={"text-sm font-normal text-muted-foreground"}>
           {copy.description}
         </p>
-        <button type={"button"} onClick={() => window.location.reload()}>
+        <button
+          type={"button"}
+          onClick={() => window.location.reload()}
+          className={"bg-primary text-primary-foreground hover:bg-primary/80"}
+        >
           {copy.button}
         </button>
       </div>
