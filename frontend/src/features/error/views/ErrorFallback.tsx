@@ -1,24 +1,14 @@
-const messages = {
-  ja: {
-    heading: "エラーが発生しました",
-    description:
-      "予期しない問題が発生しました。しばらくしてからページを再読み込みしてください。",
-    button: "ページを再読み込み",
-  },
-  en: {
-    heading: "An error occurred",
-    description:
-      "Something unexpected happened. Please reload the page and try again.",
-    button: "Reload page",
-  },
-} as const;
+import {
+  errorFallbackMessages,
+  type ErrorFallbackSupportedLocale,
+} from "./error-fallback-messages";
 
-type SupportedLocale = keyof typeof messages;
+const defaultLocale: ErrorFallbackSupportedLocale = "ja";
 
-const defaultLocale: SupportedLocale = "ja";
-
-const isSupportedLocale = (value: string): value is SupportedLocale =>
-  Object.hasOwn(messages, value);
+const isSupportedLocale = (
+  value: string,
+): value is ErrorFallbackSupportedLocale =>
+  Object.hasOwn(errorFallbackMessages, value);
 
 const readStoredLocale = () => {
   try {
@@ -28,7 +18,7 @@ const readStoredLocale = () => {
   }
 };
 
-const resolveLocale = (): SupportedLocale => {
+const resolveLocale = (): ErrorFallbackSupportedLocale => {
   const candidates = [readStoredLocale(), ...navigator.languages];
 
   for (const candidate of candidates) {
@@ -44,7 +34,7 @@ const resolveLocale = (): SupportedLocale => {
 };
 
 const ErrorFallback = () => {
-  const copy = messages[resolveLocale()];
+  const copy = errorFallbackMessages[resolveLocale()];
 
   return (
     <main>

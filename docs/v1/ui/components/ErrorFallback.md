@@ -15,11 +15,11 @@ Place `ErrorBoundary` at the outermost edge of `AppProviders`, outside `QueryCli
 
 ## i18n
 
-Instead of a translation function such as `useTranslations`, `ErrorFallback` selects its copy from a minimal dictionary embedded in the component. It operates outside the `I18nProvider` context tree and can therefore preserve locale-appropriate output even if `I18nProvider` crashes. Derive the supported-locale type from the dictionary keys so adding a language does not add branches to locale resolution.
+Instead of a translation function such as `useTranslations`, `ErrorFallback` selects its copy from a minimal dictionary in the feature-local `error-fallback-messages.ts` module. The module remains independent from the `I18nProvider` context tree and can therefore preserve locale-appropriate output even if `I18nProvider` crashes. Derive the supported-locale type from the dictionary keys so adding a language does not add branches to locale resolution.
 
 ```typescript
-// features/error/views/ErrorFallback.tsx (illustrative)
-const messages = {
+// features/error/views/error-fallback-messages.ts (illustrative)
+export const errorFallbackMessages = {
   ja: {
     heading: "エラーが発生しました",
     description:
@@ -34,12 +34,12 @@ const messages = {
   },
 } as const;
 
-type SupportedLocale = keyof typeof messages;
+type SupportedLocale = keyof typeof errorFallbackMessages;
 
 const defaultLocale: SupportedLocale = "ja";
 
 const isSupportedLocale = (value: string): value is SupportedLocale =>
-  Object.hasOwn(messages, value);
+  Object.hasOwn(errorFallbackMessages, value);
 
 const readStoredLocale = (): string | null => {
   try {
