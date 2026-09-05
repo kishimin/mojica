@@ -21,6 +21,8 @@ test.describe("image generation", () => {
     await imageGenerationPage.fillText("KA");
     await imageGenerationPage.fillForegroundCharacter("A");
     await imageGenerationPage.fillBackgroundCharacter("B");
+    await imageGenerationPage.tabToSubmitButton();
+    await expect(imageGenerationPage.submitButton()).toBeFocused();
 
     const download = await imageGenerationPage.submitWithKeyboard();
 
