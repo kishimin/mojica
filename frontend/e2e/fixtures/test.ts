@@ -11,6 +11,10 @@ import {
 import { notFoundPage, type NotFoundPage } from "../pages/not-found-page.ts";
 
 /** Shared Playwright fixture entry point for E2E tests. */
+type E2EOptions = {
+  appLocale: Locale;
+};
+
 type E2EFixtures = {
   locale: Locale;
   imageGenerationPage: ImageGenerationPage;
@@ -18,8 +22,11 @@ type E2EFixtures = {
   errorFallbackPage: ErrorFallbackPage;
 };
 
-export const test = base.extend<E2EFixtures>({
-  locale: "ja",
+export const test = base.extend<E2EOptions & E2EFixtures>({
+  appLocale: ["ja", { option: true }],
+  locale: async ({ appLocale }, provide) => {
+    await provide(appLocale);
+  },
   imageGenerationPage: async ({ page, locale }, provide) => {
     await page.addInitScript((selectedLocale) => {
       localStorage.setItem("locale", selectedLocale);
