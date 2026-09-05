@@ -420,7 +420,7 @@ jobs:
         run: |
           dotnet restore Mojica.Backend.sln
           dotnet build Mojica.Backend.sln --configuration Release --no-restore
-          nohup dotnet run --project Mojica.Api --configuration Release --no-build > ../mojica-api.log 2>&1 &
+          nohup dotnet Mojica.Api/bin/Release/net8.0/Mojica.Api.dll > ../mojica-api.log 2>&1 &
           echo $! > ../mojica-api.pid
           curl --fail --retry 30 --retry-delay 1 --retry-all-errors http://127.0.0.1:5063/health
       - name: Build frontend
