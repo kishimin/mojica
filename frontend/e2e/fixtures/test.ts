@@ -11,13 +11,19 @@ import {
 import { notFoundPage, type NotFoundPage } from "../pages/not-found-page.ts";
 
 /** Shared Playwright fixture entry point for E2E tests. */
-export const test = base.extend<{
+type E2eOptions = {
   locale: Locale;
+};
+
+type E2eFixtures = {
   imageGenerationPage: ImageGenerationPage;
   notFoundPage: NotFoundPage;
   errorFallbackPage: ErrorFallbackPage;
-}>({
-  locale: async (_fixtures, provide) => {
+};
+
+export const test = base.extend<E2eOptions & E2eFixtures>({
+  locale: async ({ browserName: _browserName }, provide) => {
+    void _browserName;
     await provide("ja");
   },
   imageGenerationPage: async ({ page, locale }, provide) => {

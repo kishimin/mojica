@@ -50,12 +50,20 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     return downloadPromise;
   };
 
+  const submitWithKeyboard = async (): Promise<Download> => {
+    const downloadPromise = page.waitForEvent("download");
+    await submitButton().press("Enter");
+
+    return downloadPromise;
+  };
+
   return {
     navigate,
     fillText,
     fillForegroundCharacter,
     fillBackgroundCharacter,
     submit,
+    submitWithKeyboard,
     heading,
     textInput,
     foregroundCharacterInput,

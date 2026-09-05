@@ -19,12 +19,12 @@ export const imageGenerationSelectors = {
     en: /Text to draw/,
   },
   foregroundCharacterLabel: {
-    ja: /描画に使う文字/,
-    en: /Character used to render text/,
+    ja: /^描画に使う文字$/,
+    en: /^Character used to render text$/,
   },
   backgroundCharacterLabel: {
-    ja: /敷き詰める文字/,
-    en: /Background character/,
+    ja: /^敷き詰める文字$/,
+    en: /^Background character$/,
   },
   submitButton: {
     ja: /画像を生成する/,

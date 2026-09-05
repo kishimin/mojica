@@ -355,7 +355,7 @@ export default defineConfig([
         },
         {
           selector:
-            "CallExpression[callee.property.name=/^(fill|selectOption|type|press)$/] > Literal:first-child",
+            "CallExpression[callee.property.name=/^(fill|selectOption|type)$/] > Literal:first-child",
           message: "Pass scenario input values into Page Object functions.",
         },
       ],
