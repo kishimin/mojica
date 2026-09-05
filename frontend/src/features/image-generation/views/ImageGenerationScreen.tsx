@@ -10,7 +10,11 @@ const ImageGenerationScreen = () => {
 
   return (
     <main className={"min-w-0 flex-1 px-0 pt-8 md:px-6 md:pt-12"}>
-      <div className={"mx-auto flex w-full max-w-[620px] flex-col gap-7"}>
+      <div
+        className={
+          "mx-auto flex w-full max-w-none flex-col gap-7 md:max-w-[620px]"
+        }
+      >
         <section
           className={
             "flex flex-col items-center gap-3 px-4 text-center md:px-0"
@@ -23,7 +27,7 @@ const ImageGenerationScreen = () => {
         </section>
         <Paper
           className={
-            "w-screen max-w-none min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)] md:w-auto md:max-w-full"
+            "w-full min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)]"
           }
         >
           <ImageGenerationForm locale={locale} />
