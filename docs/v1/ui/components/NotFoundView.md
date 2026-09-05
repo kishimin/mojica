@@ -11,7 +11,7 @@ Although it differs from [ImageGenerationForm](./ImageGenerationForm.md) and sim
 
 | Main story state | Verification |
 | ---------------- | ------------ |
-| Default | Display of the heading, description, and `トップページへ戻る` (Back to home) link |
+| Default | Display of the heading, description, and `トップページへ戻る` (Back to home) link styled as a button |
 
 ## Tests
 

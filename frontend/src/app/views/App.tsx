@@ -1,15 +1,10 @@
-import AppFooter from "../components/AppFooter/AppFooter";
-import AppHeader from "../components/AppHeader/AppHeader";
+import { RouterProvider } from "@tanstack/react-router";
 import { AppProviders } from "../providers/AppProviders";
-import ImageGenerationScreen from "@/features/image-generation/views/ImageGenerationScreen";
+import { router } from "@/lib/router";
 
 const App = () => (
   <AppProviders>
-    <div className={"flex min-h-screen flex-col overflow-x-clip"}>
-      <AppHeader />
-      <ImageGenerationScreen />
-      <AppFooter />
-    </div>
+    <RouterProvider router={router} />
   </AppProviders>
 );
 
