@@ -1,6 +1,4 @@
-import type { Locale } from "../../src/types/i18n.ts";
-
-type LocalizedSelector = Record<Locale, RegExp>;
+import type { LocalizedSelector } from "./localized-selector.ts";
 export const imageGenerationSelectorKeys = {
   heading: "heading",
   textLabel: "textLabel",
