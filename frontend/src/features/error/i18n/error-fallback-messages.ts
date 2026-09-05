@@ -3,7 +3,7 @@ export const errorFallbackMessages = {
   ja: {
     heading: "エラーが発生しました",
     description:
-      "予期しない問題が発生しました。しばらくしてからページを再読み込みしてください。",
+      "予期しないエラーが発生しました。ページを再読み込みして、もう一度お試しください。",
     button: "ページを再読み込み",
   },
   en: {

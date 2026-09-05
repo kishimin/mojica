@@ -19,3 +19,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const English: Story = {
+  beforeEach: () => {
+    localStorage.setItem("locale", "en");
+
+    return () => {
+      localStorage.removeItem("locale");
+    };
+  },
+};

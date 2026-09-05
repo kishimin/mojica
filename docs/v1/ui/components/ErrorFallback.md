@@ -23,7 +23,7 @@ export const errorFallbackMessages = {
   ja: {
     heading: "エラーが発生しました",
     description:
-      "予期しない問題が発生しました。しばらくしてからページを再読み込みしてください。",
+      "予期しないエラーが発生しました。ページを再読み込みして、もう一度お試しください。",
     button: "ページを再読み込み",
   },
   en: {
@@ -45,7 +45,7 @@ Read the `"locale"` local-storage key directly—the same key `I18nProvider` (`p
 ## Screen specification (ui.md §20)
 
 - Heading: `エラーが発生しました` (en: “An error occurred”)
-- Description: `予期しない問題が発生しました。しばらくしてからページを再読み込みしてください。` (en: “Something unexpected happened. Please reload the page and try again.”)
+- Description: `予期しないエラーが発生しました。ページを再読み込みして、もう一度お試しください。` (en: “Something unexpected happened. Please reload the page and try again.”)
 - Button: `ページを再読み込み` (en: “Reload page”)
 
 The button performs a normal browser page reload equivalent to `window.location.reload()`, not client-side navigation. The root `ErrorBoundary` may be handling a corrupted React tree that includes providers, so application navigation alone cannot guarantee recovery from a clean initial state. Its click handler must not call the mojica API directly. Any network activity after the reload follows the normal initial-render flow at that time.
