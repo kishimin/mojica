@@ -1,40 +1,10 @@
 import {
   errorFallbackMessages,
-  type ErrorFallbackSupportedLocale,
 } from "../i18n/error-fallback-messages";
-
-const defaultLocale: ErrorFallbackSupportedLocale = "ja";
-
-const isSupportedLocale = (
-  value: string,
-): value is ErrorFallbackSupportedLocale =>
-  Object.hasOwn(errorFallbackMessages, value);
-
-const readStoredLocale = () => {
-  try {
-    return localStorage.getItem("locale");
-  } catch {
-    return null;
-  }
-};
-
-const resolveLocale = (): ErrorFallbackSupportedLocale => {
-  const candidates = [readStoredLocale(), ...navigator.languages];
-
-  for (const candidate of candidates) {
-    const normalized = candidate?.toLowerCase();
-    const language = normalized?.split("-")[0];
-
-    if (language && isSupportedLocale(language)) {
-      return language;
-    }
-  }
-
-  return defaultLocale;
-};
+import { resolveErrorFallbackLocale } from "../i18n/resolve-error-fallback-locale";
 
 const ErrorFallback = () => {
-  const copy = errorFallbackMessages[resolveLocale()];
+  const copy = errorFallbackMessages[resolveErrorFallbackLocale()];
 
   return (
     <main>
