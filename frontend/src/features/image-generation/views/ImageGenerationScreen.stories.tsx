@@ -6,6 +6,7 @@ const meta = {
   title: "Features/Image Generation/ImageGenerationScreen",
   component: ImageGenerationScreen,
   parameters: {
+    layout: "fullscreen",
     docs: {
       description: {
         component:
