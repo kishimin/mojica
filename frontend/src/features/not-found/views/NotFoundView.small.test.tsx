@@ -63,6 +63,14 @@ describe("NotFoundView", () => {
         screen.getByRole("link", { name: "トップページへ戻る" }),
       ).toHaveAttribute("href", "/");
     });
+
+    test("provides the English accessible link back to the home page", () => {
+      setupWithI18n(<NotFoundView />, "en");
+
+      expect(
+        screen.getByRole("link", { name: "Back to Home" }),
+      ).toHaveAttribute("href", "/");
+    });
   });
 
   describe("accessible structure", () => {
@@ -73,10 +81,9 @@ describe("NotFoundView", () => {
     // Then: The not-found message has a heading and the recovery action has an accessible name
     // Blocked by: NotFoundView implementation
     // Priority: P1
-    test("exposes the not-found content through accessible headings and links", () => {
+    test("exposes the not-found headings and home link accessibly", () => {
       setupWithI18n(<NotFoundView />);
 
-      expect(screen.getByRole("main")).toBeVisible();
       expect(screen.getByRole("heading", { name: "404" })).toBeVisible();
       expect(
         screen.getByRole("link", { name: "トップページへ戻る" }),

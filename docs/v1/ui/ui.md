@@ -531,13 +531,13 @@ Description:
 URLが正しいか確認するか、トップページへ戻ってください。
 ```
 
-Button:
+Recovery link (styled as a button):
 
 ```text
 トップページへ戻る
 ```
 
-The button navigates to the image generation screen (`/`) without making a mojica API request.
+The link navigates to the image generation screen (`/`) without making a mojica API request. It may be styled like a button, but it remains a link because its purpose is navigation.
 
 English localized examples:
 
