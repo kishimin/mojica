@@ -237,7 +237,7 @@ jobs:
           retention-days: 14
 
       - name: Upload coverage report
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('frontend/coverage/**') != '' }}
         uses: actions/upload-artifact@v7
         with:
           name: frontend-small-coverage-report

@@ -1,8 +1,13 @@
 import { errorFallbackMessages } from "../i18n/error-fallback-messages";
 import { resolveErrorFallbackLocale } from "../i18n/resolve-error-fallback-locale";
+import { I18nProvider } from "@/providers/I18nProvider";
 
-const ErrorFallback = () => {
-  const copy = errorFallbackMessages[resolveErrorFallbackLocale()];
+type ErrorFallbackContentProps = {
+  locale: keyof typeof errorFallbackMessages;
+};
+
+const ErrorFallbackContent = ({ locale }: ErrorFallbackContentProps) => {
+  const copy = errorFallbackMessages[locale];
 
   return (
     <main
@@ -28,6 +33,16 @@ const ErrorFallback = () => {
         </button>
       </div>
     </main>
+  );
+};
+
+const ErrorFallback = () => {
+  const locale = resolveErrorFallbackLocale();
+
+  return (
+    <I18nProvider initialLocale={locale}>
+      <ErrorFallbackContent locale={locale} />
+    </I18nProvider>
   );
 };
 

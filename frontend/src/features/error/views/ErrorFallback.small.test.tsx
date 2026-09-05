@@ -33,6 +33,7 @@ describe("ErrorFallback", () => {
       expect(
         screen.getByRole("button", { name: "ページを再読み込み" }),
       ).toBeEnabled();
+      expect(document.documentElement.lang).toBe("ja");
     });
 
     test("renders the English unexpected-error recovery content", () => {
