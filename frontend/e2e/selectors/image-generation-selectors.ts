@@ -1,6 +1,15 @@
 import type { Locale } from "../../src/types/i18n.ts";
 
 type LocalizedSelector = Record<Locale, RegExp>;
+export const imageGenerationSelectorKeys = {
+  heading: "heading",
+  textLabel: "textLabel",
+  foregroundCharacterLabel: "foregroundCharacterLabel",
+  backgroundCharacterLabel: "backgroundCharacterLabel",
+  submitButton: "submitButton",
+} as const;
+type ImageGenerationSelectorKey =
+  (typeof imageGenerationSelectorKeys)[keyof typeof imageGenerationSelectorKeys];
 
 export const imageGenerationSelectors = {
   heading: {
@@ -23,11 +32,4 @@ export const imageGenerationSelectors = {
     ja: /画像を生成する/,
     en: /Generate image/,
   },
-} satisfies Record<
-  | "heading"
-  | "textLabel"
-  | "foregroundCharacterLabel"
-  | "backgroundCharacterLabel"
-  | "submitButton",
-  LocalizedSelector
->;
+} satisfies Record<ImageGenerationSelectorKey, LocalizedSelector>;
