@@ -26,7 +26,9 @@ test.describe("visual regression", () => {
       await imageGenerationPage.navigate();
 
       await expect(imageGenerationPage.heading()).toBeVisible();
-      await imageGenerationPage.compareScreenshot("image-generation-home-en.png");
+      await imageGenerationPage.compareScreenshot(
+        "image-generation-home-en.png",
+      );
     });
 
     test("keeps the English not-found layout stable", async ({
