@@ -1,5 +1,6 @@
 import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
 import { screen } from "@testing-library/react";
+import type { ReactElement } from "react";
 import { describe, expect, test } from "vitest";
 import { AppProviders } from "@/app/providers/AppProviders";
 import { createAppRouter } from "@/lib/router";
@@ -15,6 +16,9 @@ const setupWithRouter = (initialEntry: string) => {
     </AppProviders>,
   );
 };
+
+const setupWithAppProviders = (ui: ReactElement) =>
+  setup(<AppProviders>{ui}</AppProviders>);
 
 describe("root route wiring", () => {
   test("renders the home screen inside the shared application shell", async () => {
@@ -56,11 +60,7 @@ describe("root route wiring", () => {
     };
     localStorage.setItem("locale", "ja");
 
-    setup(
-      <AppProviders>
-        <ThrowingChild />
-      </AppProviders>,
-    );
+    setupWithAppProviders(<ThrowingChild />);
 
     expect(
       await screen.findByRole("heading", { name: "エラーが発生しました" }),
