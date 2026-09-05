@@ -9,6 +9,10 @@ import {
   type ImageGenerationPage,
 } from "../pages/image-generation-page.ts";
 import { notFoundPage, type NotFoundPage } from "../pages/not-found-page.ts";
+import {
+  visualRegressionPage,
+  type VisualRegressionPage,
+} from "../pages/visual-regression-page.ts";
 
 /** Shared Playwright fixture entry point for E2E tests. */
 type E2eOptions = {
@@ -19,6 +23,7 @@ type E2eFixtures = {
   imageGenerationPage: ImageGenerationPage;
   notFoundPage: NotFoundPage;
   errorFallbackPage: ErrorFallbackPage;
+  visualRegressionPage: VisualRegressionPage;
 };
 
 export const test = base.extend<E2eOptions & E2eFixtures>({
@@ -40,6 +45,9 @@ export const test = base.extend<E2eOptions & E2eFixtures>({
   },
   errorFallbackPage: async ({ page }, provide) => {
     await provide(errorFallbackPage(page));
+  },
+  visualRegressionPage: async ({ page }, provide) => {
+    await provide(visualRegressionPage(page));
   },
 });
 
