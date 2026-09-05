@@ -107,6 +107,17 @@ const lintE2e = async (source, filePath) => {
   return result.messages.filter(({ ruleId }) => ruleId?.startsWith("local/"));
 };
 
+const lintE2ePageObject = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "e2e/pages/example-page.ts",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) =>
+      ruleId === "local/require-e2e-page-object-method-references",
+  );
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -418,6 +429,36 @@ test("allows assertion-free skipped E2E plans without a Page Object fixture", as
     'import { test } from "../fixtures.js"; test.skip("planned", async () => {});',
     "e2e/tests/image-generation.small.test.ts",
   );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects inline methods in Page Object return values", async () => {
+  const messages = await lintE2ePageObject(`
+    const examplePage = (page) => {
+      return { submit: async () => page.getByRole("button").click() };
+    };
+  `);
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/require-e2e-page-object-method-references",
+        message:
+          "Define Page Object methods before the returned object and return the function reference.",
+      },
+    ],
+  );
+});
+
+test("allows function references in Page Object return values", async () => {
+  const messages = await lintE2ePageObject(`
+    const examplePage = (page) => {
+      const submit = async () => page.getByRole("button").click();
+      return { submit };
+    };
+  `);
 
   assert.deepEqual(messages, []);
 });

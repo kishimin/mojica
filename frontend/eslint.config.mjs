@@ -23,6 +23,7 @@ import requireE2eFixtureImport from "./eslint-rules/require-e2e-fixture-import.m
 import noRawPageOperationsInE2e from "./eslint-rules/no-raw-page-operations-in-e2e.mjs";
 import requireE2ePageFixture from "./eslint-rules/require-e2e-page-fixture.mjs";
 import requireE2eLocatorFunctions from "./eslint-rules/require-e2e-locator-functions.mjs";
+import requireE2ePageObjectMethodReferences from "./eslint-rules/require-e2e-page-object-method-references.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -158,6 +159,8 @@ export default defineConfig([
           "no-raw-page-operations-in-e2e": noRawPageOperationsInE2e,
           "require-e2e-page-fixture": requireE2ePageFixture,
           "require-e2e-locator-functions": requireE2eLocatorFunctions,
+          "require-e2e-page-object-method-references":
+            requireE2ePageObjectMethodReferences,
         },
       },
     },
@@ -331,6 +334,7 @@ export default defineConfig([
     files: ["e2e/pages/**/*.{ts,tsx}"],
     rules: {
       "local/require-e2e-locator-functions": "error",
+      "local/require-e2e-page-object-method-references": "error",
       "no-restricted-syntax": [
         "error",
         {
