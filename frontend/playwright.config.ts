@@ -32,9 +32,16 @@ export default defineConfig({
       use: { ...devices["iPhone 15"] },
     },
   ],
-  webServer: {
-    command: "bun run preview",
-    url: "http://localhost:4173",
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: "bun run preview",
+      url: "http://localhost:4173",
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: "bun run storybook -- --ci",
+      url: "http://localhost:6006",
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 });
