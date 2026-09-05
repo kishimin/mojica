@@ -25,14 +25,4 @@ test.describe("image generation", () => {
     // Blocked by: A deterministic non-production API error scenario
     // Priority: P1
   });
-
-  test.skip("downloads the generated PNG with its response filename", async () => {
-    // ID: IMAGE-GENERATION-E2E-M-003
-    // Source: docs/v1/ui/ui.md § 8, § 10; docs/v1/ui/components/ImageGenerationForm.md
-    // Given: The real API returns a PNG image with a download filename
-    // When: The user completes a valid image-generation request
-    // Then: The browser downloads the generated PNG using the response filename
-    // Blocked by: Real API response and filesystem access
-    // Priority: P0
-  });
 });
