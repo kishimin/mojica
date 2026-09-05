@@ -353,6 +353,11 @@ export default defineConfig([
           message:
             "Return Page Object operations explicitly from a block body.",
         },
+        {
+          selector:
+            "CallExpression[callee.property.name='goto'] > Literal:first-child",
+          message: "Pass navigation paths into Page Object functions.",
+        },
       ],
     },
   },

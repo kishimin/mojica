@@ -20,8 +20,8 @@ export const imageGenerationPage = (page: Page) => {
   const heading = () =>
     page.getByRole("heading", { name: imageGenerationSelectors.heading });
 
-  const navigate = async () => {
-    await page.goto("/");
+  const navigate = async (path: string) => {
+    await page.goto(path);
   };
 
   const fillText = async (value: string) => {

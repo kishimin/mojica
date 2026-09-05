@@ -3,8 +3,8 @@ import { notFoundSelectors } from "../selectors/not-found-selectors.ts";
 
 /** Provides user-facing operations for the not-found page. */
 export const notFoundPage = (page: Page) => {
-  const navigate = async () => {
-    await page.goto("/missing");
+  const navigate = async (path: string) => {
+    await page.goto(path);
   };
 
   const homeLink = () =>
