@@ -313,6 +313,30 @@ export default defineConfig([
           tsx: "always",
         },
       ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "CallExpression[callee.property.name=/^getBy(Role|LabelText|Text|Placeholder)$/] ObjectExpression > Property[key.name='name'][value.type='Literal'][value.regex=null]",
+          message:
+            "Use a regular expression for accessible locator names in E2E tests.",
+        },
+      ],
+    },
+  },
+
+  {
+    files: ["e2e/pages/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "CallExpression[callee.property.name=/^getBy(Role|LabelText|Text|Placeholder)$/] ObjectExpression > Property[key.name='name'][value.regex]",
+          message:
+            "Define E2E locator names in the page selector module instead of inline.",
+        },
+      ],
     },
   },
 
