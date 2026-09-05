@@ -1,14 +1,26 @@
-import { describe, test } from "vitest";
+import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, test } from "vitest";
+import { AppProviders } from "@/app/providers/AppProviders";
+import { createAppRouter } from "@/lib/router";
 
 describe("root route wiring", () => {
-  // ID: ROOT-ROUTE-S-001
-  // Source: docs/v1/ui/components/App.md; docs/v1/ui/components/Layout.md
-  // Given: The application is opened at the image-generation home path
-  // When: The root route is matched
-  // Then: The image-generation screen is rendered inside the shared header and footer
-  // Blocked by: root route, Layout, and App RouterProvider implementation
-  // Priority: P0
-  test.todo("renders the home screen inside the shared application shell");
+  test("renders the home screen inside the shared application shell", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createAppRouter({ history });
+
+    render(
+      <AppProviders>
+        <RouterProvider router={router} />
+      </AppProviders>,
+    );
+
+    expect(await screen.findByRole("banner")).toBeVisible();
+    expect(
+      await screen.findByRole("heading", { name: "文字で、文字を描く。" }),
+    ).toBeVisible();
+    expect(await screen.findByRole("contentinfo")).toBeVisible();
+  });
 
   // ID: ROOT-ROUTE-S-002
   // Source: docs/v1/ui/ui.md § 19; docs/v1/ui/components/NotFoundView.md
