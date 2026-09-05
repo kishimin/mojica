@@ -1,20 +1,24 @@
 import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { AppProviders } from "@/app/providers/AppProviders";
 import { createAppRouter } from "@/lib/router";
+import { setup } from "@/tests/test-utils";
+
+const setupWithRouter = (initialEntry: string) => {
+  const history = createMemoryHistory({ initialEntries: [initialEntry] });
+  const router = createAppRouter({ history });
+
+  return setup(
+    <AppProviders>
+      <RouterProvider router={router} />
+    </AppProviders>,
+  );
+};
 
 describe("root route wiring", () => {
   test("renders the home screen inside the shared application shell", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/"] });
-    const router = createAppRouter({ history });
-
-    render(
-      <AppProviders>
-        <RouterProvider router={router} />
-      </AppProviders>,
-    );
+    setupWithRouter("/");
 
     expect(await screen.findByRole("banner")).toBeVisible();
     expect(
@@ -24,14 +28,7 @@ describe("root route wiring", () => {
   });
 
   test("renders the 404 view inside the shared application shell", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/missing"] });
-    const router = createAppRouter({ history });
-
-    render(
-      <AppProviders>
-        <RouterProvider router={router} />
-      </AppProviders>,
-    );
+    setupWithRouter("/missing");
 
     expect(await screen.findByRole("heading", { name: "404" })).toBeVisible();
     expect(await screen.findByRole("banner")).toBeVisible();
@@ -39,15 +36,7 @@ describe("root route wiring", () => {
   });
 
   test("navigates from the 404 recovery link to the home screen", async () => {
-    const user = userEvent.setup();
-    const history = createMemoryHistory({ initialEntries: ["/missing"] });
-    const router = createAppRouter({ history });
-
-    render(
-      <AppProviders>
-        <RouterProvider router={router} />
-      </AppProviders>,
-    );
+    const { user } = setupWithRouter("/missing");
 
     const homeLink = await screen.findByRole("link", {
       name: "トップページへ戻る",
@@ -67,7 +56,7 @@ describe("root route wiring", () => {
     };
     localStorage.setItem("locale", "ja");
 
-    render(
+    setup(
       <AppProviders>
         <ThrowingChild />
       </AppProviders>,
