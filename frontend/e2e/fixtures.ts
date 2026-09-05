@@ -1,4 +1,4 @@
-import { expect, test as base } from "@playwright/test";
+import { test as base } from "@playwright/test";
 import type { Locale } from "../src/types/i18n.ts";
 import {
   errorFallbackPage,
@@ -37,4 +37,4 @@ export const test = base.extend<{
   },
 });
 
-export { expect };
+export { expect } from "@playwright/test";
