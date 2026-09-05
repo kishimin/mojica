@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import type { Locale } from "../../src/types/i18n.ts";
 import { notFoundSelectors } from "../selectors/not-found-selectors.ts";
 
@@ -11,9 +11,13 @@ export const notFoundPage = (page: Page, locale: Locale) => {
   const homeLink = () =>
     page.getByRole("link", { name: notFoundSelectors.homeLink[locale] });
 
+  const compareScreenshot = async (name: string) =>
+    expect(page).toHaveScreenshot(name, { fullPage: true });
+
   return {
     navigate,
     homeLink,
+    compareScreenshot,
   };
 };
 

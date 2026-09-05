@@ -1,4 +1,4 @@
-import type { Download, Page } from "@playwright/test";
+import { expect, type Download, type Page } from "@playwright/test";
 import type { Locale } from "../../src/types/i18n.ts";
 import { imageGenerationSelectors } from "../selectors/image-generation-selectors.ts";
 
@@ -55,6 +55,9 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     return downloadPromise;
   };
 
+  const compareScreenshot = async (name: string) =>
+    expect(page).toHaveScreenshot(name, { fullPage: true });
+
   return {
     navigate,
     fillText,
@@ -67,6 +70,7 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     foregroundCharacterInput,
     backgroundCharacterInput,
     submitButton,
+    compareScreenshot,
   };
 };
 
