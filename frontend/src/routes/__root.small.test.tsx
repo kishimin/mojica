@@ -1,0 +1,39 @@
+import { describe, test } from "vitest";
+
+describe("root route wiring", () => {
+  // ID: ROOT-ROUTE-S-001
+  // Source: docs/v1/ui/components/App.md; docs/v1/ui/components/Layout.md
+  // Given: The application is opened at the image-generation home path
+  // When: The root route is matched
+  // Then: The image-generation screen is rendered inside the shared header and footer
+  // Blocked by: root route, Layout, and App RouterProvider implementation
+  // Priority: P0
+  test.todo("renders the home screen inside the shared application shell");
+
+  // ID: ROOT-ROUTE-S-002
+  // Source: docs/v1/ui/ui.md § 19; docs/v1/ui/components/NotFoundView.md
+  // Given: The application is opened at an unknown path
+  // When: No child route matches the location
+  // Then: The 404 view is rendered while the shared header and footer remain visible
+  // Blocked by: root route notFoundComponent and Layout implementation
+  // Priority: P0
+  test.todo("renders the 404 view inside the shared application shell");
+
+  // ID: ROOT-ROUTE-S-003
+  // Source: docs/v1/ui/ui.md § 19; docs/v1/ui/components/NotFoundView.md
+  // Given: The 404 view is displayed for an unknown path
+  // When: The user activates the home recovery link
+  // Then: The router navigates to the image-generation home path without an API request
+  // Blocked by: root route, NotFoundView link, and router integration
+  // Priority: P0
+  test.todo("navigates from the 404 recovery link to the home screen");
+
+  // ID: ROOT-ROUTE-S-004
+  // Source: docs/v1/ui/ui.md § 20; docs/v1/ui/components/ErrorFallback.md; docs/v1/ui/components/App.md
+  // Given: A child rendered by the application throws during rendering
+  // When: The root ErrorBoundary handles the exception
+  // Then: ErrorFallback replaces the application content without the shared header or footer
+  // Blocked by: AppProviders ErrorBoundary and RouterProvider integration
+  // Priority: P0
+  test.todo("renders the error fallback outside the shared application shell");
+});
