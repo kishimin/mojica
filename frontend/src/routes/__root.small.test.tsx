@@ -65,6 +65,7 @@ describe("root route wiring", () => {
     const ThrowingChild = () => {
       throw new Error("render failure");
     };
+    localStorage.setItem("locale", "ja");
 
     render(
       <AppProviders>
