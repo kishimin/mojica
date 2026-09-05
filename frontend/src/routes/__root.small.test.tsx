@@ -22,14 +22,20 @@ describe("root route wiring", () => {
     expect(await screen.findByRole("contentinfo")).toBeVisible();
   });
 
-  // ID: ROOT-ROUTE-S-002
-  // Source: docs/v1/ui/ui.md § 19; docs/v1/ui/components/NotFoundView.md
-  // Given: The application is opened at an unknown path
-  // When: No child route matches the location
-  // Then: The 404 view is rendered while the shared header and footer remain visible
-  // Blocked by: root route notFoundComponent and Layout implementation
-  // Priority: P0
-  test.todo("renders the 404 view inside the shared application shell");
+  test("renders the 404 view inside the shared application shell", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/missing"] });
+    const router = createAppRouter({ history });
+
+    render(
+      <AppProviders>
+        <RouterProvider router={router} />
+      </AppProviders>,
+    );
+
+    expect(await screen.findByRole("heading", { name: "404" })).toBeVisible();
+    expect(await screen.findByRole("banner")).toBeVisible();
+    expect(await screen.findByRole("contentinfo")).toBeVisible();
+  });
 
   // ID: ROOT-ROUTE-S-003
   // Source: docs/v1/ui/ui.md § 19; docs/v1/ui/components/NotFoundView.md
