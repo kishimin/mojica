@@ -338,6 +338,7 @@ jobs:
     env:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://127.0.0.1:5063
+      VITE_API_URL: http://127.0.0.1:5063
       Cors__AllowedOrigins__0: http://localhost:4173
       GlyphForge__BaseUrl: http://127.0.0.1:8080/
       GlyphForge__Timeout: 00:01:00
