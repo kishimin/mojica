@@ -1,4 +1,4 @@
-import { test } from "../fixtures.ts";
+import { test } from "../fixtures/test.ts";
 
 test.describe("error fallback", () => {
   test.skip("recovers the application after an unexpected rendering error", async () => {
