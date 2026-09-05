@@ -22,6 +22,7 @@ import requireE2eTestDirectory from "./eslint-rules/require-e2e-test-directory.m
 import requireE2eFixtureImport from "./eslint-rules/require-e2e-fixture-import.mjs";
 import noRawPageOperationsInE2e from "./eslint-rules/no-raw-page-operations-in-e2e.mjs";
 import requireE2ePageFixture from "./eslint-rules/require-e2e-page-fixture.mjs";
+import requireE2eLocatorFunctions from "./eslint-rules/require-e2e-locator-functions.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -156,6 +157,7 @@ export default defineConfig([
           "require-e2e-fixture-import": requireE2eFixtureImport,
           "no-raw-page-operations-in-e2e": noRawPageOperationsInE2e,
           "require-e2e-page-fixture": requireE2ePageFixture,
+          "require-e2e-locator-functions": requireE2eLocatorFunctions,
         },
       },
     },
@@ -328,6 +330,7 @@ export default defineConfig([
   {
     files: ["e2e/pages/**/*.{ts,tsx}"],
     rules: {
+      "local/require-e2e-locator-functions": "error",
       "no-restricted-syntax": [
         "error",
         {
