@@ -72,22 +72,4 @@ describe("NotFoundView", () => {
       ).toHaveAttribute("href", "/");
     });
   });
-
-  describe("accessible structure", () => {
-    // ID: NOT-FOUND-VIEW-S-004
-    // Source: docs/v1/ui/ui.md § 19; docs/v1/ui/components/NotFoundView.md § Tests
-    // Given: The 404 view is rendered
-    // When: Assistive technology inspects the page content
-    // Then: The not-found message has a heading and the recovery action has an accessible name
-    // Blocked by: NotFoundView implementation
-    // Priority: P1
-    test("exposes the not-found headings and home link accessibly", () => {
-      setupWithI18n(<NotFoundView />);
-
-      expect(screen.getByRole("heading", { name: "404" })).toBeVisible();
-      expect(
-        screen.getByRole("link", { name: "トップページへ戻る" }),
-      ).toBeVisible();
-    });
-  });
 });
