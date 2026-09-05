@@ -11,12 +11,10 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
   const foregroundCharacterInput = () =>
     page.getByRole("textbox", {
       name: imageGenerationSelectors.foregroundCharacterLabel[locale],
-      exact: true,
     });
   const backgroundCharacterInput = () =>
     page.getByRole("textbox", {
       name: imageGenerationSelectors.backgroundCharacterLabel[locale],
-      exact: true,
     });
   const submitButton = () =>
     page.getByRole("button", {
@@ -57,6 +55,18 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     return downloadPromise;
   };
 
+  const tabToSubmitButton = async () => {
+    await textInput().focus();
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+  };
+
   return {
     navigate,
     fillText,
@@ -64,6 +74,7 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     fillBackgroundCharacter,
     submit,
     submitWithKeyboard,
+    tabToSubmitButton,
     heading,
     textInput,
     foregroundCharacterInput,
