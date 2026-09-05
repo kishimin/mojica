@@ -61,12 +61,21 @@ describe("root route wiring", () => {
     ).toBeVisible();
   });
 
-  // ID: ROOT-ROUTE-S-004
-  // Source: docs/v1/ui/ui.md § 20; docs/v1/ui/components/ErrorFallback.md; docs/v1/ui/components/App.md
-  // Given: A child rendered by the application throws during rendering
-  // When: The root ErrorBoundary handles the exception
-  // Then: ErrorFallback replaces the application content without the shared header or footer
-  // Blocked by: AppProviders ErrorBoundary and RouterProvider integration
-  // Priority: P0
-  test.todo("renders the error fallback outside the shared application shell");
+  test("renders the error fallback outside the shared application shell", async () => {
+    const ThrowingChild = () => {
+      throw new Error("render failure");
+    };
+
+    render(
+      <AppProviders>
+        <ThrowingChild />
+      </AppProviders>,
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "エラーが発生しました" }),
+    ).toBeVisible();
+    expect(screen.queryByRole("banner")).not.toBeInTheDocument();
+    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
+  });
 });
