@@ -1,12 +1,12 @@
 import { expect, test as base } from "@playwright/test";
 import {
-  createNavigationPage,
-  type NavigationPage,
-} from "./pages/navigation-page.js";
-import {
   createImageGenerationPage,
   type ImageGenerationPage,
 } from "./pages/image-generation-page.js";
+import {
+  createNavigationPage,
+  type NavigationPage,
+} from "./pages/navigation-page.js";
 
 /** Shared Playwright fixture entry point for E2E tests. */
 export const test = base.extend<{
