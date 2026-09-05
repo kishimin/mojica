@@ -23,7 +23,7 @@ const ImageGenerationScreen = () => {
         </section>
         <Paper
           className={
-            "min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)]"
+            "w-screen max-w-none min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)] md:w-auto md:max-w-full"
           }
         >
           <ImageGenerationForm locale={locale} />
