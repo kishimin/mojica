@@ -3,45 +3,45 @@ import { imageGenerationSelectors } from "../selectors/image-generation-selector
 
 /** Provides user-facing image-generation operations for browser tests. */
 export const imageGenerationPage = (page: Page) => {
+  const textInput = () =>
+    page.getByRole("textbox", { name: imageGenerationSelectors.text });
+  const foregroundCharacterInput = () =>
+    page.getByRole("textbox", {
+      name: imageGenerationSelectors.foregroundCharacter,
+      exact: true,
+    });
+  const backgroundCharacterInput = () =>
+    page.getByRole("textbox", {
+      name: imageGenerationSelectors.backgroundCharacter,
+      exact: true,
+    });
+  const submitButton = () =>
+    page.getByRole("button", { name: imageGenerationSelectors.submit });
+  const heading = () =>
+    page.getByRole("heading", { name: imageGenerationSelectors.heading });
+
   const goto = async () => {
     await page.goto("/");
   };
 
   const fillText = async (value: string) => {
-    await page
-      .getByRole("textbox", { name: imageGenerationSelectors.text })
-      .fill(value);
+    await textInput().fill(value);
   };
 
   const fillForegroundCharacter = async (value: string) => {
-    await page
-      .getByRole("textbox", {
-        name: imageGenerationSelectors.foregroundCharacter,
-        exact: true,
-      })
-      .fill(value);
+    await foregroundCharacterInput().fill(value);
   };
 
   const fillBackgroundCharacter = async (value: string) => {
-    await page
-      .getByRole("textbox", {
-        name: imageGenerationSelectors.backgroundCharacter,
-        exact: true,
-      })
-      .fill(value);
+    await backgroundCharacterInput().fill(value);
   };
 
   const submit = async (): Promise<Download> => {
     const downloadPromise = page.waitForEvent("download");
-    await page
-      .getByRole("button", { name: imageGenerationSelectors.submit })
-      .click();
+    await submitButton().click();
 
     return downloadPromise;
   };
-
-  const heading = () =>
-    page.getByRole("heading", { name: imageGenerationSelectors.heading });
 
   return {
     goto,
@@ -50,6 +50,10 @@ export const imageGenerationPage = (page: Page) => {
     fillBackgroundCharacter,
     submit,
     heading,
+    textInput,
+    foregroundCharacterInput,
+    backgroundCharacterInput,
+    submitButton,
   };
 };
 
