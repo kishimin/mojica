@@ -1,12 +1,19 @@
 import { screen } from "@testing-library/react";
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import ErrorFallback from "./ErrorFallback";
 import { setup } from "@/tests/test-utils";
 
-afterEach(() => {
-  vi.restoreAllMocks();
+beforeEach(() => {
   localStorage.clear();
 });
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+const mockBrowserLanguages = (languages: string[]) => {
+  vi.spyOn(navigator, "languages", "get").mockReturnValue(languages);
+};
 
 describe("ErrorFallback", () => {
   describe("localized fallback content", () => {
@@ -18,11 +25,7 @@ describe("ErrorFallback", () => {
     // Blocked by: ErrorFallback implementation
     // Priority: P0
     test("renders the Japanese unexpected-error recovery content", () => {
-      localStorage.clear();
-      Object.defineProperty(navigator, "languages", {
-        configurable: true,
-        value: ["ja"],
-      });
+      mockBrowserLanguages(["ja"]);
 
       setup(<ErrorFallback />);
 
@@ -47,10 +50,7 @@ describe("ErrorFallback", () => {
     // Blocked by: ErrorFallback implementation
     // Priority: P1
     test("renders the English unexpected-error recovery content", () => {
-      Object.defineProperty(navigator, "languages", {
-        configurable: true,
-        value: ["en-US"],
-      });
+      mockBrowserLanguages(["en-US"]);
 
       setup(<ErrorFallback />);
 
@@ -76,10 +76,7 @@ describe("ErrorFallback", () => {
     // Priority: P0
     test("prefers the stored supported locale over the browser locale", () => {
       localStorage.setItem("locale", "en");
-      Object.defineProperty(navigator, "languages", {
-        configurable: true,
-        value: ["ja"],
-      });
+      mockBrowserLanguages(["ja"]);
 
       setup(<ErrorFallback />);
 
@@ -96,11 +93,7 @@ describe("ErrorFallback", () => {
     // Blocked by: ErrorFallback implementation
     // Priority: P1
     test("uses the first supported browser locale when storage has no supported locale", () => {
-      localStorage.clear();
-      Object.defineProperty(navigator, "languages", {
-        configurable: true,
-        value: ["fr-FR", "en-US", "ja-JP"],
-      });
+      mockBrowserLanguages(["fr-FR", "en-US", "ja-JP"]);
 
       setup(<ErrorFallback />);
 
@@ -120,10 +113,7 @@ describe("ErrorFallback", () => {
       vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
         throw new Error("storage unavailable");
       });
-      Object.defineProperty(navigator, "languages", {
-        configurable: true,
-        value: ["fr-FR"],
-      });
+      mockBrowserLanguages(["fr-FR"]);
 
       setup(<ErrorFallback />);
 
