@@ -118,6 +118,16 @@ const lintE2ePageObject = async (source) => {
   );
 };
 
+const lintLocalizedSelectors = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "e2e/selectors/example-selectors.ts",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/require-localized-selector-map",
+  );
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -457,6 +467,33 @@ test("allows function references in Page Object return values", async () => {
     const examplePage = (page) => {
       const submit = async () => page.getByRole("button").click();
       return { submit };
+    };
+  `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects locale-dependent selector functions", async () => {
+  const messages = await lintLocalizedSelectors(
+    "export const reloadButtonName = (locale) => locale === \"ja\" ? /再読み込み/ : /Reload/;",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/require-localized-selector-map",
+        message:
+          "Define locale-dependent E2E selectors as a locale map instead of a function.",
+      },
+    ],
+  );
+});
+
+test("allows locale-dependent selector maps", async () => {
+  const messages = await lintLocalizedSelectors(`
+    export const selectors = {
+      reloadButton: { ja: /再読み込み/, en: /Reload/ },
     };
   `);
 
