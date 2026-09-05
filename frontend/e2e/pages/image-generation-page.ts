@@ -2,6 +2,9 @@ import type { Download, Page } from "@playwright/test";
 
 /** Provides user-facing image-generation operations for browser tests. */
 export const createImageGenerationPage = (page: Page) => ({
+  /** Returns the image-generation page heading. */
+  heading: () => page.getByRole("heading", { name: "文字で、文字を描く。" }),
+
   /** Submits the documented valid request and returns the generated download. */
   generateImage: async (): Promise<Download> => {
     await page.goto("/");

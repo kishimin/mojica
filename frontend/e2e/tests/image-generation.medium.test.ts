@@ -1,4 +1,4 @@
-import { expect, test } from "../fixtures.js";
+import { expect, test } from "../fixtures.ts";
 
 test.describe("image generation", () => {
   test("generates an image through the real API", async ({

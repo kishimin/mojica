@@ -1,14 +1,15 @@
-import { expect, test } from "../fixtures.js";
+import { expect, test } from "../fixtures.ts";
 
 test.describe("navigation", () => {
   test("returns from the not-found view to the image-generation home", async ({
-    navigationPage,
+    notFoundPage,
+    imageGenerationPage,
   }) => {
-    await navigationPage.openNotFoundView();
-    await expect(navigationPage.homeLink()).toBeVisible();
+    await notFoundPage.open();
+    await expect(notFoundPage.homeLink()).toBeVisible();
 
-    await navigationPage.returnHome();
+    await notFoundPage.homeLink().click();
 
-    await expect(navigationPage.homeHeading()).toBeVisible();
+    await expect(imageGenerationPage.heading()).toBeVisible();
   });
 });
