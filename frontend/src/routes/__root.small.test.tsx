@@ -22,13 +22,22 @@ describe("root route wiring", () => {
   // ID: ROOT-ROUTE-S-003
   // Source: docs/v1/ui/ui.md § 19; docs/v1/ui/components/NotFoundView.md
   // Given: The 404 view is displayed for an unknown path
+  // When: The user inspects the recovery action
+  // Then: An accessible home link points to the image-generation home path
+  // Blocked by: root route notFoundComponent and NotFoundView link integration
+  // Priority: P0
+  test.todo("exposes an accessible link to the image-generation home path");
+
+  // ID: ROOT-ROUTE-S-004
+  // Source: docs/v1/ui/ui.md § 19; docs/v1/ui/components/NotFoundView.md
+  // Given: The 404 view is displayed for an unknown path
   // When: The user activates the home recovery link
   // Then: The router navigates to the image-generation home path without an API request
   // Blocked by: root route, NotFoundView link, and router integration
   // Priority: P0
   test.todo("navigates from the 404 recovery link to the home screen");
 
-  // ID: ROOT-ROUTE-S-004
+  // ID: ROOT-ROUTE-S-005
   // Source: docs/v1/ui/ui.md § 20; docs/v1/ui/components/ErrorFallback.md; docs/v1/ui/components/App.md
   // Given: A child rendered by the application throws during rendering
   // When: The root ErrorBoundary handles the exception
