@@ -101,6 +101,12 @@ const lintFormFields = async (source) => {
   );
 };
 
+const lintE2e = async (source, filePath) => {
+  const [result] = await eslint.lintText(source, { filePath });
+
+  return result.messages.filter(({ ruleId }) => ruleId?.startsWith("local/"));
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -332,6 +338,65 @@ test("allows form fields separated by a blank line", async () => {
       </form>
     );
   `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects Playwright tests outside the dedicated E2E directories", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures"; test.skip("planned");',
+    "e2e/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/require-e2e-test-directory",
+        message: "Place Playwright test files under e2e/tests or e2e/specs.",
+      },
+    ],
+  );
+});
+
+test("allows Playwright tests in the dedicated E2E directories", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures"; test.skip("planned");',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects direct Playwright imports in E2E tests", async () => {
+  const messages = await lintE2e(
+    'import { test } from "@playwright/test"; test.skip("planned");',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["local/require-e2e-fixture-import"],
+  );
+});
+
+test("rejects raw page operations in E2E tests", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures"; test("works", async ({ page }) => { await page.getByRole("button").click(); });',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["local/no-raw-page-operations-in-e2e"],
+  );
+});
+
+test("allows E2E tests to use Page Object fixtures", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures"; test("works", async ({ imageGenerationPage }) => { await imageGenerationPage.generate(); });',
+    "e2e/tests/image-generation.small.test.ts",
+  );
 
   assert.deepEqual(messages, []);
 });

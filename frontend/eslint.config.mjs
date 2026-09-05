@@ -18,6 +18,9 @@ import preferGeneratedImageMswHandler from "./eslint-rules/prefer-generated-imag
 import preferNamedExportsInUtils from "./eslint-rules/prefer-named-exports-in-utils.mjs";
 import limitPropsKeys from "./eslint-rules/limit-props-keys.mjs";
 import requireBlankLineBetweenFormFields from "./eslint-rules/require-blank-line-between-form-fields.mjs";
+import requireE2eTestDirectory from "./eslint-rules/require-e2e-test-directory.mjs";
+import requireE2eFixtureImport from "./eslint-rules/require-e2e-fixture-import.mjs";
+import noRawPageOperationsInE2e from "./eslint-rules/no-raw-page-operations-in-e2e.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -148,6 +151,9 @@ export default defineConfig([
           "limit-props-keys": limitPropsKeys,
           "require-blank-line-between-form-fields":
             requireBlankLineBetweenFormFields,
+          "require-e2e-test-directory": requireE2eTestDirectory,
+          "require-e2e-fixture-import": requireE2eFixtureImport,
+          "no-raw-page-operations-in-e2e": noRawPageOperationsInE2e,
         },
       },
     },
@@ -282,6 +288,17 @@ export default defineConfig([
       vitest: { typecheck: true },
     },
     languageOptions: { globals: { ...vitest.environments.env.globals } },
+  },
+
+  // Playwright tests use the project fixture entry point and Page Objects.
+  {
+    files: ["e2e/**/*.{ts,tsx}"],
+    extends: [tseslint.configs.disableTypeChecked],
+    rules: {
+      "local/require-e2e-test-directory": "error",
+      "local/require-e2e-fixture-import": "error",
+      "local/no-raw-page-operations-in-e2e": "error",
+    },
   },
 
   // Storybook story files

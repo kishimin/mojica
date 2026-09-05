@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test } from "../fixtures.js";
 
 test.describe("error fallback", () => {
   test.skip("keeps the unexpected-error fallback usable in Japanese", async () => {

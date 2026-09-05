@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test } from "../fixtures.js";
 
 test.describe("image generation", () => {
   test.skip("generates an image through the real API", async () => {

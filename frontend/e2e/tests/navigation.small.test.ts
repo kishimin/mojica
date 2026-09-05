@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test } from "../fixtures.js";
 
 test.describe("navigation", () => {
   test.skip("returns from the not-found view to the image-generation home", async () => {
