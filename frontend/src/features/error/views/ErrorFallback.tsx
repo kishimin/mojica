@@ -20,7 +20,9 @@ const ErrorFallback = () => {
         <button
           type={"button"}
           onClick={() => window.location.reload()}
-          className={"bg-primary text-primary-foreground hover:bg-primary/80"}
+          className={
+            "rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/80"
+          }
         >
           {copy.button}
         </button>
