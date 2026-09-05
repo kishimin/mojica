@@ -30,6 +30,6 @@ test.describe("image generation", () => {
     await page.getByRole("button", { name: "画像を生成する" }).click();
 
     const download = await downloadPromise;
-    await expect(download.suggestedFilename()).toBe("generated-image.png");
+    expect(download.suggestedFilename()).toBe("generated-image.png");
   });
 });
