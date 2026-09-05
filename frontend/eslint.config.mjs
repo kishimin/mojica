@@ -355,8 +355,8 @@ export default defineConfig([
         },
         {
           selector:
-            "CallExpression[callee.property.name='goto'] > Literal:first-child",
-          message: "Pass navigation paths into Page Object functions.",
+            "CallExpression[callee.property.name='fill'] > Literal:first-child",
+          message: "Pass scenario input values into Page Object functions.",
         },
       ],
     },
