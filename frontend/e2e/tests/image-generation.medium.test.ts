@@ -1,7 +1,9 @@
-import { test } from "../fixtures.js";
+import { expect, test } from "../fixtures.js";
 
 test.describe("image generation", () => {
-  test.skip("generates an image through the real API", async () => {
+  test("generates an image through the real API", async ({
+    imageGenerationPage,
+  }) => {
     // ID: IMAGE-GENERATION-E2E-M-001
     // Source: docs/v1/ui/ui.md § 4-10; docs/v1/ui/components/ImageGenerationForm.md
     // Given: The frontend and the configured Mojica API are available
@@ -9,6 +11,9 @@ test.describe("image generation", () => {
     // Then: The user can obtain the generated image
     // Blocked by: Real Mojica API and Glyph Forge service lifecycle
     // Priority: P0
+    const download = await imageGenerationPage.generateImage();
+
+    expect(download.suggestedFilename()).toMatch(/\.png$/);
   });
 
   test.skip("shows a user-facing message for an image-generation API error", async () => {
