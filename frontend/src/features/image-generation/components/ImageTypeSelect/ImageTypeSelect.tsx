@@ -22,6 +22,7 @@ type ImageTypeSelectProps = {
   errorMessage?: string;
 };
 
+/** Provides the module's public behavior. */
 const ImageTypeSelect = ({
   value,
   onChange,

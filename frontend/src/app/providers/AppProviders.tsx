@@ -8,6 +8,7 @@ type AppProvidersProps = {
   children: ReactNode;
 };
 
+/** Provides the module's public behavior. */
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
     <ErrorBoundary>

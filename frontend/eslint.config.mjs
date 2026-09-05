@@ -384,6 +384,7 @@ export default defineConfig([
           publicOnly: true,
           require: {
             FunctionDeclaration: true,
+            ArrowFunctionExpression: true,
             MethodDefinition: true,
             ClassDeclaration: true,
           },

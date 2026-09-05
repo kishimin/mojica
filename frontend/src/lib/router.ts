@@ -6,6 +6,7 @@ type AppRouterOptions = {
   history?: RouterHistory;
 };
 
+/** Provides the module's public behavior. */
 export const createAppRouter = ({
   history = createBrowserHistory(),
 }: AppRouterOptions = {}) => createRouter({ routeTree, history });

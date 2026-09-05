@@ -14,6 +14,7 @@ type TextFieldProps = ComponentPropsWithoutRef<"input"> & {
   helperText?: string;
 };
 
+/** Provides the module's public behavior. */
 const TextField = ({
   label,
   id,

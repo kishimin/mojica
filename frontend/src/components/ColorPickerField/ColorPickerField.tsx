@@ -21,6 +21,7 @@ type ColorPickerFieldProps = Omit<
   errorMessage?: string;
 };
 
+/** Provides the module's public behavior. */
 const ColorPickerField = ({
   label,
   colorPickerLabel,

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+/** Provides the module's public behavior. */
 export const useRetryAfterCountdown = (retryAfterSeconds: number) => {
   const [remainingSeconds, setRemainingSeconds] = useState(retryAfterSeconds);
 
