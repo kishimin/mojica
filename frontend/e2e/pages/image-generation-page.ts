@@ -1,24 +1,31 @@
 import type { Download, Page } from "@playwright/test";
-import { imageGenerationSelectors } from "../selectors/image-generation-selectors.ts";
+import type { Locale } from "../../src/types/i18n.ts";
+import {
+  imageGenerationBackgroundCharacterLabel,
+  imageGenerationForegroundCharacterLabel,
+  imageGenerationHeadingName,
+  imageGenerationSubmitButtonName,
+  imageGenerationTextLabel,
+} from "../selectors/image-generation-selectors.ts";
 
 /** Provides user-facing image-generation operations for browser tests. */
-export const imageGenerationPage = (page: Page) => {
+export const imageGenerationPage = (page: Page, locale: Locale) => {
   const textInput = () =>
-    page.getByRole("textbox", { name: imageGenerationSelectors.text });
+    page.getByRole("textbox", { name: imageGenerationTextLabel(locale) });
   const foregroundCharacterInput = () =>
     page.getByRole("textbox", {
-      name: imageGenerationSelectors.foregroundCharacter,
+      name: imageGenerationForegroundCharacterLabel(locale),
       exact: true,
     });
   const backgroundCharacterInput = () =>
     page.getByRole("textbox", {
-      name: imageGenerationSelectors.backgroundCharacter,
+      name: imageGenerationBackgroundCharacterLabel(locale),
       exact: true,
     });
   const submitButton = () =>
-    page.getByRole("button", { name: imageGenerationSelectors.submit });
+    page.getByRole("button", { name: imageGenerationSubmitButtonName(locale) });
   const heading = () =>
-    page.getByRole("heading", { name: imageGenerationSelectors.heading });
+    page.getByRole("heading", { name: imageGenerationHeadingName(locale) });
 
   const navigate = async () => {
     await page.goto("/");
