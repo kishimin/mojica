@@ -17,27 +17,23 @@ export const test = base.extend<{
   notFoundPage: NotFoundPage;
   errorFallbackPage: ErrorFallbackPage;
 }>({
-  locale: async (_fixtures, use) => {
-    // oxlint-disable-next-line react-hooks/rules-of-hooks -- Playwright fixture callbacks expose a required use function.
-    await use("ja");
+  locale: async (_fixtures, provide) => {
+    await provide("ja");
   },
-  imageGenerationPage: async ({ page, locale }, use) => {
+  imageGenerationPage: async ({ page, locale }, provide) => {
     await page.addInitScript((selectedLocale) => {
       localStorage.setItem("locale", selectedLocale);
     }, locale);
-    // oxlint-disable-next-line react-hooks/rules-of-hooks -- Playwright fixture callbacks expose a required use function.
-    await use(imageGenerationPage(page, locale));
+    await provide(imageGenerationPage(page, locale));
   },
-  notFoundPage: async ({ page, locale }, use) => {
+  notFoundPage: async ({ page, locale }, provide) => {
     await page.addInitScript((selectedLocale) => {
       localStorage.setItem("locale", selectedLocale);
     }, locale);
-    // oxlint-disable-next-line react-hooks/rules-of-hooks -- Playwright fixture callbacks expose a required use function.
-    await use(notFoundPage(page, locale));
+    await provide(notFoundPage(page, locale));
   },
-  errorFallbackPage: async ({ page }, use) => {
-    // oxlint-disable-next-line react-hooks/rules-of-hooks -- Playwright fixture callbacks expose a required use function.
-    await use(errorFallbackPage(page));
+  errorFallbackPage: async ({ page }, provide) => {
+    await provide(errorFallbackPage(page));
   },
 });
 
