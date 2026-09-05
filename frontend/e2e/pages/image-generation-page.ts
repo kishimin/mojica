@@ -32,15 +32,6 @@ export const imageGenerationPage = (page: Page) => {
   const heading = () =>
     page.getByRole("heading", { name: "文字で、文字を描く。" });
 
-  const generateImage = async (): Promise<Download> => {
-    await goto();
-    await fillText("KA");
-    await fillForegroundCharacter("A");
-    await fillBackgroundCharacter("B");
-
-    return submit();
-  };
-
   return {
     goto,
     fillText,
@@ -48,7 +39,6 @@ export const imageGenerationPage = (page: Page) => {
     fillBackgroundCharacter,
     submit,
     heading,
-    generateImage,
   };
 };
 

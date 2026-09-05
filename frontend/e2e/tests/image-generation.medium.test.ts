@@ -11,7 +11,12 @@ test.describe("image generation", () => {
     // Then: The user can obtain the generated image
     // Blocked by: Real Mojica API and Glyph Forge service lifecycle
     // Priority: P0
-    const download = await imageGenerationPage.generateImage();
+    await imageGenerationPage.goto();
+    await imageGenerationPage.fillText("KA");
+    await imageGenerationPage.fillForegroundCharacter("A");
+    await imageGenerationPage.fillBackgroundCharacter("B");
+
+    const download = await imageGenerationPage.submit();
 
     expect(download.suggestedFilename()).toMatch(/\.png$/);
   });
