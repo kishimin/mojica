@@ -19,10 +19,7 @@ type E2EFixtures = {
 };
 
 export const test = base.extend<E2EFixtures>({
-  locale: async ({ browserName: _browserName }, provide) => {
-    void _browserName;
-    await provide("ja");
-  },
+  locale: "ja",
   imageGenerationPage: async ({ page, locale }, provide) => {
     await page.addInitScript((selectedLocale) => {
       localStorage.setItem("locale", selectedLocale);
