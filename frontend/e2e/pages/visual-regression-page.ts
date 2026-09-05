@@ -1,14 +1,19 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { visualRegressionSelectors } from "../selectors/visual-regression-selectors.ts";
 
 /** Provides navigation and screenshot operations for visual regression tests. */
 export const visualRegressionPage = (page: Page) => {
   const imageGenerationHeading = (): Locator =>
-    page.getByRole("heading", { name: /文字で、文字を描く。/ });
+    page.getByRole("heading", {
+      name: visualRegressionSelectors.imageGenerationHeading,
+    });
   const notFoundHeading = (): Locator =>
-    page.getByRole("heading", { name: "404" });
+    page.getByRole("heading", {
+      name: visualRegressionSelectors.notFoundHeading,
+    });
   const errorFallbackHeading = (): Locator =>
     page.getByRole("heading", {
-      name: /エラーが発生しました|An error occurred/,
+      name: visualRegressionSelectors.errorFallbackHeading,
     });
   const openHome = async () => page.goto("/");
   const openNotFound = async () => page.goto("/missing");

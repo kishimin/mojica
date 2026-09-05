@@ -19,9 +19,18 @@ export default defineConfig({
       name: "Microsoft Edge",
       use: { ...devices["Desktop Edge"], channel: "msedge" },
     },
-    { name: "Safari", use: { ...devices["Desktop Safari"] } },
-    { name: "Android (Chrome)", use: { ...devices["Pixel 7"] } },
-    { name: "iPhone (Safari)", use: { ...devices["iPhone 15"] } },
+    {
+      name: "Safari",
+      use: { ...devices["Desktop Safari"] },
+    },
+    {
+      name: "Android (Chrome)",
+      use: { ...devices["Pixel 7"] },
+    },
+    {
+      name: "iPhone (Safari)",
+      use: { ...devices["iPhone 15"] },
+    },
   ],
   webServer: [
     {
