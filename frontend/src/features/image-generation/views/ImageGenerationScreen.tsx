@@ -9,9 +9,13 @@ const ImageGenerationScreen = () => {
   const messages = imageGenerationScreenMessages[locale];
 
   return (
-    <main className={"min-w-0 flex-1 px-4 pt-8 md:px-6 md:pt-12"}>
+    <main className={"min-w-0 flex-1 px-0 pt-8 md:px-6 md:pt-12"}>
       <div className={"mx-auto flex w-full max-w-[620px] flex-col gap-7"}>
-        <section className={"flex flex-col items-center gap-3 text-center"}>
+        <section
+          className={
+            "flex flex-col items-center gap-3 px-4 text-center md:px-0"
+          }
+        >
           <h1 className={"text-2xl font-semibold"}>{messages.heading}</h1>
           <p className={"text-sm text-muted-foreground"}>
             {messages.description}
@@ -19,7 +23,7 @@ const ImageGenerationScreen = () => {
         </section>
         <Paper
           className={
-            "-mx-4 min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)] md:mx-0"
+            "min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)]"
           }
         >
           <ImageGenerationForm locale={locale} />
