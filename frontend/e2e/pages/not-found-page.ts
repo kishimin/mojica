@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 
 /** Provides user-facing operations for the not-found page. */
-export const createNotFoundPage = (page: Page) => ({
+export const notFoundPage = (page: Page) => ({
   /** Opens a route that the application does not define. */
   open: async () => {
     await page.goto("/missing");
@@ -11,4 +11,4 @@ export const createNotFoundPage = (page: Page) => ({
   homeLink: () => page.getByRole("link", { name: "トップページへ戻る" }),
 });
 
-export type NotFoundPage = ReturnType<typeof createNotFoundPage>;
+export type NotFoundPage = ReturnType<typeof notFoundPage>;

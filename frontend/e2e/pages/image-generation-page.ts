@@ -1,7 +1,7 @@
 import type { Download, Page } from "@playwright/test";
 
 /** Provides user-facing image-generation operations for browser tests. */
-export const createImageGenerationPage = (page: Page) => ({
+export const imageGenerationPage = (page: Page) => ({
   /** Returns the image-generation page heading. */
   heading: () => page.getByRole("heading", { name: "文字で、文字を描く。" }),
 
@@ -23,4 +23,4 @@ export const createImageGenerationPage = (page: Page) => ({
   },
 });
 
-export type ImageGenerationPage = ReturnType<typeof createImageGenerationPage>;
+export type ImageGenerationPage = ReturnType<typeof imageGenerationPage>;
