@@ -56,11 +56,6 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
   };
 
   const tabToSubmitButton = async () => {
-    await textInput().focus();
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
