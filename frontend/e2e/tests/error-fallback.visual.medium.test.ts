@@ -6,7 +6,7 @@ test.describe("ErrorFallback Storybook visual regression", () => {
   test("keeps the Japanese error fallback layout stable", async ({
     errorFallbackPage,
   }) => {
-    await errorFallbackPage.openStory("features-error-errorfallback--default");
+    await errorFallbackPage.openStory("features-error-errorfallback--japanese");
 
     await expect(errorFallbackPage.heading()).toBeVisible();
     await errorFallbackPage.compareScreenshot("error-fallback.png");
