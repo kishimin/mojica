@@ -301,6 +301,18 @@ export default defineConfig([
       "local/require-e2e-fixture-import": "error",
       "local/no-raw-page-operations-in-e2e": "error",
       "local/require-e2e-page-fixture": "error",
+      // Keep E2E imports aligned with the TypeScript files they load. This
+      // prevents runtime-only .js specifiers and ambiguous extensionless paths.
+      "import/extensions": [
+        "error",
+        "always",
+        {
+          js: "never",
+          jsx: "never",
+          ts: "always",
+          tsx: "always",
+        },
+      ],
     },
   },
 
