@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/hooks/use-i18n";
 import { notFoundViewMessages } from "@/i18n/messages";
 
@@ -16,12 +17,12 @@ const NotFoundView = () => {
         <p className={"text-sm text-muted-foreground"}>
           {messages.description}
         </p>
-        <a
+        <Link
           className={"rounded-md bg-primary px-4 py-2 text-primary-foreground"}
-          href={"/"}
+          to={"/"}
         >
           {messages.homeLink}
-        </a>
+        </Link>
       </div>
     </main>
   );

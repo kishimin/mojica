@@ -1,12 +1,29 @@
+import {
+  createMemoryHistory,
+  RouterContextProvider,
+} from "@tanstack/react-router";
 import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import NotFoundView from "./NotFoundView";
+import { createAppRouter } from "@/lib/router";
 import { setupWithI18n } from "@/tests/test-utils";
+
+const setupNotFoundView = (locale: "ja" | "en" = "ja") =>
+  setupWithI18n(
+    <RouterContextProvider
+      router={createAppRouter({
+        history: createMemoryHistory({ initialEntries: ["/missing"] }),
+      })}
+    >
+      <NotFoundView />
+    </RouterContextProvider>,
+    locale,
+  );
 
 describe("NotFoundView", () => {
   describe("Japanese locale", () => {
     test("renders the Japanese not-found status and message", () => {
-      setupWithI18n(<NotFoundView />);
+      setupNotFoundView();
 
       expect(screen.getByRole("heading", { name: "404" })).toBeVisible();
       expect(
@@ -22,7 +39,7 @@ describe("NotFoundView", () => {
 
   describe("English locale", () => {
     test("renders the English not-found status and message", () => {
-      setupWithI18n(<NotFoundView />, "en");
+      setupNotFoundView("en");
 
       expect(screen.getByRole("heading", { name: "404" })).toBeVisible();
       expect(
@@ -36,7 +53,7 @@ describe("NotFoundView", () => {
 
   describe("home navigation", () => {
     test("provides an accessible link back to the home page", () => {
-      setupWithI18n(<NotFoundView />);
+      setupNotFoundView();
 
       expect(
         screen.getByRole("link", { name: "トップページへ戻る" }),
@@ -44,7 +61,7 @@ describe("NotFoundView", () => {
     });
 
     test("provides the English accessible link back to the home page", () => {
-      setupWithI18n(<NotFoundView />, "en");
+      setupNotFoundView("en");
 
       expect(
         screen.getByRole("link", { name: "Back to Home" }),
