@@ -1,7 +1,7 @@
 import {
   errorFallbackMessages,
   type ErrorFallbackSupportedLocale,
-} from "./error-fallback-messages";
+} from "../i18n/error-fallback-messages";
 
 const defaultLocale: ErrorFallbackSupportedLocale = "ja";
 
