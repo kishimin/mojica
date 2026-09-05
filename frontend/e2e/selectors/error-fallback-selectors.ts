@@ -1,4 +1,9 @@
 /** Stable accessible names used by the error-fallback page object. */
 export const errorFallbackSelectors = {
-  reloadButton: /ページを再読み込み|Reload page/,
+  ja: {
+    reloadButton: /ページを再読み込み/,
+  },
+  en: {
+    reloadButton: /Reload page/,
+  },
 } as const;
