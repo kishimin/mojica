@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import type { Locale } from "../../src/types/i18n.ts";
-import { notFoundHomeLinkName } from "../selectors/not-found-selectors.ts";
+import { notFoundSelectors } from "../selectors/not-found-selectors.ts";
 
 /** Provides user-facing operations for the not-found page. */
 export const notFoundPage = (page: Page, locale: Locale) => {
@@ -9,7 +9,7 @@ export const notFoundPage = (page: Page, locale: Locale) => {
   };
 
   const homeLink = () =>
-    page.getByRole("link", { name: notFoundHomeLinkName(locale) });
+    page.getByRole("link", { name: notFoundSelectors.homeLink[locale] });
 
   return {
     navigate,
