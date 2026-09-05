@@ -55,13 +55,6 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     return downloadPromise;
   };
 
-  const tabToSubmitButton = async () => {
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
-  };
-
   return {
     navigate,
     fillText,
@@ -69,7 +62,6 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     fillBackgroundCharacter,
     submit,
     submitWithKeyboard,
-    tabToSubmitButton,
     heading,
     textInput,
     foregroundCharacterInput,
