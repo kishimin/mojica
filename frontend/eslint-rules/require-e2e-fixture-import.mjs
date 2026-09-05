@@ -1,5 +1,6 @@
 const testFilePattern = /(?:\.test|\.spec)\.[cm]?[jt]sx?$/;
 const e2eDirectoryPattern = /(?:^|\/)e2e\//;
+const fixtureImportPattern = /(?:^|\/)fixtures(?:\.[cm]?[jt]sx?)?$/;
 
 export default {
   meta: {
@@ -23,7 +24,21 @@ export default {
           e2eDirectoryPattern.test(filePath) && testFilePattern.test(filePath);
       },
       ImportDeclaration(node) {
-        if (isE2eTest && node.source.value === "@playwright/test") {
+        if (!isE2eTest) {
+          return;
+        }
+
+        const importsTest = node.specifiers.some(
+          (specifier) =>
+            specifier.type === "ImportSpecifier" &&
+            specifier.imported.type === "Identifier" &&
+            specifier.imported.name === "test",
+        );
+        if (
+          importsTest &&
+          (node.source.value === "@playwright/test" ||
+            !fixtureImportPattern.test(node.source.value))
+        ) {
           context.report({ node, messageId: "directImport" });
         }
       },

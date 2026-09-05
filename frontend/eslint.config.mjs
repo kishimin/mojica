@@ -21,6 +21,7 @@ import requireBlankLineBetweenFormFields from "./eslint-rules/require-blank-line
 import requireE2eTestDirectory from "./eslint-rules/require-e2e-test-directory.mjs";
 import requireE2eFixtureImport from "./eslint-rules/require-e2e-fixture-import.mjs";
 import noRawPageOperationsInE2e from "./eslint-rules/no-raw-page-operations-in-e2e.mjs";
+import requireE2ePageFixture from "./eslint-rules/require-e2e-page-fixture.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -154,6 +155,7 @@ export default defineConfig([
           "require-e2e-test-directory": requireE2eTestDirectory,
           "require-e2e-fixture-import": requireE2eFixtureImport,
           "no-raw-page-operations-in-e2e": noRawPageOperationsInE2e,
+          "require-e2e-page-fixture": requireE2ePageFixture,
         },
       },
     },
@@ -298,6 +300,7 @@ export default defineConfig([
       "local/require-e2e-test-directory": "error",
       "local/require-e2e-fixture-import": "error",
       "local/no-raw-page-operations-in-e2e": "error",
+      "local/require-e2e-page-fixture": "error",
     },
   },
 

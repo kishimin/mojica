@@ -382,7 +382,7 @@ test("rejects direct Playwright imports in E2E tests", async () => {
 
 test("rejects raw page operations in E2E tests", async () => {
   const messages = await lintE2e(
-    'import { test } from "../fixtures"; test("works", async ({ page }) => { await page.getByRole("button").click(); });',
+    'import { test } from "../fixtures.js"; test("works", async ({ imageGenerationPage, page }) => { await page.getByRole("button").click(); });',
     "e2e/tests/image-generation.small.test.ts",
   );
 
@@ -395,6 +395,27 @@ test("rejects raw page operations in E2E tests", async () => {
 test("allows E2E tests to use Page Object fixtures", async () => {
   const messages = await lintE2e(
     'import { test } from "../fixtures"; test("works", async ({ imageGenerationPage }) => { await imageGenerationPage.generate(); });',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects implemented E2E tests without a Page Object fixture", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures.js"; test("works", async ({ page }) => {});',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["local/require-e2e-page-fixture"],
+  );
+});
+
+test("allows assertion-free skipped E2E plans without a Page Object fixture", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures.js"; test.skip("planned", async () => {});',
     "e2e/tests/image-generation.small.test.ts",
   );
 
