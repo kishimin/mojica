@@ -347,6 +347,12 @@ export default defineConfig([
           selector: "Property[key.name='open']",
           message: "Use navigate for Page Object navigation functions.",
         },
+        {
+          selector:
+            "VariableDeclarator[id.name=/Page$/] > ArrowFunctionExpression > ObjectExpression",
+          message:
+            "Return Page Object operations explicitly from a block body.",
+        },
       ],
     },
   },
