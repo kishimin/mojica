@@ -1,3 +1,4 @@
+/** Provides the module's public behavior. */
 const AppFooter = () => (
   <footer
     className={

@@ -15,6 +15,7 @@ type LanguageSwitcherProps = {
   onChange: (locale: Locale) => void;
 };
 
+/** Provides the module's public behavior. */
 const LanguageSwitcher = ({ locale, onChange }: LanguageSwitcherProps) => {
   const selectedLanguage = languageOptions.find(
     (option) => option.locale === locale,

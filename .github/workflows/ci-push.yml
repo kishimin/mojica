@@ -244,3 +244,69 @@ jobs:
           path: frontend/coverage
           if-no-files-found: error
           retention-days: 14
+
+  frontend-e2e-small:
+    name: Frontend E2E (Small)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://127.0.0.1:5063
+      VITE_API_URL: http://127.0.0.1:5063
+      Cors__AllowedOrigins__0: http://localhost:4173
+      GlyphForge__BaseUrl: http://127.0.0.1:8080/
+      GlyphForge__Timeout: 00:01:00
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.13
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: bun install --frozen-lockfile
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: bunx playwright install --with-deps chromium webkit
+      - uses: actions/checkout@v4
+        with:
+          repository: kishimin/glyph-forge
+          ref: b238ea5a1a067d2e4f7e0a27979363b5154a06ba
+          path: .ci/glyph-forge
+      - name: Start Glyph Forge
+        run: |
+          docker build --tag glyph-forge-ci .ci/glyph-forge
+          docker run --detach --name glyph-forge-ci --publish 8080:8080 glyph-forge-ci
+          curl --fail --retry 30 --retry-delay 1 --retry-all-errors http://127.0.0.1:8080/health
+      - name: Build and start Mojica API
+        working-directory: backend
+        run: |
+          dotnet restore Mojica.Backend.sln
+          dotnet build Mojica.Backend.sln --configuration Release --no-restore
+          nohup dotnet run --project Mojica.Api --configuration Release --no-build > ../mojica-api.log 2>&1 &
+          echo $! > ../mojica-api.pid
+          curl --fail --retry 30 --retry-delay 1 --retry-all-errors http://127.0.0.1:5063/health
+      - name: Build frontend
+        working-directory: frontend
+        run: bun run build
+      - name: Run Small E2E tests
+        working-directory: frontend
+        run: bun run e2e
+      - name: Upload E2E artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-e2e-small-results
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+            mojica-api.log
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Stop E2E services
+        if: always()
+        run: |
+          if [ -f mojica-api.pid ]; then kill "$(cat mojica-api.pid)" || true; fi
+          docker rm --force glyph-forge-ci || true

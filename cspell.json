@@ -2,8 +2,9 @@
   "version": "0.2",
   "ignorePaths": ["frontend/public/mockServiceWorker.js"],
   "words": [
-    "ASPNETCORE",
     "aspnet",
+    "ASPNETCORE",
+    "errorfallback",
     "IMGTYPE",
     "kishimin",
     "moji",

@@ -22,6 +22,8 @@ export const downloadGeneratedImage = (response: AxiosResponse<Blob>) => {
 
   anchor.href = objectUrl;
   anchor.download = filename;
+  document.body.append(anchor);
   anchor.click();
+  anchor.remove();
   URL.revokeObjectURL(objectUrl);
 };
