@@ -12,14 +12,15 @@
 ## Prerequisites and dependencies
 
 - The shared foundation, UI components, image-generation flow, error pages, and root routing are available on `main`.
-- Tests must use the repository's Playwright projects and existing local fixtures/stubs where applicable.
-- Do not contact a deployed or external service unless a test is explicitly classified as Large and the environment provides it.
+- Tests must use the repository's Playwright projects and a configured real Mojica API.
+- Do not replace the Mojica API with `page.route`, MSW, or another frontend response mock in an E2E test.
+- A deployed API or an explicitly configured local API/Glyph Forge environment is required before the image-generation flow can be added.
 
 ## Owned scope
 
 This branch owns browser-level verification of the completed UI:
 
-- Real-browser image-generation flow through a localhost API stub or configured deployed API.
+- Real-browser image-generation flow through a configured real API.
 - PNG download behavior and filename verification.
 - Responsive rendering at the documented viewport sizes.
 - 404 navigation and unexpected-error recovery screens.
@@ -29,8 +30,9 @@ This branch owns browser-level verification of the completed UI:
 
 The decomposition below is inferred from the implementation plan and linked specifications; it does not add product behavior.
 
-- [ ] Inspect the existing Playwright projects, fixtures, server lifecycle, and test data boundaries.
-- [ ] Add a browser test for the image-generation happy path, classified by its actual dependency scope.
+- [x] Inspect the existing Playwright projects, fixtures, server lifecycle, and test data boundaries.
+- [ ] Confirm the real Mojica API and Glyph Forge environment used by E2E runs.
+- [ ] Add a browser test for the image-generation happy path after the real API environment is available.
 - [ ] Add a browser test for validation and documented API error presentations where browser behavior adds value beyond Small/Medium tests.
 - [ ] Add PNG download verification with the file-system dependency classified as at least Medium.
 - [ ] Add responsive checks at 390px, 768px, and 1440px without creating viewport-specific duplicate stories.
@@ -46,6 +48,7 @@ The decomposition below is inferred from the implementation plan and linked spec
 - [ ] Reimplementing component, form, routing, or error-page behavior already owned by earlier branches.
 - [ ] Replacing Small/Medium unit and integration tests with browser tests.
 - [ ] Changing API contracts, generated clients, backend behavior, or design tokens.
+- [ ] Replacing the real API with a frontend network mock.
 - [ ] Contacting production services from default local CI runs.
 
 ## Completion criteria
@@ -58,6 +61,7 @@ The decomposition below is inferred from the implementation plan and linked spec
 
 ## Unresolved decisions and blockers
 
-- Confirm the available local frontend/API server lifecycle before writing tests that require a network boundary.
+- The current Playwright web server starts only the frontend preview; no E2E API/Glyph Forge service lifecycle is configured.
+- Confirm the non-production Mojica API and Glyph Forge endpoints before adding real image-generation coverage.
 - Confirm which Playwright project owns VRT and download tests; do not assume all browser tests are Large.
 - No implementation work is included until the test boundaries and fixtures are confirmed.
