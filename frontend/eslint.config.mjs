@@ -339,6 +339,14 @@ export default defineConfig([
           message:
             "Define E2E locator names in the page selector module instead of inline.",
         },
+        {
+          selector: "VariableDeclarator[id.name='goto']",
+          message: "Use navigate for Page Object navigation functions.",
+        },
+        {
+          selector: "Property[key.name='open']",
+          message: "Use navigate for Page Object navigation functions.",
+        },
       ],
     },
   },

@@ -4,7 +4,7 @@ import { notFoundSelectors } from "../selectors/not-found-selectors.ts";
 /** Provides user-facing operations for the not-found page. */
 export const notFoundPage = (page: Page) => ({
   /** Opens a route that the application does not define. */
-  open: async () => {
+  navigate: async () => {
     await page.goto("/missing");
   },
 

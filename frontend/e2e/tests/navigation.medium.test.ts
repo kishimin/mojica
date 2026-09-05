@@ -5,7 +5,7 @@ test.describe("navigation", () => {
     notFoundPage,
     imageGenerationPage,
   }) => {
-    await notFoundPage.open();
+    await notFoundPage.navigate();
     await expect(notFoundPage.homeLink()).toBeVisible();
 
     await notFoundPage.homeLink().click();
