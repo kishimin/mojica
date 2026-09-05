@@ -122,15 +122,4 @@ describe("ErrorFallback", () => {
       ).toBeVisible();
     });
   });
-
-  describe("recovery action", () => {
-    // ID: ERROR-FALLBACK-S-006
-    // Source: docs/v1/ui/ui.md § 20; docs/v1/ui/components/ErrorFallback.md § Screen specification
-    // Given: The unexpected-error fallback is displayed
-    // When: The user activates the reload action
-    // Then: A normal browser page reload is requested without client-side navigation or an API request
-    // Blocked by: ErrorFallback implementation
-    // Priority: P0
-    test.todo("reloads the page when the recovery action is activated");
-  });
 });

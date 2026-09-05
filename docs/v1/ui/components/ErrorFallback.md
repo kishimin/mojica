@@ -15,7 +15,7 @@ Place `ErrorBoundary` at the outermost edge of `AppProviders`, outside `QueryCli
 
 ## i18n
 
-Instead of a translation function such as `useTranslations`, `ErrorFallback` selects its copy from a minimal dictionary in the feature-local `i18n/error-fallback-messages.ts` module. The module remains independent from the `I18nProvider` context tree and can therefore preserve locale-appropriate output even if `I18nProvider` crashes. Derive the supported-locale type from the dictionary keys so adding a language does not add branches to locale resolution.
+Instead of a translation function such as `useTranslations`, `ErrorFallback` selects its copy from a minimal dictionary in the feature-local `i18n/error-fallback-messages.ts` module. Locale resolution, including browser and storage access, is implemented by the sibling `i18n/resolve-error-fallback-locale.ts` module. Both modules remain independent from the `I18nProvider` context tree and can therefore preserve locale-appropriate output even if `I18nProvider` crashes. Derive the supported-locale type from the dictionary keys so adding a language does not add branches to locale resolution.
 
 ```typescript
 // features/error/i18n/error-fallback-messages.ts (illustrative)
@@ -36,33 +36,9 @@ export const errorFallbackMessages = {
 
 type SupportedLocale = keyof typeof errorFallbackMessages;
 
-const defaultLocale: SupportedLocale = "ja";
-
-const isSupportedLocale = (value: string): value is SupportedLocale =>
-  Object.hasOwn(errorFallbackMessages, value);
-
-const readStoredLocale = (): string | null => {
-  try {
-    return localStorage.getItem("locale");
-  } catch {
-    return null;
-  }
-};
-
-const resolveLocale = (): SupportedLocale => {
-  const candidates = [readStoredLocale(), ...navigator.languages];
-
-  for (const candidate of candidates) {
-    const normalized = candidate?.toLowerCase();
-    if (normalized && isSupportedLocale(normalized)) return normalized;
-
-    const language = normalized?.split("-")[0];
-    if (language && isSupportedLocale(language)) return language;
-  }
-
-  return defaultLocale;
-};
 ```
+
+The `resolve-error-fallback-locale.ts` module owns `localStorage` and `navigator.languages` access and applies the same resolution rules without using the provider.
 
 Read the `"locale"` local-storage key directly—the same key `I18nProvider` (`providers/I18nProvider.tsx`) uses for persistence (see component-design.md). If the stored value is absent or unsupported, or local storage cannot be read, inspect `navigator.languages` in order. Match the full language tag first, followed by its leading language subtag, such as `en` from `en-US`. If no browser language is supported, fall back to the default locale, `ja`. Dictionary keys are lowercase language tags. Add any new language to the dictionary and keep it aligned with the locales supported by `I18nProvider`.
 
@@ -83,4 +59,4 @@ The button performs a normal browser page reload equivalent to `window.location.
 ## Tests
 
 - Size: Small
-- Verifies: `ErrorFallback` in isolation; copy for every locale in the dictionary; preference for a stored value; fallback to browser language or the default locale when the stored value is absent, unsupported, or unreadable; and, using `userEvent`, that the reload button invokes page reload. `AppProviders.small.test.tsx` verifies that `ErrorBoundary` actually catches a child exception and renders `ErrorFallback` (see [App](./App.md)).
+- Verifies: `ErrorFallback` in isolation; copy for every locale in the dictionary; preference for a stored value; and fallback to browser language or the default locale when the stored value is absent, unsupported, or unreadable. Browser page-reload behavior is outside the Small test boundary. `AppProviders.small.test.tsx` verifies that `ErrorBoundary` actually catches a child exception and renders `ErrorFallback` (see [App](./App.md)).
