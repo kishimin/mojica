@@ -1,6 +1,10 @@
 import { expect, type Download, type Page } from "@playwright/test";
 import type { Locale } from "../../src/types/i18n.ts";
-import { imageGenerationSelectors } from "../selectors/image-generation-selectors.ts";
+import type { ImageType } from "../../src/types/image-type.ts";
+import {
+  imageGenerationSelectors,
+  imageTypeOptionSelectors,
+} from "../selectors/image-generation-selectors.ts";
 
 /** Provides user-facing image-generation operations for browser tests. */
 export const imageGenerationPage = (page: Page, locale: Locale) => {
@@ -19,6 +23,10 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
   const submitButton = () =>
     page.getByRole("button", {
       name: imageGenerationSelectors.submitButton[locale],
+    });
+  const imageTypeSelect = () =>
+    page.getByRole("combobox", {
+      name: imageGenerationSelectors.imageTypeLabel[locale],
     });
   const heading = () =>
     page.getByRole("heading", {
@@ -39,6 +47,19 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
 
   const fillBackgroundCharacter = async (value: string) => {
     await backgroundCharacterInput().fill(value);
+  };
+
+  const selectType = async (value: ImageType) => {
+    await imageTypeSelect().click();
+    await page
+      .getByRole("option", {
+        name: imageTypeOptionSelectors[value][locale],
+      })
+      .click();
+  };
+
+  const captureScreenshot = async (path: string) => {
+    await page.screenshot({ path, fullPage: true });
   };
 
   const submit = async (): Promise<Download> => {
@@ -63,6 +84,7 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     fillText,
     fillForegroundCharacter,
     fillBackgroundCharacter,
+    selectType,
     submit,
     submitWithKeyboard,
     heading,
@@ -71,6 +93,7 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     backgroundCharacterInput,
     submitButton,
     compareScreenshot,
+    captureScreenshot,
   };
 };
 
