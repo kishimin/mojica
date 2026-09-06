@@ -23,16 +23,22 @@ const generateAndCapture = async (
   imageType: ImageType,
   screenshotPath: string,
 ): Promise<void> => {
-  await imageGenerationPage.navigate();
-  await imageGenerationPage.fillText("KA");
-  await imageGenerationPage.fillForegroundCharacter("A");
-  await imageGenerationPage.fillBackgroundCharacter("B");
-  await imageGenerationPage.selectType(imageType);
+  await test.step("Open the image-generation screen", () =>
+    imageGenerationPage.navigate());
+  await test.step("Fill the image-generation inputs", async () => {
+    await imageGenerationPage.fillText("KA");
+    await imageGenerationPage.fillForegroundCharacter("A");
+    await imageGenerationPage.fillBackgroundCharacter("B");
+    await imageGenerationPage.selectType(imageType);
+  });
 
-  const download = await imageGenerationPage.submit();
+  const download = await test.step("Submit the image-generation request", () =>
+    imageGenerationPage.submit());
 
-  expect(download.suggestedFilename()).toMatch(/\.png$/);
-  await imageGenerationPage.captureScreenshot(screenshotPath);
+  await test.step("Verify the PNG download and capture the screen", async () => {
+    expect(download.suggestedFilename()).toMatch(/\.png$/);
+    await imageGenerationPage.captureScreenshot(screenshotPath);
+  });
 };
 
 test.describe("Japanese release flow", () => {

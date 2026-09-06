@@ -5,11 +5,15 @@ test.describe("navigation", () => {
     notFoundPage,
     imageGenerationPage,
   }) => {
-    await notFoundPage.navigate("/missing");
-    await expect(notFoundPage.homeLink()).toBeVisible();
+    await test.step("Open the not-found route", () =>
+      notFoundPage.navigate("/missing"));
+    await test.step("Verify the home link is available", () =>
+      expect(notFoundPage.homeLink()).toBeVisible());
 
-    await notFoundPage.homeLink().click();
+    await test.step("Navigate to the image-generation home", () =>
+      notFoundPage.homeLink().click());
 
-    await expect(imageGenerationPage.heading()).toBeVisible();
+    await test.step("Verify the image-generation screen is displayed", () =>
+      expect(imageGenerationPage.heading()).toBeVisible());
   });
 });
