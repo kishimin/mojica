@@ -36,7 +36,9 @@ const generateAndCapture = async (
     imageGenerationPage.submit());
 
   await test.step("Verify the PNG download and capture the screen", async () => {
-    expect(download.suggestedFilename()).toMatch(/\.png$/);
+    expect(download.suggestedFilename()).toMatch(
+      new RegExp(`^mojica-${imageType}-[0-9a-f-]+\\.png$`),
+    );
     await imageGenerationPage.captureScreenshot(screenshotPath);
   });
 };
