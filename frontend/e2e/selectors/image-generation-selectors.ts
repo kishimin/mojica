@@ -18,7 +18,7 @@ export const imageGenerationSelectors = {
   },
   textLabel: {
     ja: /描画する文字列/,
-    en: /Text to draw/,
+    en: /Text to render/,
   },
   foregroundCharacterLabel: {
     ja: /^描画に使う文字$/,
