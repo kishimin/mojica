@@ -65,7 +65,9 @@ const ColorPickerField = ({
           }
           aria-invalid={errorMessage ? true : isExternallyInvalid}
           disabled={inputProps.disabled}
-          className={"size-9 shrink-0 rounded-md border-0 p-0"}
+          className={
+            "size-9 shrink-0 appearance-none rounded-md border-0 bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-md [&::-webkit-color-swatch]:border-0"
+          }
           value={value}
           onChange={handleChange}
         />

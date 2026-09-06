@@ -6,18 +6,24 @@ test.describe("ErrorFallback Storybook visual regression", () => {
   test("keeps the Japanese error fallback layout stable", async ({
     errorFallbackPage,
   }) => {
-    await errorFallbackPage.openStory("features-error-errorfallback--japanese");
+    await test.step("Open the Japanese error fallback story", () =>
+      errorFallbackPage.openStory("features-error-errorfallback--japanese"));
 
-    await expect(errorFallbackPage.heading()).toBeVisible();
-    await errorFallbackPage.compareScreenshot("error-fallback.png");
+    await test.step("Verify the Japanese error heading", () =>
+      expect(errorFallbackPage.heading()).toBeVisible());
+    await test.step("Compare the Japanese error fallback screenshot", () =>
+      errorFallbackPage.compareScreenshot("error-fallback.png"));
   });
 
   test("keeps the English error fallback layout stable", async ({
     errorFallbackPage,
   }) => {
-    await errorFallbackPage.openStory("features-error-errorfallback--english");
+    await test.step("Open the English error fallback story", () =>
+      errorFallbackPage.openStory("features-error-errorfallback--english"));
 
-    await expect(errorFallbackPage.heading()).toBeVisible();
-    await errorFallbackPage.compareScreenshot("error-fallback-en.png");
+    await test.step("Verify the English error heading", () =>
+      expect(errorFallbackPage.heading()).toBeVisible());
+    await test.step("Compare the English error fallback screenshot", () =>
+      errorFallbackPage.compareScreenshot("error-fallback-en.png"));
   });
 });

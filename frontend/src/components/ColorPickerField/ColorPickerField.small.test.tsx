@@ -34,6 +34,21 @@ describe("ColorPickerField", () => {
     expect(screen.getByLabelText("Choose color")).toHaveValue("#ffd400");
   });
 
+  test("uses the field border token around both color controls", () => {
+    render(
+      <ColorPickerField
+        label={"Color"}
+        colorPickerLabel={"Choose color"}
+        value={"#FFD400"}
+        onChange={vi.fn<(hex: string) => void>()}
+      />,
+    );
+
+    expect(screen.getByRole("group", { name: "Color" })).toHaveClass(
+      "border-input",
+    );
+  });
+
   test("synchronizes the color control after editing the HEX textbox", async () => {
     const { user } = setup(<ControlledColorPickerField />);
 

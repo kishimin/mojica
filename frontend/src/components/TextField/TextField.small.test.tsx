@@ -13,6 +13,14 @@ describe("TextField", () => {
     expect(textbox).toHaveValue("Hello");
   });
 
+  test("uses the field border token", () => {
+    render(<TextField label={"Text"} />);
+
+    expect(screen.getByRole("textbox", { name: "Text" })).toHaveClass(
+      "border-input",
+    );
+  });
+
   test("associates the validation message with the textbox", () => {
     render(<TextField label={"Text"} errorMessage={"Text is required"} />);
 

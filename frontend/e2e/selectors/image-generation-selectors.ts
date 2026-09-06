@@ -1,3 +1,4 @@
+import type { ImageType } from "../../src/types/image-type.ts";
 import type { LocalizedSelector } from "./localized-selector.ts";
 export const imageGenerationSelectorKeys = {
   heading: "heading",
@@ -5,6 +6,7 @@ export const imageGenerationSelectorKeys = {
   foregroundCharacterLabel: "foregroundCharacterLabel",
   backgroundCharacterLabel: "backgroundCharacterLabel",
   submitButton: "submitButton",
+  imageTypeLabel: "imageTypeLabel",
 } as const;
 type ImageGenerationSelectorKey =
   (typeof imageGenerationSelectorKeys)[keyof typeof imageGenerationSelectorKeys];
@@ -16,7 +18,7 @@ export const imageGenerationSelectors = {
   },
   textLabel: {
     ja: /描画する文字列/,
-    en: /Text to draw/,
+    en: /Text to render/,
   },
   foregroundCharacterLabel: {
     ja: /^描画に使う文字$/,
@@ -30,4 +32,14 @@ export const imageGenerationSelectors = {
     ja: /画像を生成する/,
     en: /Generate image/,
   },
+  imageTypeLabel: {
+    ja: /画像タイプ/,
+    en: /Image type/,
+  },
 } satisfies Record<ImageGenerationSelectorKey, LocalizedSelector>;
+
+export const imageTypeOptionSelectors = {
+  standard: { ja: /標準画像/, en: /Standard image/ },
+  "x-background": { ja: /X背景画像/, en: /X background image/ },
+  "x-icon": { ja: /Xアイコン画像/, en: /X icon image/ },
+} satisfies Record<ImageType, LocalizedSelector>;
