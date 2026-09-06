@@ -23,7 +23,7 @@ public sealed class RateLimitRegistrationMediumTests
     }
 
     [Fact]
-    public async Task Start_WhenRateLimitConfigurationIsMissing_AllowsHealthEndpointToStart()
+    public async Task Start_InDevelopment_UsesConfiguredRateLimitDefaults()
     {
         using var factory = new WebApplicationFactory<Program>();
         using var client = factory.CreateClient();
@@ -31,6 +31,12 @@ public sealed class RateLimitRegistrationMediumTests
         using var response = await client.GetAsync("/health");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var options = factory.Services.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+
+        Assert.Equal(100, options.PermitLimit);
+        Assert.Equal(TimeSpan.FromMinutes(1), options.Window);
+        Assert.Equal(0, options.QueueLimit);
     }
 
     [Fact]
