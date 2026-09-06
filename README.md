@@ -152,8 +152,16 @@ Build and run the backend container from the `backend` directory:
 ```powershell
 cd backend
 docker build -t mojica-api:local .
-docker run --rm -p 8080:8080 mojica-api:local
+docker run --rm -p 8080:8080 `
+  -e "GlyphForge__BaseUrl=http://host.docker.internal:8080/" `
+  -e "GlyphForge__Timeout=00:01:00" `
+  -e "RateLimit__PermitLimit=100" `
+  -e "RateLimit__Window=00:01:00" `
+  -e "RateLimit__QueueLimit=0" `
+  mojica-api:local
 ```
+
+The container uses Production startup validation, so all of these options are required. Replace `GlyphForge__BaseUrl` when Glyph Forge is not reachable through Docker Desktop's host gateway.
 
 Confirm that the container is healthy:
 
@@ -210,7 +218,7 @@ The successful response is a generated `image/png`. Error responses use JSON and
 | `backgroundCharacter` | Yes | - | Character(s) used to fill the surrounding area, up to 128 characters. |
 | `backgroundColor` | Yes | - | HEX color in `#RRGGBB` format. |
 
-The API returns `200 OK` with `image/png` on success. It returns `400` for malformed requests, `422` for validation failures, `429` for rate limiting, `500` for unexpected backend failures, `502` for Glyph Forge failures, and `504` for Glyph Forge timeouts. `foregroundCharacter` and `backgroundCharacter` may individually contain only whitespace, but they cannot both be whitespace-only. The `Retry-After` header is returned when retry timing is available.
+The API returns `200 OK` with `image/png` on success. It returns `400` for malformed requests, `422` for request validation failures or generated image-size limit failures, `429` for rate limiting, `500` for unexpected backend failures, `502` for Glyph Forge failures, and `504` for Glyph Forge timeouts. A validation `422` contains field errors when applicable; an image-size limit `422` contains a general error code and message instead. `foregroundCharacter` and `backgroundCharacter` may individually contain only whitespace, but they cannot both be whitespace-only. The `Retry-After` header is returned when retry timing is available.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -253,12 +261,13 @@ dotnet run --project backend/Mojica.Api
 
 ### `Set RELEASE_E2E_BASE_URL to run against the deployed service.`
 
-Release E2E tests intentionally skip when no deployed frontend URL is provided. Set the variable before running the release suite:
+Release E2E tests intentionally skip when no deployed frontend URL is provided. The package-level `bun run e2e` command runs every Playwright test, so build the frontend first and target the release spec explicitly:
 
 ```powershell
-$env:RELEASE_E2E_BASE_URL = "https://mojica.pages.dev/"
 cd frontend
-bun run e2e
+bun run build
+$env:RELEASE_E2E_BASE_URL = "https://mojica.pages.dev/"
+bunx playwright test e2e/tests/image-generation.large.test.ts
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
