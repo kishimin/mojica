@@ -391,6 +391,9 @@ jobs:
       Cors__AllowedOrigins__0: http://localhost:4173
       GlyphForge__BaseUrl: http://127.0.0.1:8080/
       GlyphForge__Timeout: 00:01:00
+      RateLimit__PermitLimit: 100
+      RateLimit__Window: 00:01:00
+      RateLimit__QueueLimit: 0
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
