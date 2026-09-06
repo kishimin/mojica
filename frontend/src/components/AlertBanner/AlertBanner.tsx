@@ -8,6 +8,7 @@ type AlertBannerProps = {
   description: string;
 };
 
+/** Provides the module's public behavior. */
 const AlertBanner = ({ title, description }: AlertBannerProps) => (
   <Alert
     variant={"destructive"}

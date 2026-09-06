@@ -22,6 +22,7 @@ const getInitialLocale = (): Locale => {
   }
 };
 
+/** Provides the module's public behavior. */
 export const I18nProvider = ({
   children,
   initialLocale,

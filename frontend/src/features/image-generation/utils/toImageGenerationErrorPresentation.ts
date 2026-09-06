@@ -4,6 +4,7 @@ import {
   type ImageGenerationErrorPresentation,
 } from "@/types/image-generation-error-presentation";
 
+/** Provides the module's public behavior. */
 export const toImageGenerationErrorPresentation = (
   code: ApiErrorResponse["code"],
 ): ImageGenerationErrorPresentation => {

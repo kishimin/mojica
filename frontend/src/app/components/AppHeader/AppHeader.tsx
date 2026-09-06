@@ -2,6 +2,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
 import Logo from "@/components/Logo/Logo";
 import { useI18n } from "@/hooks/use-i18n";
 
+/** Provides the module's public behavior. */
 const AppHeader = () => {
   const { locale, setLocale } = useI18n();
 

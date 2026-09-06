@@ -36,6 +36,7 @@ const ErrorFallbackContent = ({ locale }: ErrorFallbackContentProps) => {
   );
 };
 
+/** Provides the module's public behavior. */
 const ErrorFallback = () => {
   const locale = resolveErrorFallbackLocale();
 

@@ -2,6 +2,7 @@ import type { UseFormSetError } from "react-hook-form";
 import type { ImageGenerationFormValues } from "../schemas/imageGenerationSchema";
 import type { ApiValidationFieldError } from "@/models/apiValidationFieldError";
 
+/** Provides the module's public behavior. */
 export const applyImageGenerationFieldErrors = (
   fieldErrors: ApiValidationFieldError[] | null | undefined,
   setError: UseFormSetError<ImageGenerationFormValues>,

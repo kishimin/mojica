@@ -4,6 +4,7 @@ type RetryAfterHeaderSource = {
   [key: string]: unknown;
 };
 
+/** Provides the module's public behavior. */
 export const toRetryAfterSeconds = (
   headers: AxiosResponse<unknown>["headers"] | undefined,
 ) => {

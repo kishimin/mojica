@@ -54,6 +54,7 @@ const parseResponse = (
   return response;
 };
 
+/** Provides the module's public behavior. */
 export const parseImageGenerationErrorResponse = async (
   value: unknown,
 ): Promise<ImageGenerationErrorResponse | undefined> => {

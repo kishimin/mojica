@@ -5,6 +5,7 @@ export const AXIOS_INSTANCE = create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
+/** Provides the module's public behavior. */
 export const customInstance = <T>(
   config: AxiosRequestConfig,
 ): Promise<AxiosResponse<T>> => {

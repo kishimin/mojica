@@ -11,6 +11,7 @@ type ImageGenerationApiError = {
   description: string;
 };
 
+/** Provides the module's public behavior. */
 export const toImageGenerationApiError = (
   response: ApiErrorResponse | ApiValidationErrorResponse | undefined,
   locale: Locale,

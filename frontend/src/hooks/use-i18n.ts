@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { I18nContext } from "./i18n-context";
 
+/** Provides the module's public behavior. */
 export const useI18n = () => {
   const context = useContext(I18nContext);
 

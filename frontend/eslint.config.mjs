@@ -18,6 +18,13 @@ import preferGeneratedImageMswHandler from "./eslint-rules/prefer-generated-imag
 import preferNamedExportsInUtils from "./eslint-rules/prefer-named-exports-in-utils.mjs";
 import limitPropsKeys from "./eslint-rules/limit-props-keys.mjs";
 import requireBlankLineBetweenFormFields from "./eslint-rules/require-blank-line-between-form-fields.mjs";
+import requireE2eTestDirectory from "./eslint-rules/require-e2e-test-directory.mjs";
+import requireE2eFixtureImport from "./eslint-rules/require-e2e-fixture-import.mjs";
+import noRawPageOperationsInE2e from "./eslint-rules/no-raw-page-operations-in-e2e.mjs";
+import requireE2ePageFixture from "./eslint-rules/require-e2e-page-fixture.mjs";
+import requireE2eLocatorFunctions from "./eslint-rules/require-e2e-locator-functions.mjs";
+import requireE2ePageObjectMethodReferences from "./eslint-rules/require-e2e-page-object-method-references.mjs";
+import requireLocalizedSelectorMap from "./eslint-rules/require-localized-selector-map.mjs";
 
 export default defineConfig([
   // Global ignores
@@ -148,6 +155,14 @@ export default defineConfig([
           "limit-props-keys": limitPropsKeys,
           "require-blank-line-between-form-fields":
             requireBlankLineBetweenFormFields,
+          "require-e2e-test-directory": requireE2eTestDirectory,
+          "require-e2e-fixture-import": requireE2eFixtureImport,
+          "no-raw-page-operations-in-e2e": noRawPageOperationsInE2e,
+          "require-e2e-page-fixture": requireE2ePageFixture,
+          "require-e2e-locator-functions": requireE2eLocatorFunctions,
+          "require-e2e-page-object-method-references":
+            requireE2ePageObjectMethodReferences,
+          "require-localized-selector-map": requireLocalizedSelectorMap,
         },
       },
     },
@@ -284,6 +299,82 @@ export default defineConfig([
     languageOptions: { globals: { ...vitest.environments.env.globals } },
   },
 
+  // Playwright tests use the project fixture entry point and Page Objects.
+  {
+    files: ["e2e/**/*.{ts,tsx}"],
+    extends: [tseslint.configs.disableTypeChecked],
+    rules: {
+      "local/require-e2e-test-directory": "error",
+      "local/require-e2e-fixture-import": "error",
+      "local/no-raw-page-operations-in-e2e": "error",
+      "local/require-e2e-page-fixture": "error",
+      // Keep E2E imports aligned with the TypeScript files they load. This
+      // prevents runtime-only .js specifiers and ambiguous extensionless paths.
+      "import/extensions": [
+        "error",
+        "always",
+        {
+          js: "never",
+          jsx: "never",
+          ts: "always",
+          tsx: "always",
+        },
+      ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "CallExpression[callee.property.name=/^getBy(Role|LabelText|Text|Placeholder)$/] ObjectExpression > Property[key.name='name'][value.type='Literal'][value.regex=null]",
+          message:
+            "Use a regular expression for accessible locator names in E2E tests.",
+        },
+      ],
+    },
+  },
+
+  {
+    files: ["e2e/selectors/**/*.{ts,tsx}"],
+    rules: {
+      "local/require-localized-selector-map": "error",
+    },
+  },
+
+  {
+    files: ["e2e/pages/**/*.{ts,tsx}"],
+    rules: {
+      "local/require-e2e-locator-functions": "error",
+      "local/require-e2e-page-object-method-references": "error",
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "CallExpression[callee.property.name=/^getBy(Role|LabelText|Text|Placeholder)$/] ObjectExpression > Property[key.name='name'][value.regex]",
+          message:
+            "Define E2E locator names in the page selector module instead of inline.",
+        },
+        {
+          selector: "VariableDeclarator[id.name='goto']",
+          message: "Use navigate for Page Object navigation functions.",
+        },
+        {
+          selector: "Property[key.name='open']",
+          message: "Use navigate for Page Object navigation functions.",
+        },
+        {
+          selector:
+            "VariableDeclarator[id.name=/Page$/] > ArrowFunctionExpression > ObjectExpression",
+          message:
+            "Return Page Object operations explicitly from a block body.",
+        },
+        {
+          selector:
+            "CallExpression[callee.property.name=/^(fill|selectOption|type)$/] > Literal:first-child",
+          message: "Pass scenario input values into Page Object functions.",
+        },
+      ],
+    },
+  },
+
   // Storybook story files
   ...storybook.configs["flat/recommended"],
 
@@ -306,6 +397,7 @@ export default defineConfig([
           publicOnly: true,
           require: {
             FunctionDeclaration: true,
+            ArrowFunctionExpression: true,
             MethodDefinition: true,
             ClassDeclaration: true,
           },

@@ -15,6 +15,7 @@ const defaultValues = {
   type: imageTypeDefinitions.standard,
 } satisfies DefaultValues<ImageGenerationFormValues>;
 
+/** Provides the module's public behavior. */
 export const useImageGenerationForm = () =>
   useForm<ImageGenerationFormValues>({
     defaultValues,

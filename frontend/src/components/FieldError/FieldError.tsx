@@ -5,6 +5,7 @@ type FieldErrorProps = {
   message?: string;
 };
 
+/** Provides the module's public behavior. */
 const FieldError = ({ id, message }: FieldErrorProps) => {
   if (!message) {
     return null;

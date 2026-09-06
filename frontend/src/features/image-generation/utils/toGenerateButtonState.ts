@@ -7,6 +7,7 @@ type GenerateButtonStateInputs = {
   hasApiError: boolean;
 };
 
+/** Provides the module's public behavior. */
 export const toGenerateButtonState = ({
   isPending,
   isSubmitting,

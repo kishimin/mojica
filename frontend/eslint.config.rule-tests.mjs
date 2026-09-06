@@ -101,6 +101,33 @@ const lintFormFields = async (source) => {
   );
 };
 
+const lintE2e = async (source, filePath) => {
+  const [result] = await eslint.lintText(source, { filePath });
+
+  return result.messages.filter(({ ruleId }) => ruleId?.startsWith("local/"));
+};
+
+const lintE2ePageObject = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "e2e/pages/example-page.ts",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) =>
+      ruleId === "local/require-e2e-page-object-method-references",
+  );
+};
+
+const lintLocalizedSelectors = async (source) => {
+  const [result] = await eslint.lintText(source, {
+    filePath: "e2e/selectors/example-selectors.ts",
+  });
+
+  return result.messages.filter(
+    ({ ruleId }) => ruleId === "local/require-localized-selector-map",
+  );
+};
+
 test("rejects text written directly inside a JSX tag", async () => {
   const messages = await lintJsx(
     "const Example = () => <p>Use letters only</p>;",
@@ -331,6 +358,143 @@ test("allows form fields separated by a blank line", async () => {
         <TextField />
       </form>
     );
+  `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects Playwright tests outside the dedicated E2E directories", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures"; test.skip("planned");',
+    "e2e/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/require-e2e-test-directory",
+        message: "Place Playwright test files under e2e/tests or e2e/specs.",
+      },
+    ],
+  );
+});
+
+test("allows Playwright tests in the dedicated E2E directories", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures"; test.skip("planned");',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects direct Playwright imports in E2E tests", async () => {
+  const messages = await lintE2e(
+    'import { test } from "@playwright/test"; test.skip("planned");',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["local/require-e2e-fixture-import"],
+  );
+});
+
+test("rejects raw page operations in E2E tests", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures.js"; test("works", async ({ imageGenerationPage, page }) => { await page.getByRole("button").click(); });',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["local/no-raw-page-operations-in-e2e"],
+  );
+});
+
+test("allows E2E tests to use Page Object fixtures", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures"; test("works", async ({ imageGenerationPage }) => { await imageGenerationPage.generate(); });',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects implemented E2E tests without a Page Object fixture", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures.js"; test("works", async ({ page }) => {});',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId }) => ruleId),
+    ["local/require-e2e-page-fixture"],
+  );
+});
+
+test("allows assertion-free skipped E2E plans without a Page Object fixture", async () => {
+  const messages = await lintE2e(
+    'import { test } from "../fixtures.js"; test.skip("planned", async () => {});',
+    "e2e/tests/image-generation.small.test.ts",
+  );
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects inline methods in Page Object return values", async () => {
+  const messages = await lintE2ePageObject(`
+    const examplePage = (page) => {
+      return { submit: async () => page.getByRole("button").click() };
+    };
+  `);
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/require-e2e-page-object-method-references",
+        message:
+          "Define Page Object methods before the returned object and return the function reference.",
+      },
+    ],
+  );
+});
+
+test("allows function references in Page Object return values", async () => {
+  const messages = await lintE2ePageObject(`
+    const examplePage = (page) => {
+      const submit = async () => page.getByRole("button").click();
+      return { submit };
+    };
+  `);
+
+  assert.deepEqual(messages, []);
+});
+
+test("rejects locale-dependent selector functions", async () => {
+  const messages = await lintLocalizedSelectors(
+    "export const reloadButtonName = (locale) => locale === \"ja\" ? /再読み込み/ : /Reload/;",
+  );
+
+  assert.deepEqual(
+    messages.map(({ ruleId, message }) => ({ ruleId, message })),
+    [
+      {
+        ruleId: "local/require-localized-selector-map",
+        message:
+          "Define locale-dependent E2E selectors as a locale map instead of a function.",
+      },
+    ],
+  );
+});
+
+test("allows locale-dependent selector maps", async () => {
+  const messages = await lintLocalizedSelectors(`
+    export const selectors = {
+      reloadButton: { ja: /再読み込み/, en: /Reload/ },
+    };
   `);
 
   assert.deepEqual(messages, []);
