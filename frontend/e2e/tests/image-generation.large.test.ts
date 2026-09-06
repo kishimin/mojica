@@ -1,4 +1,7 @@
-import { imageTypeDefinitions } from "../../src/types/image-type.ts";
+import {
+  imageTypeDefinitions,
+  type ImageType,
+} from "../../src/types/image-type.ts";
 import { expect, test } from "../fixtures/test.ts";
 import type { ImageGenerationPage } from "../pages/image-generation-page.ts";
 
@@ -17,14 +20,14 @@ test.describe.configure({ mode: "serial" });
 
 const generateAndCapture = async (
   imageGenerationPage: ImageGenerationPage,
-  imageType: keyof typeof imageTypeDefinitions,
+  imageType: ImageType,
   screenshotPath: string,
 ): Promise<void> => {
   await imageGenerationPage.navigate();
   await imageGenerationPage.fillText("KA");
   await imageGenerationPage.fillForegroundCharacter("A");
   await imageGenerationPage.fillBackgroundCharacter("B");
-  await imageGenerationPage.selectType(imageTypeDefinitions[imageType]);
+  await imageGenerationPage.selectType(imageType);
 
   const download = await imageGenerationPage.submit();
 
@@ -40,7 +43,7 @@ test.describe("Japanese release flow", () => {
   }, testInfo) => {
     await generateAndCapture(
       imageGenerationPage,
-      "standard",
+      imageTypeDefinitions.standard,
       testInfo.outputPath("ja-standard.png"),
     );
   });
@@ -50,7 +53,7 @@ test.describe("Japanese release flow", () => {
   }, testInfo) => {
     await generateAndCapture(
       imageGenerationPage,
-      "xBackground",
+      imageTypeDefinitions.xBackground,
       testInfo.outputPath("ja-x-background.png"),
     );
   });
@@ -60,7 +63,7 @@ test.describe("Japanese release flow", () => {
   }, testInfo) => {
     await generateAndCapture(
       imageGenerationPage,
-      "xIcon",
+      imageTypeDefinitions.xIcon,
       testInfo.outputPath("ja-x-icon.png"),
     );
   });
@@ -74,7 +77,7 @@ test.describe("English release flow", () => {
   }, testInfo) => {
     await generateAndCapture(
       imageGenerationPage,
-      "standard",
+      imageTypeDefinitions.standard,
       testInfo.outputPath("en-standard.png"),
     );
   });
@@ -84,7 +87,7 @@ test.describe("English release flow", () => {
   }, testInfo) => {
     await generateAndCapture(
       imageGenerationPage,
-      "xBackground",
+      imageTypeDefinitions.xBackground,
       testInfo.outputPath("en-x-background.png"),
     );
   });
@@ -94,7 +97,7 @@ test.describe("English release flow", () => {
   }, testInfo) => {
     await generateAndCapture(
       imageGenerationPage,
-      "xIcon",
+      imageTypeDefinitions.xIcon,
       testInfo.outputPath("en-x-icon.png"),
     );
   });
