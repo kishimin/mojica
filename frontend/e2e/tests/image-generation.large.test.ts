@@ -21,6 +21,7 @@ test.describe.configure({ mode: "serial" });
 const generateAndCapture = async (
   imageGenerationPage: ImageGenerationPage,
   imageType: ImageType,
+  downloadPath: string,
   screenshotPath: string,
 ): Promise<void> => {
   await test.step("Open the image-generation screen", () =>
@@ -35,10 +36,14 @@ const generateAndCapture = async (
   const download = await test.step("Submit the image-generation request", () =>
     imageGenerationPage.submit());
 
-  await test.step("Verify the PNG download and capture the screen", async () => {
+  await test.step("Save and verify the PNG download", async () => {
     expect(download.suggestedFilename()).toMatch(
       new RegExp(`^mojica-${imageType}-[0-9a-f-]+\\.png$`),
     );
+    await download.saveAs(downloadPath);
+  });
+
+  await test.step("Capture the screen", async () => {
     await imageGenerationPage.captureScreenshot(screenshotPath);
   });
 };
@@ -52,6 +57,7 @@ test.describe("Japanese release flow", () => {
     await generateAndCapture(
       imageGenerationPage,
       imageTypeDefinitions.standard,
+      testInfo.outputPath("ja-standard-download.png"),
       testInfo.outputPath("ja-standard.png"),
     );
   });
@@ -62,6 +68,7 @@ test.describe("Japanese release flow", () => {
     await generateAndCapture(
       imageGenerationPage,
       imageTypeDefinitions.xBackground,
+      testInfo.outputPath("ja-x-background-download.png"),
       testInfo.outputPath("ja-x-background.png"),
     );
   });
@@ -72,6 +79,7 @@ test.describe("Japanese release flow", () => {
     await generateAndCapture(
       imageGenerationPage,
       imageTypeDefinitions.xIcon,
+      testInfo.outputPath("ja-x-icon-download.png"),
       testInfo.outputPath("ja-x-icon.png"),
     );
   });
@@ -86,6 +94,7 @@ test.describe("English release flow", () => {
     await generateAndCapture(
       imageGenerationPage,
       imageTypeDefinitions.standard,
+      testInfo.outputPath("en-standard-download.png"),
       testInfo.outputPath("en-standard.png"),
     );
   });
@@ -96,6 +105,7 @@ test.describe("English release flow", () => {
     await generateAndCapture(
       imageGenerationPage,
       imageTypeDefinitions.xBackground,
+      testInfo.outputPath("en-x-background-download.png"),
       testInfo.outputPath("en-x-background.png"),
     );
   });
@@ -106,6 +116,7 @@ test.describe("English release flow", () => {
     await generateAndCapture(
       imageGenerationPage,
       imageTypeDefinitions.xIcon,
+      testInfo.outputPath("en-x-icon-download.png"),
       testInfo.outputPath("en-x-icon.png"),
     );
   });
