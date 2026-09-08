@@ -20,6 +20,14 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     page.getByRole("textbox", {
       name: imageGenerationSelectors.backgroundCharacterLabel[locale],
     });
+  const foregroundColorInput = () =>
+    page.getByRole("textbox", {
+      name: imageGenerationSelectors.foregroundColorLabel[locale],
+    });
+  const backgroundColorInput = () =>
+    page.getByRole("textbox", {
+      name: imageGenerationSelectors.backgroundColorLabel[locale],
+    });
   const submitButton = () =>
     page.getByRole("button", {
       name: imageGenerationSelectors.submitButton[locale],
@@ -47,6 +55,14 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
 
   const fillBackgroundCharacter = async (value: string) => {
     await backgroundCharacterInput().fill(value);
+  };
+
+  const fillForegroundColor = async (value: string) => {
+    await foregroundColorInput().fill(value);
+  };
+
+  const fillBackgroundColor = async (value: string) => {
+    await backgroundColorInput().fill(value);
   };
 
   const selectType = async (value: ImageType) => {
@@ -84,6 +100,8 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     fillText,
     fillForegroundCharacter,
     fillBackgroundCharacter,
+    fillForegroundColor,
+    fillBackgroundColor,
     selectType,
     submit,
     submitWithKeyboard,
@@ -91,6 +109,8 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     textInput,
     foregroundCharacterInput,
     backgroundCharacterInput,
+    foregroundColorInput,
+    backgroundColorInput,
     submitButton,
     compareScreenshot,
     captureScreenshot,

@@ -4,7 +4,9 @@ export const imageGenerationSelectorKeys = {
   heading: "heading",
   textLabel: "textLabel",
   foregroundCharacterLabel: "foregroundCharacterLabel",
+  foregroundColorLabel: "foregroundColorLabel",
   backgroundCharacterLabel: "backgroundCharacterLabel",
+  backgroundColorLabel: "backgroundColorLabel",
   submitButton: "submitButton",
   imageTypeLabel: "imageTypeLabel",
 } as const;
@@ -24,9 +26,17 @@ export const imageGenerationSelectors = {
     ja: /^描画に使う文字$/,
     en: /^Character used to render text$/,
   },
+  foregroundColorLabel: {
+    ja: /^描画に使う文字の色$/,
+    en: /^Foreground character color$/,
+  },
   backgroundCharacterLabel: {
     ja: /^敷き詰める文字$/,
     en: /^Background character$/,
+  },
+  backgroundColorLabel: {
+    ja: /^敷き詰める文字の色$/,
+    en: /^Background character color$/,
   },
   submitButton: {
     ja: /画像を生成する/,
