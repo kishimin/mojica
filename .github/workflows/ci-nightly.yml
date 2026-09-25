@@ -362,7 +362,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: kishimin/glyph-forge
-          ref: b238ea5a1a067d2e4f7e0a27979363b5154a06ba
+          ref: cb51be57bf61057d785931b9899a664c8fa6ce90
           path: .ci/glyph-forge
       - name: Start Glyph Forge
         run: |
