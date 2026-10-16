@@ -353,12 +353,8 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: bun install --frozen-lockfile
-      - name: Install Playwright browsers
-        working-directory: frontend
-        run: bunx playwright install --with-deps chromium webkit
+      - name: Build fixed E2E environment
+        run: docker build --file frontend/Dockerfile.e2e --tag mojica-e2e frontend
       - uses: actions/checkout@v4
         with:
           repository: kishimin/glyph-forge
@@ -377,12 +373,15 @@ jobs:
           nohup dotnet Mojica.Api/bin/Release/net8.0/Mojica.Api.dll > ../mojica-api.log 2>&1 &
           echo $! > ../mojica-api.pid
           curl --fail --retry 30 --retry-delay 1 --retry-all-errors http://127.0.0.1:5063/health
-      - name: Build frontend
-        working-directory: frontend
-        run: bun run build
       - name: Run Large E2E tests
-        working-directory: frontend
-        run: bun run e2e
+        run: |
+          docker run --name mojica-e2e --init --ipc=host --network host \
+            --env VITE_API_URL mojica-e2e
+      - name: Collect E2E reports
+        if: ${{ !cancelled() }}
+        run: |
+          docker cp mojica-e2e:/app/playwright-report frontend/playwright-report
+          docker cp mojica-e2e:/app/test-results frontend/test-results
       - name: Upload E2E artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
@@ -399,3 +398,4 @@ jobs:
         run: |
           if [ -f mojica-api.pid ]; then kill "$(cat mojica-api.pid)" || true; fi
           docker rm --force glyph-forge-ci || true
+          docker rm --force mojica-e2e || true
