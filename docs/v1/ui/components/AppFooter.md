@@ -3,7 +3,7 @@
 - Layer: Application shell (`app/components/`)
 - Location: `app/components/AppFooter/AppFooter.tsx`
 - Implementation: Tailwind only
-- Responsibility: A static footer displaying `© kishimin 2026`
+- Responsibility: Display `© kishimin 2026` and a localized link to the Google Forms contact form.
 
 ## Storybook
 
