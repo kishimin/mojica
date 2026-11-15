@@ -1,4 +1,16 @@
 import { useI18n } from "@/hooks/use-i18n";
+import type { Locale } from "@/types/i18n";
+
+const contactForms = {
+  ja: {
+    label: "お問い合わせ",
+    url: "https://docs.google.com/forms/d/e/1FAIpQLSdG8CcjnmGBseY6ExWhEidXutkXzyU3VmVrhFfQs9crJeOndQ/viewform",
+  },
+  en: {
+    label: "Contact",
+    url: "https://docs.google.com/forms/d/e/1FAIpQLSedj8RXI0wSVnIHYu4jyRi7oyZ9jRFH98QGLyXAHtHC10XqFw/viewform",
+  },
+} satisfies Record<Locale, { label: string; url: string }>;
 
 /** Provides the module's public behavior. */
 const AppFooter = () => {
@@ -13,11 +25,9 @@ const AppFooter = () => {
       {"© kishimin 2026"}
       <a
         className={"underline"}
-        href={
-          "https://docs.google.com/forms/d/e/1FAIpQLSdG8CcjnmGBseY6ExWhEidXutkXzyU3VmVrhFfQs9crJeOndQ/viewform"
-        }
+        href={contactForms[locale].url}
       >
-        {locale === "ja" ? "お問い合わせ" : "Contact"}
+        {contactForms[locale].label}
       </a>
     </footer>
   );
