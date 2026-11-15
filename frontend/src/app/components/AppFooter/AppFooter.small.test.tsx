@@ -33,6 +33,9 @@ describe("AppFooter", () => {
       </I18nProvider>,
     );
 
-    expect(screen.getByRole("link", { name: "Contact" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute(
+      "href",
+      "https://docs.google.com/forms/d/e/1FAIpQLSedj8RXI0wSVnIHYu4jyRi7oyZ9jRFH98QGLyXAHtHC10XqFw/viewform",
+    );
   });
 });
