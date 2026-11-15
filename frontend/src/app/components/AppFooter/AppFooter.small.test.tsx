@@ -14,4 +14,13 @@ describe("AppFooter", () => {
 
     expect(screen.getByText("© kishimin 2026")).toBeVisible();
   });
+
+  test("links to the contact form", () => {
+    render(<AppFooter />);
+
+    expect(screen.getByRole("link", { name: "お問い合わせ" })).toHaveAttribute(
+      "href",
+      "https://docs.google.com/forms/d/e/1FAIpQLSdG8CcjnmGBseY6ExWhEidXutkXzyU3VmVrhFfQs9crJeOndQ/viewform",
+    );
+  });
 });
