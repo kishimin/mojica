@@ -74,6 +74,13 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
       .click();
   };
 
+  const fillImageMode = async (file: { name: string; mimeType: string; buffer: Buffer }, foreground: string, background: string) => {
+    await page.getByRole("radio", { name: imageGenerationSelectors.imageMode[locale] }).check();
+    await page.getByLabel(imageGenerationSelectors.sourceImage[locale]).setInputFiles(file);
+    await page.getByRole("textbox", { name: imageGenerationSelectors.patternCharacters[locale] }).fill(foreground);
+    await page.getByRole("textbox", { name: imageGenerationSelectors.imageBackgroundCharacters[locale] }).fill(background);
+  };
+
   const captureScreenshot = async (path: string) => {
     await page.screenshot({ path, fullPage: true });
   };
@@ -105,6 +112,7 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     fillForegroundColor,
     fillBackgroundColor,
     selectType,
+    fillImageMode,
     submit,
     submitWithKeyboard,
     heading,
