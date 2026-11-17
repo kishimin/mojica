@@ -43,6 +43,8 @@ builder.Services.AddHttpClient("GlyphForge", (serviceProvider, client) =>
 });
 builder.Services.AddSingleton<ImageGenerationPort, GlyphForgeImageGenerationAdapter>();
 builder.Services.AddSingleton<IImageGenerationService, ImageGenerationService>();
+builder.Services.AddSingleton<ImageUploadPort, GlyphForgeImageUploadAdapter>();
+builder.Services.AddSingleton<ImageUploadService>();
 
 var rateLimitOptions = builder.Services
     .AddOptions<RateLimitOptions>()

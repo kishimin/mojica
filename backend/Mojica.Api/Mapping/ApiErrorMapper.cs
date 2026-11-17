@@ -75,6 +75,14 @@ public static class ApiErrorMapper
                 StatusCodes.Status422UnprocessableEntity,
                 PublicApiErrorCode.ImageSizeLimitExceeded,
                 language),
+            _ when code == ImageGenerationPortErrorCode.InvalidImage => CreateError(
+                StatusCodes.Status422UnprocessableEntity, PublicApiErrorCode.InvalidImage, language),
+            _ when code == ImageGenerationPortErrorCode.ImageOutputSizeExceeded => CreateError(
+                StatusCodes.Status422UnprocessableEntity, PublicApiErrorCode.ImageOutputSizeExceeded, language),
+            _ when code == ImageGenerationPortErrorCode.ImageRequestInvalid => CreateError(
+                StatusCodes.Status422UnprocessableEntity, PublicApiErrorCode.ImageRequestInvalid, language),
+            _ when code == ImageGenerationPortErrorCode.RequestTooLarge => CreateError(
+                StatusCodes.Status413PayloadTooLarge, PublicApiErrorCode.RequestTooLarge, language),
             _ => throw new ArgumentOutOfRangeException(
                 nameof(error),
                 code.Value,
