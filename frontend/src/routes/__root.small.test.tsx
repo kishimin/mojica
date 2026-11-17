@@ -22,7 +22,7 @@ describe("root route wiring", () => {
 
     expect(await screen.findByRole("banner")).toBeVisible();
     expect(
-      await screen.findByRole("heading", { name: "文字で、文字を描く。" }),
+      await screen.findByRole("heading", { name: "文字で描く。" }),
     ).toBeVisible();
     expect(await screen.findByRole("contentinfo")).toBeVisible();
   });
@@ -46,7 +46,7 @@ describe("root route wiring", () => {
     await user.click(homeLink);
 
     expect(
-      await screen.findByRole("heading", { name: "文字で、文字を描く。" }),
+      await screen.findByRole("heading", { name: "文字で描く。" }),
     ).toBeVisible();
   });
 

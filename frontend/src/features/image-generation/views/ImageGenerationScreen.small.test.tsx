@@ -13,7 +13,7 @@ describe("ImageGenerationScreen", () => {
       renderScreen("ja");
 
       expect(
-        screen.getByRole("heading", { name: "文字で、文字を描く。" }),
+        screen.getByRole("heading", { name: "文字で描く。" }),
       ).toBeVisible();
     });
 
@@ -33,7 +33,7 @@ describe("ImageGenerationScreen", () => {
       renderScreen("en");
 
       expect(
-        screen.getByRole("heading", { name: "Draw letters with letters." }),
+        screen.getByRole("heading", { name: "Draw with text." }),
       ).toBeVisible();
     });
 
@@ -42,7 +42,7 @@ describe("ImageGenerationScreen", () => {
 
       expect(
         screen.getByText(
-          "Combine your favorite characters and two colors to generate text art.",
+          "Combine characters and two colors to create text art.",
         ),
       ).toBeVisible();
     });
