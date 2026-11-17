@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import type { AxiosResponse } from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Controller } from "react-hook-form";
@@ -15,6 +16,7 @@ import {
   usePostImages,
   type PostImagesMutationError,
 } from "@/api/endpoints/image/image";
+import { customInstance } from "@/api/mutator/custom-instance";
 import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
@@ -34,6 +36,9 @@ type ImageGenerationFormProps = {
 /** Renders the image-generation inputs and their initial values. */
 const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
   const [preview, setPreview] = useState<{ response: AxiosResponse<Blob>; url: string }>();
+  const [mode, setMode] = useState<"text" | "image">("text");
+  const [file, setFile] = useState<File>();
+  const [fileError, setFileError] = useState(false);
   const revision = useRef(0);
   useEffect(() => () => {
     if (preview) URL.revokeObjectURL(preview.url);
@@ -48,12 +53,17 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     register,
     control,
     handleSubmit,
+    getValues,
+    trigger,
     setError,
     formState: { errors, isSubmitting },
   } = useImageGenerationForm();
   const { isPending, mutate } = usePostImages<PostImagesMutationError>();
   const messages = imageGenerationFormMessages[locale];
   const screenMessages = imageGenerationScreenMessages[locale];
+  const upload = useMutation<AxiosResponse<Blob>, PostImagesMutationError, FormData>({
+    mutationFn: (data) => customInstance<Blob>({ url: "/images/frame-file", method: "POST", data, responseType: "blob" }),
+  });
   const invalidatePreview = () => {
     revision.current += 1;
     setPreview(undefined);
@@ -64,9 +74,37 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     const fieldErrors = response && "errors" in response ? response.errors : undefined;
     applyImageGenerationFieldErrors(fieldErrors, setError);
     if ((fieldErrors ?? []).length === 0) {
-      setApiError(toImageGenerationApiError(response, locale));
+      const presentation = toImageGenerationApiError(response, locale);
+      setApiError(mode === "image" && response?.code === "IMAGE_OUTPUT_SIZE_EXCEEDED"
+        ? { ...presentation, description: messages.imageOutputTooLarge }
+        : presentation);
       setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
     }
+  };
+
+  const submitImage = async () => {
+    const submittedRevision = revision.current;
+    if (!file) {
+      setFileError(true);
+      return;
+    }
+    const valid = await trigger(["foregroundCharacter", "foregroundColor", "backgroundCharacter", "backgroundColor"]);
+    if (!valid || submittedRevision !== revision.current) return;
+    setApiError(undefined);
+    setRetryAfterSeconds(0);
+    const values = getValues();
+    const data = new FormData();
+    data.append("frameImage", file);
+    data.append("foregroundCharacter", values.foregroundCharacter);
+    data.append("foregroundColor", values.foregroundColor);
+    data.append("backgroundCharacter", values.backgroundCharacter);
+    data.append("backgroundColor", values.backgroundColor);
+    upload.mutate(data, {
+      onSuccess: (response) => {
+        if (submittedRevision === revision.current) setPreview({ response, url: URL.createObjectURL(response.data) });
+      },
+      onError: (error) => { void handleApiError(error, submittedRevision); },
+    });
   };
 
   const submitForm = (submittedRevision: number) => handleSubmit((values) => {
@@ -92,7 +130,11 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
       className={"min-w-0 flex flex-col gap-6"}
       onChange={invalidatePreview}
       onSubmit={(event) => {
-        void submitForm(revision.current)(event);
+        if (mode === "text") void submitForm(revision.current)(event);
+        else {
+          event.preventDefault();
+          void submitImage();
+        }
       }}
     >
       {apiError ? (
@@ -102,15 +144,25 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         />
       ) : null}
 
-      <TextField
+      <fieldset className={"flex gap-4"}>
+        <legend>{messages.mode}</legend>
+        <label><input type={"radio"} name={"mode"} checked={mode === "text"} onChange={() => { setMode("text"); setFile(undefined); setFileError(false); setApiError(undefined); }} /> {messages.textMode}</label>
+        <label><input type={"radio"} name={"mode"} checked={mode === "image"} onChange={() => { setMode("image"); setApiError(undefined); }} /> {messages.imageMode}</label>
+      </fieldset>
+      {mode === "text" ? <TextField
         label={messages.text}
         helperText={screenMessages.textHelper}
         errorMessage={getErrorMessage(errors.text?.message)}
         {...register("text")}
-      />
+      /> : <div className={"flex flex-col gap-2"}>
+        <label htmlFor={"frame-image"}>{messages.imageFile}</label>
+        <input id={"frame-image"} type={"file"} accept={"image/png,image/jpeg,image/webp"} aria-describedby={"frame-image-help"} aria-invalid={fileError} aria-errormessage={fileError ? "frame-image-error" : undefined} onChange={(event) => { setFile(event.target.files?.[0]); setFileError(false); }} />
+        <p id={"frame-image-help"}>{messages.imageHelp}</p>
+        {fileError ? <p id={"frame-image-error"} role={"alert"}>{messages.imageRequired}</p> : null}
+      </div>}
 
       <TextField
-        label={messages.foregroundCharacter}
+        label={mode === "text" ? messages.foregroundCharacter : messages.imageForeground}
         helperText={screenMessages.characterHelper}
         errorMessage={getErrorMessage(errors.foregroundCharacter?.message)}
         {...register("foregroundCharacter")}
@@ -121,8 +173,8 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         control={control}
         render={({ field }) => (
           <ColorPickerField
-            label={messages.foregroundColor}
-            colorPickerLabel={messages.foregroundColorPicker}
+            label={mode === "text" ? messages.foregroundColor : messages.imageForegroundColor}
+            colorPickerLabel={mode === "text" ? messages.foregroundColorPicker : messages.imageForegroundColorPicker}
             value={field.value}
             onChange={field.onChange}
             errorMessage={getErrorMessage(errors.foregroundColor?.message)}
@@ -131,7 +183,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
       />
 
       <TextField
-        label={messages.backgroundCharacter}
+        label={mode === "text" ? messages.backgroundCharacter : messages.imageBackground}
         helperText={screenMessages.characterHelper}
         errorMessage={getErrorMessage(errors.backgroundCharacter?.message)}
         {...register("backgroundCharacter")}
@@ -142,8 +194,8 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         control={control}
         render={({ field }) => (
           <ColorPickerField
-            label={messages.backgroundColor}
-            colorPickerLabel={messages.backgroundColorPicker}
+            label={mode === "text" ? messages.backgroundColor : messages.imageBackgroundColor}
+            colorPickerLabel={mode === "text" ? messages.backgroundColorPicker : messages.imageBackgroundColorPicker}
             value={field.value}
             onChange={field.onChange}
             errorMessage={getErrorMessage(errors.backgroundColor?.message)}
@@ -151,7 +203,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         )}
       />
 
-      <Controller
+      {mode === "text" ? <Controller
         name={"type"}
         control={control}
         render={({ field }) => (
@@ -161,11 +213,11 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
             errorMessage={getErrorMessage(errors.type?.message)}
           />
         )}
-      />
+      /> : null}
 
       <GenerateButton
         state={toGenerateButtonState({
-          isPending,
+          isPending: isPending || upload.isPending,
           isSubmitting,
           remainingRetryAfterSeconds,
           hasApiError: apiError !== undefined,
