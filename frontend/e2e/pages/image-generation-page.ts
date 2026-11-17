@@ -79,16 +79,18 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
   };
 
   const submit = async (): Promise<Download> => {
-    const downloadPromise = page.waitForEvent("download");
     await submitButton().click();
-
+    await expect(page.getByRole("img", { name: imageGenerationSelectors.preview[locale] })).toBeVisible();
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: imageGenerationSelectors.downloadButton[locale] }).click();
     return downloadPromise;
   };
 
   const submitWithKeyboard = async (): Promise<Download> => {
-    const downloadPromise = page.waitForEvent("download");
     await submitButton().press("Enter");
-
+    await expect(page.getByRole("img", { name: imageGenerationSelectors.preview[locale] })).toBeVisible();
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: imageGenerationSelectors.downloadButton[locale] }).press("Enter");
     return downloadPromise;
   };
 
