@@ -55,6 +55,9 @@ type ImageGenerationFormMessages = {
   backgroundCharacter: string;
   backgroundColor: string;
   backgroundColorPicker: string;
+  previewPlaceholder: string;
+  previewAlt: string;
+  download: string;
 };
 
 export const imageGenerationFormMessages = {
@@ -66,6 +69,9 @@ export const imageGenerationFormMessages = {
     backgroundCharacter: "敷き詰める文字",
     backgroundColor: "敷き詰める文字の色",
     backgroundColorPicker: "敷き詰める文字の色を選択",
+    previewPlaceholder: "生成するとここに表示されます",
+    previewAlt: "生成した画像",
+    download: "PNGをダウンロード",
   },
   en: {
     text: "Text to render",
@@ -75,6 +81,9 @@ export const imageGenerationFormMessages = {
     backgroundCharacter: "Background character",
     backgroundColor: "Background character color",
     backgroundColorPicker: "Choose background character color",
+    previewPlaceholder: "Your generated image will appear here",
+    previewAlt: "Generated image",
+    download: "Download PNG",
   },
 } satisfies Record<Locale, ImageGenerationFormMessages>;
 
@@ -93,7 +102,7 @@ export const imageGenerationScreenMessages = {
       "好きな文字と2つの色を組み合わせて、文字アート画像を生成します。",
     textHelper: "1〜64文字",
     characterHelper: "1〜128文字",
-    downloadHelper: "生成したPNG画像は自動でダウンロードされます。",
+    downloadHelper: "生成した画像を確認してからダウンロードできます。",
   },
   en: {
     heading: "Draw letters with letters.",
@@ -101,7 +110,7 @@ export const imageGenerationScreenMessages = {
       "Combine your favorite characters and two colors to generate text art.",
     textHelper: "1–64 characters",
     characterHelper: "1–128 characters",
-    downloadHelper: "The generated PNG image will download automatically.",
+    downloadHelper: "Preview the generated image before downloading it.",
   },
 } satisfies Record<Locale, ImageGenerationScreenMessages>;
 

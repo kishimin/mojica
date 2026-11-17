@@ -1,4 +1,5 @@
-import { useState } from "react";
+import type { AxiosResponse } from "axios";
+import { useEffect, useRef, useState } from "react";
 import { Controller } from "react-hook-form";
 import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
 import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
@@ -17,6 +18,7 @@ import {
 import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
+import { Button } from "@/components/ui/button";
 import {
   imageGenerationFormMessages,
   imageGenerationScreenMessages,
@@ -31,6 +33,11 @@ type ImageGenerationFormProps = {
 
 /** Renders the image-generation inputs and their initial values. */
 const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
+  const [preview, setPreview] = useState<{ response: AxiosResponse<Blob>; url: string }>();
+  const revision = useRef(0);
+  useEffect(() => () => {
+    if (preview) URL.revokeObjectURL(preview.url);
+  }, [preview]);
   const [apiError, setApiError] = useState<{
     title: string;
     description: string;
@@ -44,34 +51,35 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     setError,
     formState: { errors, isSubmitting },
   } = useImageGenerationForm();
-  const { isPending, mutate } = usePostImages<PostImagesMutationError>({
-    mutation: {
-      onSuccess: (response) => {
-        downloadGeneratedImage(response);
-      },
-      onError: async (error) => {
-        const response = await parseImageGenerationErrorResponse(
-          error.response?.data,
-        );
-        const fieldErrors =
-          response && "errors" in response ? response.errors : undefined;
-
-        applyImageGenerationFieldErrors(fieldErrors, setError);
-
-        if ((fieldErrors ?? []).length === 0) {
-          setApiError(toImageGenerationApiError(response, locale));
-          setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
-        }
-      },
-    },
-  });
+  const { isPending, mutate } = usePostImages<PostImagesMutationError>();
   const messages = imageGenerationFormMessages[locale];
   const screenMessages = imageGenerationScreenMessages[locale];
+  const invalidatePreview = () => {
+    revision.current += 1;
+    setPreview(undefined);
+  };
+  const handleApiError = async (error: PostImagesMutationError, submittedRevision: number) => {
+    const response = await parseImageGenerationErrorResponse(error.response?.data);
+    if (submittedRevision !== revision.current) return;
+    const fieldErrors = response && "errors" in response ? response.errors : undefined;
+    applyImageGenerationFieldErrors(fieldErrors, setError);
+    if ((fieldErrors ?? []).length === 0) {
+      setApiError(toImageGenerationApiError(response, locale));
+      setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
+    }
+  };
 
-  const submitForm = handleSubmit((values) => {
+  const submitForm = (submittedRevision: number) => handleSubmit((values) => {
+    if (submittedRevision !== revision.current) return;
     setApiError(undefined);
     setRetryAfterSeconds(0);
-    mutate({ data: values });
+    mutate({ data: values }, {
+      onSuccess: (response) => {
+        if (submittedRevision !== revision.current) return;
+        setPreview({ response, url: URL.createObjectURL(response.data) });
+      },
+      onError: (error) => { void handleApiError(error, submittedRevision); },
+    });
   });
 
   const getErrorMessage = (message: string | undefined) =>
@@ -82,8 +90,9 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
   return (
     <form
       className={"min-w-0 flex flex-col gap-6"}
+      onChange={invalidatePreview}
       onSubmit={(event) => {
-        void submitForm(event);
+        void submitForm(revision.current)(event);
       }}
     >
       {apiError ? (
@@ -148,7 +157,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         render={({ field }) => (
           <ImageTypeSelect
             value={field.value}
-            onChange={field.onChange}
+            onChange={(value) => { invalidatePreview(); field.onChange(value); }}
             errorMessage={getErrorMessage(errors.type?.message)}
           />
         )}
@@ -166,6 +175,14 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
       <p className={"text-center text-xs text-helper-foreground"}>
         {screenMessages.downloadHelper}
       </p>
+      {preview ? (
+        <div className={"flex flex-col items-center gap-4"}>
+          <img src={preview.url} alt={messages.previewAlt} className={"max-w-full"} />
+          <Button type={"button"} onClick={() => downloadGeneratedImage(preview.response)}>
+            {messages.download}
+          </Button>
+        </div>
+      ) : <p>{messages.previewPlaceholder}</p>}
     </form>
   );
 };
