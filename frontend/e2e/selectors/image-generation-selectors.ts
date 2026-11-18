@@ -8,6 +8,8 @@ export const imageGenerationSelectorKeys = {
   backgroundCharacterLabel: "backgroundCharacterLabel",
   backgroundColorLabel: "backgroundColorLabel",
   submitButton: "submitButton",
+  downloadButton: "downloadButton",
+  preview: "preview",
   imageTypeLabel: "imageTypeLabel",
 } as const;
 type ImageGenerationSelectorKey =
@@ -41,6 +43,14 @@ export const imageGenerationSelectors = {
   submitButton: {
     ja: /画像を生成する/,
     en: /Generate image/,
+  },
+  downloadButton: {
+    ja: /PNGをダウンロード/,
+    en: /Download PNG/,
+  },
+  preview: {
+    ja: /生成した画像/,
+    en: /Generated image/,
   },
   imageTypeLabel: {
     ja: /画像タイプ/,

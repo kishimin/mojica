@@ -1,22 +1,13 @@
-import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
-import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
-import { applyImageGenerationFieldErrors } from "../../utils/applyImageGenerationFieldErrors";
+import { useImageGenerationController } from "../../hooks/useImageGenerationController";
 import { downloadGeneratedImage } from "../../utils/downloadGeneratedImage";
-import { parseImageGenerationErrorResponse } from "../../utils/parseImageGenerationErrorResponse";
 import { toGenerateButtonState } from "../../utils/toGenerateButtonState";
-import { toImageGenerationApiError } from "../../utils/toImageGenerationApiError";
-import { toRetryAfterSeconds } from "../../utils/toRetryAfterSeconds";
 import GenerateButton from "../GenerateButton/GenerateButton";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
-import {
-  usePostImages,
-  type PostImagesMutationError,
-} from "@/api/endpoints/image/image";
 import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
+import { Button } from "@/components/ui/button";
 import {
   imageGenerationFormMessages,
   imageGenerationScreenMessages,
@@ -31,48 +22,20 @@ type ImageGenerationFormProps = {
 
 /** Renders the image-generation inputs and their initial values. */
 const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
-  const [apiError, setApiError] = useState<{
-    title: string;
-    description: string;
-  }>();
-  const [retryAfterSeconds, setRetryAfterSeconds] = useState(0);
-  const remainingRetryAfterSeconds = useRetryAfterCountdown(retryAfterSeconds);
   const {
     register,
     control,
-    handleSubmit,
-    setError,
-    formState: { errors, isSubmitting },
-  } = useImageGenerationForm();
-  const { isPending, mutate } = usePostImages<PostImagesMutationError>({
-    mutation: {
-      onSuccess: (response) => {
-        downloadGeneratedImage(response);
-      },
-      onError: async (error) => {
-        const response = await parseImageGenerationErrorResponse(
-          error.response?.data,
-        );
-        const fieldErrors =
-          response && "errors" in response ? response.errors : undefined;
-
-        applyImageGenerationFieldErrors(fieldErrors, setError);
-
-        if ((fieldErrors ?? []).length === 0) {
-          setApiError(toImageGenerationApiError(response, locale));
-          setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
-        }
-      },
-    },
-  });
+    errors,
+    isPending,
+    isSubmitting,
+    apiError,
+    remainingRetryAfterSeconds,
+    preview,
+    invalidatePreview,
+    onSubmit,
+  } = useImageGenerationController(locale);
   const messages = imageGenerationFormMessages[locale];
   const screenMessages = imageGenerationScreenMessages[locale];
-
-  const submitForm = handleSubmit((values) => {
-    setApiError(undefined);
-    setRetryAfterSeconds(0);
-    mutate({ data: values });
-  });
 
   const getErrorMessage = (message: string | undefined) =>
     message
@@ -82,9 +45,8 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
   return (
     <form
       className={"min-w-0 flex flex-col gap-6"}
-      onSubmit={(event) => {
-        void submitForm(event);
-      }}
+      onChange={invalidatePreview}
+      onSubmit={onSubmit}
     >
       {apiError ? (
         <AlertBanner
@@ -148,7 +110,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         render={({ field }) => (
           <ImageTypeSelect
             value={field.value}
-            onChange={field.onChange}
+            onChange={(value) => { invalidatePreview(); field.onChange(value); }}
             errorMessage={getErrorMessage(errors.type?.message)}
           />
         )}
@@ -166,6 +128,14 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
       <p className={"text-center text-xs text-helper-foreground"}>
         {screenMessages.downloadHelper}
       </p>
+      {preview ? (
+        <div className={"flex flex-col items-center gap-4"}>
+          <img src={preview.url} alt={messages.previewAlt} className={"max-w-full"} />
+          <Button type={"button"} onClick={() => downloadGeneratedImage(preview.response)}>
+            {messages.download}
+          </Button>
+        </div>
+      ) : <p>{messages.previewPlaceholder}</p>}
     </form>
   );
 };
