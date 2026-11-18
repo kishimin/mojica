@@ -1,14 +1,14 @@
 import { act, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import ImageGenerationForm from "./ImageGenerationForm";
+import ImageGenerationScreen from "../../views/ImageGenerationScreen";
 import { getPostImagesMockHandler } from "@/api/endpoints/image/image.msw";
 import { worker } from "@/api/mocks/browser";
 import { setupWithProviders } from "@/tests/test-utils";
 import type { Locale } from "@/types/i18n";
 
 const setupImageGenerationForm = (locale: Locale) =>
-  setupWithProviders(<ImageGenerationForm locale={locale} />, locale);
+  setupWithProviders(<ImageGenerationScreen />, locale);
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -85,6 +85,13 @@ describe("ImageGenerationForm", () => {
     });
   });
 
+  test("does not show pixel limits in either locale", async () => {
+    const { user } = setupImageGenerationForm("en");
+    await user.click(screen.getByRole("radio", { name: "Draw images with text" }));
+    expect(screen.queryByText(/pixels? per side/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/PNG, JPEG, or WebP up to 2 MiB/i)).toBeVisible();
+  });
+
   describe("client submission", () => {
     test("discards a response when inputs changed during generation", async () => {
       const callbacks = { requestStarted: () => {}, releaseResponse: () => {} };
@@ -109,7 +116,7 @@ describe("ImageGenerationForm", () => {
       callbacks.releaseResponse();
       await screen.findByRole("button", { name: "画像を生成する" });
       expect(screen.queryByRole("img", { name: "生成した画像" })).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: "PNGをダウンロード" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "PNGをダウンロード" })).toBeDisabled();
     });
     test("uploads an image and renders the returned preview", async () => {
       const requests: FormData[] = [];
@@ -121,7 +128,7 @@ describe("ImageGenerationForm", () => {
       }));
       const { user } = setupImageGenerationForm("ja");
       await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
-      expect(screen.getByText(/縦横204ピクセル以下/)).toBeVisible();
+      expect(screen.queryByText(/ピクセル以下/)).not.toBeInTheDocument();
       await user.upload(screen.getByLabelText("元画像"), new File(["test"], "input.png", { type: "image/png" }));
       await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
       await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
@@ -203,7 +210,7 @@ describe("ImageGenerationForm", () => {
       await user.type(screen.getByRole("textbox", { name: "描画する文字列" }), "X");
 
       expect(screen.queryByRole("img", { name: "生成した画像" })).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: "PNGをダウンロード" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "PNGをダウンロード" })).toBeDisabled();
     });
 
     test("blocks submission and displays client validation errors", async () => {
