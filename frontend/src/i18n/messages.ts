@@ -52,6 +52,7 @@ type ImageGenerationFormMessages = {
   textMode: string;
   imageMode: string;
   imageFile: string;
+  imageSelectPrompt: string;
   imageHelp: string;
   imageRequired: string;
   imageOutputTooLarge: string;
@@ -79,7 +80,8 @@ export const imageGenerationFormMessages = {
     textMode: "文字を文字で描く",
     imageMode: "画像を文字で描く",
     imageFile: "元画像",
-    imageHelp: "PNG、JPEG、WebP形式で、2 MiB以下、縦横204ピクセル以下の静止画像を選んでください。",
+    imageSelectPrompt: "画像を選択、またはドラッグ＆ドロップ",
+    imageHelp: "PNG、JPEG、WebP形式で、2 MiB以下の静止画像を選んでください。",
     imageRequired: "元画像を選択してください。",
     imageOutputTooLarge: "元画像の縦横のサイズを小さくして、もう一度お試しください。",
     imageForeground: "絵柄に使う文字",
@@ -104,7 +106,8 @@ export const imageGenerationFormMessages = {
     textMode: "Draw text with text",
     imageMode: "Draw images with text",
     imageFile: "Source image",
-    imageHelp: "Choose a non-animated PNG, JPEG, or WebP up to 2 MiB and 204 pixels per side.",
+    imageSelectPrompt: "Choose an image or drag and drop",
+    imageHelp: "Choose a non-animated PNG, JPEG, or WebP up to 2 MiB.",
     imageRequired: "Choose a source image.",
     imageOutputTooLarge: "Reduce the source image dimensions and try again.",
     imageForeground: "Pattern characters",

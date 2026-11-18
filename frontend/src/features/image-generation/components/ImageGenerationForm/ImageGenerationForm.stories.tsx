@@ -1,12 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { HttpResponse, http } from "msw";
-import ImageGenerationForm from "./ImageGenerationForm";
+import ImageGenerationScreen from "../../views/ImageGenerationScreen";
 import { getPostImagesMockHandler } from "@/api/endpoints/image/image.msw";
 import { I18nProvider } from "@/providers/I18nProvider";
+import type { Locale } from "@/types/i18n";
+
+const ImageGenerationFormStory = ({ locale }: { locale: Locale }) => (
+  <I18nProvider initialLocale={locale}><ImageGenerationScreen /></I18nProvider>
+);
 
 const meta = {
   title: "Features/Image Generation/ImageGenerationForm",
-  component: ImageGenerationForm,
+  component: ImageGenerationFormStory,
   parameters: {
     docs: {
       description: {
@@ -15,12 +20,7 @@ const meta = {
       },
     },
   },
-  render: (args) => (
-    <I18nProvider initialLocale={args.locale}>
-      <ImageGenerationForm {...args} />
-    </I18nProvider>
-  ),
-} satisfies Meta<typeof ImageGenerationForm>;
+} satisfies Meta<typeof ImageGenerationFormStory>;
 
 export default meta;
 

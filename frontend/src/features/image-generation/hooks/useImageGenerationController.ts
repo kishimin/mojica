@@ -108,3 +108,5 @@ export const useImageGenerationController = (locale: Locale) => {
   };
   return { register, control, errors, isPending: isPending || upload.isPending, isSubmitting, apiError, remainingRetryAfterSeconds, preview, invalidatePreview, onSubmit, mode, setMode, file, setFile, fileError, setFileError, setApiError };
 };
+
+export type ImageGenerationController = ReturnType<typeof useImageGenerationController>;

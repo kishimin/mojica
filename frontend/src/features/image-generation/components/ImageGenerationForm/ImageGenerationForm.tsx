@@ -1,9 +1,10 @@
 import { Controller } from "react-hook-form";
-import { useImageGenerationController } from "../../hooks/useImageGenerationController";
+import type { ImageGenerationController } from "../../hooks/useImageGenerationController";
 import { downloadGeneratedImage } from "../../utils/downloadGeneratedImage";
 import { toGenerateButtonState } from "../../utils/toGenerateButtonState";
 import GenerateButton from "../GenerateButton/GenerateButton";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
+import uploadIcon from "@/assets/image-upload.svg";
 import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
@@ -18,11 +19,12 @@ import type { Locale } from "@/types/i18n";
 type ImageGenerationFormProps = {
   /** Locale used for this form's labels. */
   locale: Locale;
+  controller: ImageGenerationController;
 };
 
 /** Renders the image-generation inputs and their initial values. */
-const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
-  const { register, control, errors, isPending, isSubmitting, apiError, remainingRetryAfterSeconds, preview, invalidatePreview, onSubmit, mode, setMode, setFile, fileError, setFileError, setApiError } = useImageGenerationController(locale);
+const ImageGenerationForm = ({ locale, controller }: ImageGenerationFormProps) => {
+  const { register, control, errors, isPending, isSubmitting, apiError, remainingRetryAfterSeconds, preview, invalidatePreview, onSubmit, mode, file, setFile, fileError, setFileError } = controller;
   const messages = imageGenerationFormMessages[locale];
   const screenMessages = imageGenerationScreenMessages[locale];
 
@@ -44,20 +46,19 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
         />
       ) : null}
 
-      <fieldset className={"flex gap-4"}>
-        <legend>{messages.mode}</legend>
-        <label><input type={"radio"} name={"mode"} checked={mode === "text"} onChange={() => { setMode("text"); setFile(undefined); setFileError(false); setApiError(undefined); }} /> {messages.textMode}</label>
-        <label><input type={"radio"} name={"mode"} checked={mode === "image"} onChange={() => { setMode("image"); setApiError(undefined); }} /> {messages.imageMode}</label>
-      </fieldset>
       {mode === "text" ? <TextField
         label={messages.text}
         helperText={screenMessages.textHelper}
         errorMessage={getErrorMessage(errors.text?.message)}
         {...register("text")}
       /> : <div className={"flex flex-col gap-2"}>
-        <label htmlFor={"frame-image"}>{messages.imageFile}</label>
-        <input id={"frame-image"} type={"file"} accept={"image/png,image/jpeg,image/webp"} aria-describedby={"frame-image-help"} aria-invalid={fileError} aria-errormessage={fileError ? "frame-image-error" : undefined} onChange={(event) => { setFile(event.target.files?.[0]); setFileError(false); }} />
-        <p id={"frame-image-help"}>{messages.imageHelp}</p>
+        <span>{messages.imageFile}</span>
+        <label htmlFor={"frame-image"} className={"relative flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-input bg-muted/30 p-4 text-center focus-within:ring-3 focus-within:ring-ring/50"}>
+          <img src={uploadIcon} alt={""} className={"size-8"} />
+          <span>{file?.name ?? messages.imageSelectPrompt}</span>
+          <span id={"frame-image-help"} className={"text-xs text-muted-foreground"}>{messages.imageHelp}</span>
+          <input id={"frame-image"} aria-label={messages.imageFile} className={"absolute inset-0 h-full w-full cursor-pointer opacity-0"} type={"file"} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); setFile(event.dataTransfer.files[0]); setFileError(false); invalidatePreview(); }} accept={"image/png,image/jpeg,image/webp"} aria-describedby={"frame-image-help"} aria-invalid={fileError} aria-errormessage={fileError ? "frame-image-error" : undefined} onChange={(event) => { setFile(event.target.files?.[0]); setFileError(false); }} />
+        </label>
         {fileError ? <p id={"frame-image-error"} role={"alert"}>{messages.imageRequired}</p> : null}
       </div>}
 
@@ -134,7 +135,10 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
             {messages.download}
           </Button>
         </div>
-      ) : <p>{messages.previewPlaceholder}</p>}
+      ) : <div className={"flex flex-col gap-4"}>
+        <div className={"flex min-h-40 items-center justify-center rounded-lg border border-input bg-muted/30 p-4 text-center text-sm text-muted-foreground"}>{messages.previewPlaceholder}</div>
+        <Button type={"button"} disabled>{messages.download}</Button>
+      </div>}
     </form>
   );
 };
