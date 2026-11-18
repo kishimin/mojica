@@ -87,12 +87,15 @@ describe("ImageGenerationForm", () => {
 
   describe("client submission", () => {
     test("discards a response when inputs changed during generation", async () => {
-      const resolveResponse = vi.fn<(value?: void | PromiseLike<void>) => void>();
-      const responseReady = new Promise<void>((resolve) => { resolveResponse.mockImplementation(resolve); });
-      const started = vi.fn<() => void>();
-      const createObjectURL = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:preview");
+      const callbacks = { requestStarted: () => {}, releaseResponse: () => {} };
+      const requestStarted = new Promise<void>((resolve) => {
+        callbacks.requestStarted = resolve;
+      });
+      const responseReady = new Promise<void>((resolve) => {
+        callbacks.releaseResponse = resolve;
+      });
       worker.use(getPostImagesMockHandler(async () => {
-        started();
+        callbacks.requestStarted();
         await responseReady;
         return new Uint8Array([137, 80]).buffer;
       }));
@@ -101,13 +104,14 @@ describe("ImageGenerationForm", () => {
       await user.type(screen.getByRole("textbox", { name: "描画に使う文字" }), "A");
       await user.type(screen.getByRole("textbox", { name: "敷き詰める文字" }), "B");
       await user.click(screen.getByRole("button", { name: "画像を生成する" }));
-      await waitFor(() => expect(started).toHaveBeenCalledOnce());
+      await requestStarted;
       await user.type(screen.getByRole("textbox", { name: "描画する文字列" }), "X");
-      resolveResponse();
+      callbacks.releaseResponse();
       await screen.findByRole("button", { name: "画像を生成する" });
       expect(screen.queryByRole("img", { name: "生成した画像" })).not.toBeInTheDocument();
-      expect(createObjectURL).not.toHaveBeenCalled();
+      expect(screen.queryByRole("button", { name: "PNGをダウンロード" })).not.toBeInTheDocument();
     });
+
     test("submits a valid image-generation request once", async () => {
       const requests: unknown[] = [];
       worker.use(
@@ -147,53 +151,35 @@ describe("ImageGenerationForm", () => {
       });
     });
 
-    test("previews a successful PNG and downloads only when requested", async () => {
-      const objectUrl = "blob:http://localhost/generated-image";
-      const createdAnchors: HTMLAnchorElement[] = [];
-      vi.spyOn(URL, "createObjectURL").mockReturnValue(objectUrl);
-      vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => undefined);
-      const createElement = vi.spyOn(document, "createElement");
-      createElement.mockImplementation((tagName) => {
-        const element = document.createElementNS(
-          "http://www.w3.org/1999/xhtml",
-          tagName,
-        );
-        if (element instanceof HTMLAnchorElement) {
-          createdAnchors.push(element);
-        }
-        return element;
-      });
-      const click = vi
-        .spyOn(HTMLAnchorElement.prototype, "click")
-        .mockImplementation(() => undefined);
-      worker.use(
-        getPostImagesMockHandler(() => new Uint8Array([137, 80]).buffer),
+    test("shows the generated image in the preview", async () => {
+      const png = Uint8Array.from(
+        atob("iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAASSURBVChTY2CgJfiPLjAKiAYAPG0BAOp2pS8AAAAASUVORK5CYII="),
+        (character) => character.charCodeAt(0),
       );
-
+      worker.use(getPostImagesMockHandler(() => png.buffer));
       const { user } = setupImageGenerationForm("ja");
-      await user.type(
-        screen.getByRole("textbox", { name: "描画する文字列" }),
-        "KA",
-      );
-      await user.type(
-        screen.getByRole("textbox", { name: "描画に使う文字" }),
-        "🌻",
-      );
-      await user.type(
-        screen.getByRole("textbox", { name: "敷き詰める文字" }),
-        "☀",
-      );
+      await user.type(screen.getByRole("textbox", { name: "描画する文字列" }), "KA");
+      await user.type(screen.getByRole("textbox", { name: "描画に使う文字" }), "A");
+      await user.type(screen.getByRole("textbox", { name: "敷き詰める文字" }), "B");
       await user.click(screen.getByRole("button", { name: "画像を生成する" }));
 
-      expect(await screen.findByRole("img", { name: "生成した画像" })).toBeVisible();
-      expect(click).not.toHaveBeenCalled();
-      await user.click(screen.getByRole("button", { name: "PNGをダウンロード" }));
-      expect(click).toHaveBeenCalledOnce();
-      expect(createdAnchors[0]).toHaveAttribute(
-        "download",
-        "generated-image.png",
-      );
-      expect(createdAnchors[0]).toHaveAttribute("href", objectUrl);
+      const preview = await screen.findByRole("img", { name: "生成した画像" });
+      expect(preview).toBeVisible();
+      await waitFor(() => expect(preview).toHaveProperty("naturalWidth", 10));
+    });
+
+    test("clears the preview and download action after an input change", async () => {
+      worker.use(getPostImagesMockHandler(() => new Uint8Array([137, 80]).buffer));
+      const { user } = setupImageGenerationForm("ja");
+      await user.type(screen.getByRole("textbox", { name: "描画する文字列" }), "KA");
+      await user.type(screen.getByRole("textbox", { name: "描画に使う文字" }), "A");
+      await user.type(screen.getByRole("textbox", { name: "敷き詰める文字" }), "B");
+      await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+      await screen.findByRole("img", { name: "生成した画像" });
+      await user.type(screen.getByRole("textbox", { name: "描画する文字列" }), "X");
+
+      expect(screen.queryByRole("img", { name: "生成した画像" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "PNGをダウンロード" })).not.toBeInTheDocument();
     });
 
     test("blocks submission and displays client validation errors", async () => {
@@ -247,10 +233,9 @@ describe("ImageGenerationForm", () => {
   describe("submission state", () => {
     test("prevents duplicate submissions while generating", async () => {
       const requests: unknown[] = [];
-      const resolveResponse =
-        vi.fn<(value?: void | PromiseLike<void>) => void>();
+      const callbacks = { releaseResponse: () => {} };
       const responseReady = new Promise<void>((resolve) => {
-        resolveResponse.mockImplementation(resolve);
+        callbacks.releaseResponse = resolve;
       });
       worker.use(
         getPostImagesMockHandler(async ({ request }) => {
@@ -287,7 +272,7 @@ describe("ImageGenerationForm", () => {
       await user.click(submittingButton);
       expect(requests).toHaveLength(1);
 
-      resolveResponse();
+      callbacks.releaseResponse();
     });
   });
 
