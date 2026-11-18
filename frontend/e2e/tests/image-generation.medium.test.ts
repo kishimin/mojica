@@ -11,6 +11,22 @@ test.describe("image generation", () => {
     const download = await imageGenerationPage.submit();
     expect(download.suggestedFilename()).toMatch(/\.png$/);
   });
+  test("previews the image without starting a download", async ({
+    page,
+    imageGenerationPage,
+  }) => {
+    const downloads: string[] = [];
+    page.on("download", (download) => downloads.push(download.suggestedFilename()));
+    await imageGenerationPage.navigate();
+    await imageGenerationPage.fillText("KA");
+    await imageGenerationPage.fillForegroundCharacter("A");
+    await imageGenerationPage.fillBackgroundCharacter("B");
+
+    await imageGenerationPage.generate();
+
+    expect(downloads).toEqual([]);
+  });
+
   test("generates an image through the real API", async ({
     imageGenerationPage,
   }) => {

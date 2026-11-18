@@ -85,12 +85,20 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     await page.screenshot({ path, fullPage: true });
   };
 
-  const submit = async (): Promise<Download> => {
+  const generate = async () => {
     await submitButton().click();
     await expect(page.getByRole("img", { name: imageGenerationSelectors.preview[locale] })).toBeVisible();
+  };
+
+  const download = async (): Promise<Download> => {
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: imageGenerationSelectors.downloadButton[locale] }).click();
     return downloadPromise;
+  };
+
+  const submit = async (): Promise<Download> => {
+    await generate();
+    return download();
   };
 
   const submitWithKeyboard = async (): Promise<Download> => {
@@ -113,6 +121,8 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     fillBackgroundColor,
     selectType,
     fillImageMode,
+    generate,
+    download,
     submit,
     submitWithKeyboard,
     heading,
