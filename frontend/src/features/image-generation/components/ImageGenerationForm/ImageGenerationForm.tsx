@@ -1,20 +1,9 @@
-import type { AxiosResponse } from "axios";
-import { useEffect, useRef, useState } from "react";
 import { Controller } from "react-hook-form";
-import { useImageGenerationForm } from "../../hooks/useImageGenerationForm";
-import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
-import { applyImageGenerationFieldErrors } from "../../utils/applyImageGenerationFieldErrors";
+import { useImageGenerationController } from "../../hooks/useImageGenerationController";
 import { downloadGeneratedImage } from "../../utils/downloadGeneratedImage";
-import { parseImageGenerationErrorResponse } from "../../utils/parseImageGenerationErrorResponse";
 import { toGenerateButtonState } from "../../utils/toGenerateButtonState";
-import { toImageGenerationApiError } from "../../utils/toImageGenerationApiError";
-import { toRetryAfterSeconds } from "../../utils/toRetryAfterSeconds";
 import GenerateButton from "../GenerateButton/GenerateButton";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
-import {
-  usePostImages,
-  type PostImagesMutationError,
-} from "@/api/endpoints/image/image";
 import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
@@ -33,54 +22,20 @@ type ImageGenerationFormProps = {
 
 /** Renders the image-generation inputs and their initial values. */
 const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
-  const [preview, setPreview] = useState<{ response: AxiosResponse<Blob>; url: string }>();
-  const revision = useRef(0);
-  useEffect(() => () => {
-    if (preview) URL.revokeObjectURL(preview.url);
-  }, [preview]);
-  const [apiError, setApiError] = useState<{
-    title: string;
-    description: string;
-  }>();
-  const [retryAfterSeconds, setRetryAfterSeconds] = useState(0);
-  const remainingRetryAfterSeconds = useRetryAfterCountdown(retryAfterSeconds);
   const {
     register,
     control,
-    handleSubmit,
-    setError,
-    formState: { errors, isSubmitting },
-  } = useImageGenerationForm();
-  const { isPending, mutate } = usePostImages<PostImagesMutationError>();
+    errors,
+    isPending,
+    isSubmitting,
+    apiError,
+    remainingRetryAfterSeconds,
+    preview,
+    invalidatePreview,
+    onSubmit,
+  } = useImageGenerationController(locale);
   const messages = imageGenerationFormMessages[locale];
   const screenMessages = imageGenerationScreenMessages[locale];
-  const invalidatePreview = () => {
-    revision.current += 1;
-    setPreview(undefined);
-  };
-  const handleApiError = async (error: PostImagesMutationError, submittedRevision: number) => {
-    const response = await parseImageGenerationErrorResponse(error.response?.data);
-    if (submittedRevision !== revision.current) return;
-    const fieldErrors = response && "errors" in response ? response.errors : undefined;
-    applyImageGenerationFieldErrors(fieldErrors, setError);
-    if ((fieldErrors ?? []).length === 0) {
-      setApiError(toImageGenerationApiError(response, locale));
-      setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
-    }
-  };
-
-  const submitForm = (submittedRevision: number) => handleSubmit((values) => {
-    if (submittedRevision !== revision.current) return;
-    setApiError(undefined);
-    setRetryAfterSeconds(0);
-    mutate({ data: values }, {
-      onSuccess: (response) => {
-        if (submittedRevision !== revision.current) return;
-        setPreview({ response, url: URL.createObjectURL(response.data) });
-      },
-      onError: (error) => { void handleApiError(error, submittedRevision); },
-    });
-  });
 
   const getErrorMessage = (message: string | undefined) =>
     message
@@ -91,9 +46,7 @@ const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
     <form
       className={"min-w-0 flex flex-col gap-6"}
       onChange={invalidatePreview}
-      onSubmit={(event) => {
-        void submitForm(revision.current)(event);
-      }}
+      onSubmit={onSubmit}
     >
       {apiError ? (
         <AlertBanner
