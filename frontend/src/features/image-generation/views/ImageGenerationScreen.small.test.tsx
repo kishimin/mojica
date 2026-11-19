@@ -17,6 +17,15 @@ describe("ImageGenerationScreen", () => {
     expect(screen.queryByRole("textbox", { name: "描画する文字列" })).not.toBeInTheDocument();
   });
 
+  test("画像を選択せず生成するとエラーを表示する", async () => {
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent("画像を選択してください");
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
