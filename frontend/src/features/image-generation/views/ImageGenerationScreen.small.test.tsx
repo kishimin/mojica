@@ -8,6 +8,15 @@ const renderScreen = (locale: Locale) =>
   setupWithProviders(<ImageGenerationScreen />, locale);
 
 describe("ImageGenerationScreen", () => {
+  test("画像モードへ切り替えられる", async () => {
+    const { user } = renderScreen("ja");
+
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+
+    expect(screen.getByLabelText("元画像")).toBeVisible();
+    expect(screen.queryByRole("textbox", { name: "描画する文字列" })).not.toBeInTheDocument();
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
