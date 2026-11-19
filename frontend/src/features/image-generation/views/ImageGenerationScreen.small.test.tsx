@@ -137,6 +137,20 @@ describe("ImageGenerationScreen", () => {
     expect(requests).toHaveLength(0);
   });
 
+  test("出力サイズが大きい場合は元画像について案内する", async () => {
+    worker.use(http.post("*/images/frame-file", () =>
+      HttpResponse.json({ code: "IMAGE_OUTPUT_SIZE_EXCEEDED", message: "出力上限を超えました。" }, { status: 422 }),
+    ));
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+    await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("元画像の縦横のサイズを小さくして、もう一度お試しください。");
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
