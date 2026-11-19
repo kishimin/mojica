@@ -94,7 +94,11 @@ const ImageUploadForm = ({ locale }: Props) => {
                 serverErrors[item.field] = item.message;
               }
             }
-            setFieldErrors(serverErrors);
+            if (Object.keys(serverErrors).length) {
+              setFieldErrors(serverErrors);
+            } else {
+              setApiError(toImageGenerationApiError(response, locale));
+            }
           } else {
             const presentation = toImageGenerationApiError(response, locale);
             setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
