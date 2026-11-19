@@ -192,6 +192,14 @@ describe("ImageGenerationScreen", () => {
     expect(screen.getByRole("textbox", { name: "絵柄に使う文字" })).toHaveAttribute("aria-invalid", "true");
   });
 
+  test("生成前はプレビュー案内と無効なダウンロードボタンを表示する", async () => {
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+
+    expect(screen.getByText("生成するとここに表示されます")).toBeVisible();
+    expect(screen.getByRole("button", { name: "PNGをダウンロード" })).toBeDisabled();
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
