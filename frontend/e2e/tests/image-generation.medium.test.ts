@@ -1,6 +1,11 @@
 import { expect, test } from "../fixtures/test.ts";
 
 test.describe("image generation", () => {
+  test("accepts a dropped source image", async ({ imageGenerationPage }) => {
+    await imageGenerationPage.navigate();
+    await imageGenerationPage.dropSourceImage();
+    await expect(imageGenerationPage.sourceFileName("dropped.png")).toBeVisible();
+  });
   test("previews the image without starting a download", async ({
     page,
     imageGenerationPage,

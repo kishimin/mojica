@@ -74,6 +74,18 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
       .click();
   };
 
+  const dropSourceImage = async () => {
+    await page.getByRole("radio", { name: locale === "ja" ? "画像を文字で描く" : "Draw images with text" }).check();
+    const dataTransfer = await page.evaluateHandle(`(() => {
+      const data = new DataTransfer();
+      data.items.add(new File(["image"], "dropped.png", { type: "image/png" }));
+      return data;
+    })()`);
+    await page.getByLabel(locale === "ja" ? "元画像" : "Source image").dispatchEvent("drop", { dataTransfer });
+  };
+
+  const sourceFileName = (name: string) => page.getByText(name);
+
   const captureScreenshot = async (path: string) => {
     await page.screenshot({ path, fullPage: true });
   };
@@ -108,6 +120,8 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
   return {
     navigate,
     fillText,
+    dropSourceImage,
+    sourceFileName,
     fillForegroundCharacter,
     fillBackgroundCharacter,
     fillForegroundColor,
