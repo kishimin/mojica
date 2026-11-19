@@ -2,7 +2,7 @@ import type { AxiosResponse } from "axios";
 import { useEffect, useRef, useState } from "react";
 import type { DragEvent, FormEvent } from "react";
 import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
-import { imageGenerationSchema } from "../../schemas/imageGenerationSchema";
+import { imageUploadSchema } from "../../schemas/imageGenerationSchema";
 import { downloadGeneratedImage } from "../../utils/downloadGeneratedImage";
 import { parseImageGenerationErrorResponse } from "../../utils/parseImageGenerationErrorResponse";
 import { toGenerateButtonState } from "../../utils/toGenerateButtonState";
@@ -51,9 +51,7 @@ const ImageUploadForm = ({ locale }: Props) => {
 
   const revalidateField = (name: "foregroundCharacter" | "backgroundCharacter", value: string) => {
     if (!fieldErrors[name]) return;
-    const parsed = imageGenerationSchema.safeParse({
-      text: "x",
-      type: "standard",
+    const parsed = imageUploadSchema.safeParse({
       foregroundCharacter: name === "foregroundCharacter" ? value : pattern,
       backgroundCharacter: name === "backgroundCharacter" ? value : background,
       foregroundColor: patternColor,
@@ -85,7 +83,7 @@ const ImageUploadForm = ({ locale }: Props) => {
       foregroundColor: patternColor,
       backgroundColor,
     };
-    const parsed = imageGenerationSchema.safeParse({ text: "x", type: "standard", ...values });
+    const parsed = imageUploadSchema.safeParse(values);
     const errors: Record<string, string> = {};
     if (!parsed.success) {
       for (const issue of parsed.error.issues) {
