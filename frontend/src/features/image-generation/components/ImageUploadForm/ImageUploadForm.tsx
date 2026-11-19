@@ -1,11 +1,13 @@
 import type { AxiosResponse } from "axios";
 import { useEffect, useRef, useState } from "react";
 import type { DragEvent, FormEvent } from "react";
+import GenerateButton from "../GenerateButton/GenerateButton";
 import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
 import { imageGenerationSchema } from "../../schemas/imageGenerationSchema";
 import { downloadGeneratedImage } from "../../utils/downloadGeneratedImage";
 import { parseImageGenerationErrorResponse } from "../../utils/parseImageGenerationErrorResponse";
 import { toImageGenerationApiError } from "../../utils/toImageGenerationApiError";
+import { toGenerateButtonState } from "../../utils/toGenerateButtonState";
 import { toRetryAfterSeconds } from "../../utils/toRetryAfterSeconds";
 import { usePostImagesFrameFile } from "@/api/endpoints/image-upload/image-upload";
 import uploadIcon from "@/assets/image-upload.svg";
@@ -14,7 +16,6 @@ import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
 import { Button } from "@/components/ui/button";
 import {
-  generateButtonMessages,
   imageGenerationFormMessages,
   imageGenerationScreenMessages,
   imageGenerationValidationMessages,
@@ -147,9 +148,12 @@ const ImageUploadForm = ({ locale }: Props) => {
 
       <ColorPickerField label={messages.backgroundColor} colorPickerLabel={messages.backgroundColorPicker} value={backgroundColor} errorMessage={fieldErrors.backgroundColor} onChange={setBackgroundColor} />
 
-      <Button className={"h-12 w-full"} type={"submit"} disabled={upload.isPending || remainingRetryAfterSeconds > 0}>
-        {remainingRetryAfterSeconds > 0 ? generateButtonMessages[locale].cooldown(remainingRetryAfterSeconds) : generateButtonMessages[locale].idle}
-      </Button>
+      <GenerateButton state={toGenerateButtonState({
+        isPending: upload.isPending,
+        isSubmitting: false,
+        remainingRetryAfterSeconds,
+        hasApiError: apiError !== undefined,
+      })} />
 
       <p className={"text-center text-xs text-helper-foreground"}>{imageGenerationScreenMessages[locale].downloadHelper}</p>
       {preview ? <div className={"flex flex-col items-center gap-4"}>
