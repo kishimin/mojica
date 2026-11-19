@@ -280,6 +280,14 @@ describe("ImageGenerationScreen", () => {
     expect(color).not.toHaveAttribute("aria-invalid", "true");
   });
 
+  test("画像モードでは標準画像で生成することを案内する", async () => {
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+
+    expect(screen.getByText("画像モードでは標準画像を生成します。")).toBeVisible();
+    expect(screen.queryByRole("combobox", { name: "画像タイプ" })).not.toBeInTheDocument();
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
