@@ -49,7 +49,10 @@ const ImageUploadForm = ({ locale }: Props) => {
     setPreview(undefined);
   };
 
-  const revalidateField = (name: "foregroundCharacter" | "backgroundCharacter" | "foregroundColor" | "backgroundColor", value: string) => {
+  const revalidateField = (
+    name: "foregroundCharacter" | "backgroundCharacter" | "foregroundColor" | "backgroundColor",
+    value: string,
+  ) => {
     if (!fieldErrors[name]) return;
     const parsed = imageUploadSchema.safeParse({
       foregroundCharacter: name === "foregroundCharacter" ? value : pattern,
@@ -60,7 +63,9 @@ const ImageUploadForm = ({ locale }: Props) => {
     const names = [name];
     if (name === "foregroundCharacter" || name === "backgroundCharacter") {
       const other = name === "foregroundCharacter" ? "backgroundCharacter" : "foregroundCharacter";
-      if (fieldErrors[other] === imageGenerationValidationMessages[locale]["characterCombination.required"]) names.push(other);
+      if (fieldErrors[other] === imageGenerationValidationMessages[locale]["characterCombination.required"]) {
+        names.push(other);
+      }
     }
     setFieldErrors((current) => {
       const next = { ...current };
@@ -163,13 +168,49 @@ const ImageUploadForm = ({ locale }: Props) => {
         {fileError ? <p id={"frame-image-error"} role={"alert"}>{messages.imageRequired}</p> : null}
       </div>
 
-      <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.pattern} errorMessage={fieldErrors.foregroundCharacter} value={pattern} onChange={(event) => { setPattern(event.target.value); revalidateField("foregroundCharacter", event.target.value); }} />
+      <TextField
+        helperText={imageGenerationScreenMessages[locale].characterHelper}
+        label={messages.pattern}
+        errorMessage={fieldErrors.foregroundCharacter}
+        value={pattern}
+        onChange={(event) => {
+          setPattern(event.target.value);
+          revalidateField("foregroundCharacter", event.target.value);
+        }}
+      />
 
-      <ColorPickerField label={messages.patternColor} colorPickerLabel={messages.patternColorPicker} value={patternColor} errorMessage={fieldErrors.foregroundColor} onChange={(value) => { setPatternColor(value); revalidateField("foregroundColor", value); }} />
+      <ColorPickerField
+        label={messages.patternColor}
+        colorPickerLabel={messages.patternColorPicker}
+        value={patternColor}
+        errorMessage={fieldErrors.foregroundColor}
+        onChange={(value) => {
+          setPatternColor(value);
+          revalidateField("foregroundColor", value);
+        }}
+      />
 
-      <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.background} errorMessage={fieldErrors.backgroundCharacter} value={background} onChange={(event) => { setBackground(event.target.value); revalidateField("backgroundCharacter", event.target.value); }} />
+      <TextField
+        helperText={imageGenerationScreenMessages[locale].characterHelper}
+        label={messages.background}
+        errorMessage={fieldErrors.backgroundCharacter}
+        value={background}
+        onChange={(event) => {
+          setBackground(event.target.value);
+          revalidateField("backgroundCharacter", event.target.value);
+        }}
+      />
 
-      <ColorPickerField label={messages.backgroundColor} colorPickerLabel={messages.backgroundColorPicker} value={backgroundColor} errorMessage={fieldErrors.backgroundColor} onChange={(value) => { setBackgroundColor(value); revalidateField("backgroundColor", value); }} />
+      <ColorPickerField
+        label={messages.backgroundColor}
+        colorPickerLabel={messages.backgroundColorPicker}
+        value={backgroundColor}
+        errorMessage={fieldErrors.backgroundColor}
+        onChange={(value) => {
+          setBackgroundColor(value);
+          revalidateField("backgroundColor", value);
+        }}
+      />
 
       <p className={"text-xs text-helper-foreground"}>{messages.outputType}</p>
 
