@@ -1,5 +1,7 @@
 import type { AxiosResponse } from "axios";
 import { useEffect, useRef, useState } from "react";
+import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
+import { toRetryAfterSeconds } from "../../utils/toRetryAfterSeconds";
 import { imageGenerationSchema } from "../../schemas/imageGenerationSchema";
 import { parseImageGenerationErrorResponse } from "../../utils/parseImageGenerationErrorResponse";
 import { toImageGenerationApiError } from "../../utils/toImageGenerationApiError";
@@ -21,6 +23,8 @@ const ImageUploadForm = ({ locale }: Props) => {
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview.url); }, [preview]);
   const [file, setFile] = useState<File>();
   const [fileError, setFileError] = useState(false);
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState(0);
+  const remainingRetryAfterSeconds = useRetryAfterCountdown(retryAfterSeconds);
   const [apiError, setApiError] = useState<{ title: string; description: string }>();
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [pattern, setPattern] = useState("");
@@ -31,7 +35,7 @@ const ImageUploadForm = ({ locale }: Props) => {
   const messages = imageModeMessages[locale];
 
   return (
-    <form onChange={() => { revision.current += 1; setPreview(undefined); }} onSubmit={(event) => { event.preventDefault(); const submittedRevision = revision.current; setApiError(undefined); setFileError(!file);
+    <form onChange={() => { revision.current += 1; setPreview(undefined); }} onSubmit={(event) => { event.preventDefault(); const submittedRevision = revision.current; setApiError(undefined); setRetryAfterSeconds(0); setFileError(!file);
       const parsed = imageGenerationSchema.safeParse({ text: "x", type: "standard", foregroundCharacter: pattern, backgroundCharacter: background, foregroundColor: patternColor, backgroundColor });
       const errors: Record<string, string> = {};
       if (!parsed.success) for (const issue of parsed.error.issues) {
@@ -45,6 +49,7 @@ const ImageUploadForm = ({ locale }: Props) => {
           const response = await parseImageGenerationErrorResponse(error.response?.data);
           if (submittedRevision === revision.current) {
             const presentation = toImageGenerationApiError(response, locale);
+            setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
             setApiError(response?.code === "IMAGE_OUTPUT_SIZE_EXCEEDED" ? { ...presentation, description: messages.imageOutputTooLarge } : presentation);
           }
         })(); },
@@ -57,7 +62,7 @@ const ImageUploadForm = ({ locale }: Props) => {
       <ColorPickerField label={messages.patternColor} colorPickerLabel={messages.patternColorPicker} value={patternColor} errorMessage={fieldErrors.foregroundColor} onChange={setPatternColor} />
       <TextField label={messages.background} errorMessage={fieldErrors.backgroundCharacter} value={background} onChange={(event) => setBackground(event.target.value)} />
       <ColorPickerField label={messages.backgroundColor} colorPickerLabel={messages.backgroundColorPicker} value={backgroundColor} errorMessage={fieldErrors.backgroundColor} onChange={setBackgroundColor} />
-      <Button type={"submit"} disabled={upload.isPending}>{generateButtonMessages[locale].idle}</Button>
+      <Button type={"submit"} disabled={upload.isPending || remainingRetryAfterSeconds > 0}>{remainingRetryAfterSeconds > 0 ? generateButtonMessages[locale].cooldown(remainingRetryAfterSeconds) : generateButtonMessages[locale].idle}</Button>
       {preview ? <div>
         <img src={preview.url} alt={imageGenerationFormMessages[locale].previewAlt} />
         <Button type={"button"} onClick={() => downloadGeneratedImage(preview.response)}>{imageGenerationFormMessages[locale].download}</Button>
