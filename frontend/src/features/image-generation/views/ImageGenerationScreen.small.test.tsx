@@ -48,6 +48,25 @@ describe("ImageGenerationScreen", () => {
     expect(requests[0].get("backgroundCharacter")).toBe("B");
   });
 
+  test("選択した色を画像生成に使う", async () => {
+    const requests: FormData[] = [];
+    worker.use(http.post("*/images/frame-file", async ({ request }) => {
+      requests.push(await request.formData());
+      return new HttpResponse(new Uint8Array([137, 80]), { headers: { "Content-Type": "image/png" } });
+    }));
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+    await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
+    await user.clear(screen.getByRole("textbox", { name: "絵柄の文字色" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄の文字色" }), "#55aaff");
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+    await waitFor(() => expect(requests).toHaveLength(1));
+    expect(requests[0].get("foregroundColor")).toBe("#55aaff");
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
