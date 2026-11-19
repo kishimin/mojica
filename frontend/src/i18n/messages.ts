@@ -228,9 +228,13 @@ type ImageModeMessages = {
   imageRequired: string;
   pattern: string;
   background: string;
+  patternColor: string;
+  patternColorPicker: string;
+  backgroundColor: string;
+  backgroundColorPicker: string;
 };
 
 export const imageModeMessages = {
-  ja: { mode: "作成方法", textMode: "文字を文字で描く", imageMode: "画像を文字で描く", sourceImage: "元画像", imageRequired: "画像を選択してください", pattern: "絵柄に使う文字", background: "背景に使う文字" },
-  en: { mode: "Creation method", textMode: "Draw text with text", imageMode: "Draw images with text", sourceImage: "Source image", imageRequired: "Choose an image", pattern: "Pattern characters", background: "Background characters" },
+  ja: { mode: "作成方法", textMode: "文字を文字で描く", imageMode: "画像を文字で描く", sourceImage: "元画像", imageRequired: "画像を選択してください", pattern: "絵柄に使う文字", background: "背景に使う文字", patternColor: "絵柄の文字色", patternColorPicker: "絵柄の文字色を選択", backgroundColor: "背景の文字色", backgroundColorPicker: "背景の文字色を選択" },
+  en: { mode: "Creation method", textMode: "Draw text with text", imageMode: "Draw images with text", sourceImage: "Source image", imageRequired: "Choose an image", pattern: "Pattern characters", background: "Background characters", patternColor: "Pattern color", patternColorPicker: "Choose pattern color", backgroundColor: "Background color", backgroundColorPicker: "Choose background color" },
 } satisfies Record<Locale, ImageModeMessages>;
