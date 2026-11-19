@@ -24,7 +24,7 @@ const ImageGenerationScreen = () => {
             "flex flex-col items-center gap-3 px-4 text-center md:px-0"
           }
         >
-          <h1 className={"text-2xl font-semibold"}>{messages.heading}</h1>
+          <h1 className={"text-2xl font-semibold"}>{mode === "text" ? messages.heading : modeMessages.heading}</h1>
           <p className={"text-sm text-muted-foreground"}>
             {messages.description}
           </p>
