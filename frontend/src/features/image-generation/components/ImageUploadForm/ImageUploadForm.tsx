@@ -150,6 +150,7 @@ const ImageUploadForm = ({ locale }: Props) => {
       <Button className={"h-12 w-full"} type={"submit"} disabled={upload.isPending || remainingRetryAfterSeconds > 0}>
         {remainingRetryAfterSeconds > 0 ? generateButtonMessages[locale].cooldown(remainingRetryAfterSeconds) : generateButtonMessages[locale].idle}
       </Button>
+
       <p className={"text-center text-xs text-helper-foreground"}>{imageGenerationScreenMessages[locale].downloadHelper}</p>
       {preview ? <div className={"flex flex-col items-center gap-4"}>
         <img src={preview.url} alt={imageGenerationFormMessages[locale].previewAlt} className={"max-w-full"} />
