@@ -121,6 +121,22 @@ describe("ImageGenerationScreen", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("画像生成に失敗しました。");
   });
 
+  test("描画文字が空の場合は送信せず入力エラーを表示する", async () => {
+    const requests: FormData[] = [];
+    worker.use(http.post("*/images/frame-file", async ({ request }) => {
+      requests.push(await request.formData());
+      return new HttpResponse(new Uint8Array([137, 80]), { headers: { "Content-Type": "image/png" } });
+    }));
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+    expect(screen.getByText("描画に使う文字を入力してください。")).toBeVisible();
+    expect(screen.getByText("敷き詰める文字を入力してください。")).toBeVisible();
+    expect(requests).toHaveLength(0);
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
