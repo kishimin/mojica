@@ -74,21 +74,25 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
       .click();
   };
 
+  const selectImageMode = async () => {
+    await page.getByRole("radio", { name: imageGenerationSelectors.imageMode[locale] }).check();
+  };
+
   const fillImageMode = async (file: { name: string; mimeType: string; buffer: Buffer }, foreground: string, background: string) => {
-    await page.getByRole("radio", { name: locale === "ja" ? "画像を文字で描く" : "Draw images with text" }).check();
-    await page.getByLabel(locale === "ja" ? "元画像" : "Source image").setInputFiles(file);
-    await page.getByRole("textbox", { name: locale === "ja" ? "絵柄に使う文字" : "Pattern characters" }).fill(foreground);
-    await page.getByRole("textbox", { name: locale === "ja" ? "背景に使う文字" : "Background characters" }).fill(background);
+    await selectImageMode();
+    await page.getByLabel(imageGenerationSelectors.sourceImage[locale]).setInputFiles(file);
+    await page.getByRole("textbox", { name: imageGenerationSelectors.imageForeground[locale] }).fill(foreground);
+    await page.getByRole("textbox", { name: imageGenerationSelectors.imageBackground[locale] }).fill(background);
   };
 
   const dropSourceImage = async () => {
-    await page.getByRole("radio", { name: locale === "ja" ? "画像を文字で描く" : "Draw images with text" }).check();
+    await selectImageMode();
     const dataTransfer = await page.evaluateHandle(`(() => {
       const data = new DataTransfer();
       data.items.add(new File(["image"], "dropped.png", { type: "image/png" }));
       return data;
     })()`);
-    await page.getByLabel(locale === "ja" ? "元画像" : "Source image").dispatchEvent("drop", { dataTransfer });
+    await page.getByLabel(imageGenerationSelectors.sourceImage[locale]).dispatchEvent("drop", { dataTransfer });
   };
 
   const sourceFileName = (name: string) => page.getByText(name);
@@ -127,6 +131,7 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
   return {
     navigate,
     fillText,
+    selectImageMode,
     fillImageMode,
     dropSourceImage,
     sourceFileName,
