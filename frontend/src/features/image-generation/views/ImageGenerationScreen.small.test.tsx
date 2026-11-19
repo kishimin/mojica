@@ -288,6 +288,21 @@ describe("ImageGenerationScreen", () => {
     expect(screen.queryByRole("combobox", { name: "画像タイプ" })).not.toBeInTheDocument();
   });
 
+  test("文字の組み合わせを修正すると両方のエラーが消える", async () => {
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), " ");
+    await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), " ");
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+    expect(screen.getByRole("textbox", { name: "背景に使う文字" })).toHaveAttribute("aria-invalid", "true");
+
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+
+    expect(screen.getByRole("textbox", { name: "絵柄に使う文字" })).not.toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("textbox", { name: "背景に使う文字" })).not.toHaveAttribute("aria-invalid", "true");
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
