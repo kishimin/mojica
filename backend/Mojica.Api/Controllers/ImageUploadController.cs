@@ -12,6 +12,7 @@ namespace Mojica.Api.Controllers;
 public sealed class ImageUploadController(ImageUploadService service) : ControllerBase
 {
     [HttpPost("/images/frame-file")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK, "image/png")]
     [EnableRateLimiting(ImageGenerationRateLimiterPolicy.PolicyName)]
     [RequestSizeLimit(2 * 1024 * 1024 + 64 * 1024)]
     [UploadRequestSizeLimit]
