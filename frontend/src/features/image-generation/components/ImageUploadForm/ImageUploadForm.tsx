@@ -57,11 +57,19 @@ const ImageUploadForm = ({ locale }: Props) => {
       foregroundColor: name === "foregroundColor" ? value : patternColor,
       backgroundColor: name === "backgroundColor" ? value : backgroundColor,
     });
-    const issue = parsed.success ? undefined : parsed.error.issues.find((item) => item.path[0] === name);
-    setFieldErrors((current) => ({
-      ...current,
-      [name]: issue ? imageGenerationValidationMessages[locale][issue.message] ?? issue.message : "",
-    }));
+    const names = [name];
+    if (name === "foregroundCharacter" || name === "backgroundCharacter") {
+      const other = name === "foregroundCharacter" ? "backgroundCharacter" : "foregroundCharacter";
+      if (fieldErrors[other] === imageGenerationValidationMessages[locale]["characterCombination.required"]) names.push(other);
+    }
+    setFieldErrors((current) => {
+      const next = { ...current };
+      for (const field of names) {
+        const issue = parsed.success ? undefined : parsed.error.issues.find((item) => item.path[0] === field);
+        next[field] = issue ? imageGenerationValidationMessages[locale][issue.message] ?? issue.message : "";
+      }
+      return next;
+    });
   };
 
   const handleDrop = (event: DragEvent<HTMLInputElement>) => {
