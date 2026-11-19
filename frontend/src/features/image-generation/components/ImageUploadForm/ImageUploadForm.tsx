@@ -56,7 +56,8 @@ const ImageUploadForm = ({ locale }: Props) => {
       }); }}>
       {apiError ? <AlertBanner title={apiError.title} description={apiError.description} /> : null}
       <label htmlFor={"frame-image"}>{messages.sourceImage}</label>
-      <input id={"frame-image"} type={"file"} onChange={(event) => { setFile(event.target.files?.[0]); setFileError(false); }} />
+      <input id={"frame-image"} type={"file"} accept={"image/png,image/jpeg,image/webp"} aria-describedby={"frame-image-help"} onChange={(event) => { setFile(event.target.files?.[0]); setFileError(false); }} />
+      <p id={"frame-image-help"}>{messages.imageHelp}</p>
       {fileError ? <p role={"alert"}>{messages.imageRequired}</p> : null}
       <TextField label={messages.pattern} errorMessage={fieldErrors.foregroundCharacter} value={pattern} onChange={(event) => setPattern(event.target.value)} />
       <ColorPickerField label={messages.patternColor} colorPickerLabel={messages.patternColorPicker} value={patternColor} errorMessage={fieldErrors.foregroundColor} onChange={setPatternColor} />
