@@ -168,6 +168,15 @@ describe("ImageGenerationScreen", () => {
     vi.useRealTimers();
   });
 
+  test("英語の画像モードで対応形式を案内する", async () => {
+    const { user } = renderScreen("en");
+    await user.click(screen.getByRole("radio", { name: "Draw images with text" }));
+
+    expect(screen.getByLabelText("Source image")).toBeVisible();
+    expect(screen.getByText(/PNG, JPEG, or WebP up to 2 MiB/)).toBeVisible();
+    expect(screen.queryByText(/pixels? per side/i)).not.toBeInTheDocument();
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
