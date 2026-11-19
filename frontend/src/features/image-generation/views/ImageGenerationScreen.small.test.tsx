@@ -151,6 +151,23 @@ describe("ImageGenerationScreen", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("元画像の縦横のサイズを小さくして、もう一度お試しください。");
   });
 
+  test("画像生成の回数制限中は再試行を待つ", async () => {
+    vi.useFakeTimers({ toFake: ["Date", "setInterval", "clearInterval"] });
+    worker.use(http.post("*/images/frame-file", () =>
+      HttpResponse.json({ code: "RATE_LIMIT_EXCEEDED", message: "しばらくお待ちください。" }, { status: 429, headers: { "Retry-After": "5" } }),
+    ));
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+    await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+    expect(await screen.findByRole("button", { name: "5秒後に再試行できます" })).toBeDisabled();
+    act(() => { vi.advanceTimersByTime(5000); });
+    expect(screen.getByRole("button", { name: "画像を生成する" })).toBeEnabled();
+    vi.useRealTimers();
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
