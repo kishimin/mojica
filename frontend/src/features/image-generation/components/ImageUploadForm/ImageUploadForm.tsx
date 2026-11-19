@@ -49,13 +49,13 @@ const ImageUploadForm = ({ locale }: Props) => {
     setPreview(undefined);
   };
 
-  const revalidateField = (name: "foregroundCharacter" | "backgroundCharacter", value: string) => {
+  const revalidateField = (name: "foregroundCharacter" | "backgroundCharacter" | "foregroundColor" | "backgroundColor", value: string) => {
     if (!fieldErrors[name]) return;
     const parsed = imageUploadSchema.safeParse({
       foregroundCharacter: name === "foregroundCharacter" ? value : pattern,
       backgroundCharacter: name === "backgroundCharacter" ? value : background,
-      foregroundColor: patternColor,
-      backgroundColor,
+      foregroundColor: name === "foregroundColor" ? value : patternColor,
+      backgroundColor: name === "backgroundColor" ? value : backgroundColor,
     });
     const issue = parsed.success ? undefined : parsed.error.issues.find((item) => item.path[0] === name);
     setFieldErrors((current) => ({
@@ -157,11 +157,11 @@ const ImageUploadForm = ({ locale }: Props) => {
 
       <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.pattern} errorMessage={fieldErrors.foregroundCharacter} value={pattern} onChange={(event) => { setPattern(event.target.value); revalidateField("foregroundCharacter", event.target.value); }} />
 
-      <ColorPickerField label={messages.patternColor} colorPickerLabel={messages.patternColorPicker} value={patternColor} errorMessage={fieldErrors.foregroundColor} onChange={setPatternColor} />
+      <ColorPickerField label={messages.patternColor} colorPickerLabel={messages.patternColorPicker} value={patternColor} errorMessage={fieldErrors.foregroundColor} onChange={(value) => { setPatternColor(value); revalidateField("foregroundColor", value); }} />
 
       <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.background} errorMessage={fieldErrors.backgroundCharacter} value={background} onChange={(event) => { setBackground(event.target.value); revalidateField("backgroundCharacter", event.target.value); }} />
 
-      <ColorPickerField label={messages.backgroundColor} colorPickerLabel={messages.backgroundColorPicker} value={backgroundColor} errorMessage={fieldErrors.backgroundColor} onChange={setBackgroundColor} />
+      <ColorPickerField label={messages.backgroundColor} colorPickerLabel={messages.backgroundColorPicker} value={backgroundColor} errorMessage={fieldErrors.backgroundColor} onChange={(value) => { setBackgroundColor(value); revalidateField("backgroundColor", value); }} />
 
       <GenerateButton state={toGenerateButtonState({
         isPending: upload.isPending,

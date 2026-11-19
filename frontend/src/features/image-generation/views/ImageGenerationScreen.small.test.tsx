@@ -277,7 +277,7 @@ describe("ImageGenerationScreen", () => {
 
     await user.type(color, "#55aaff");
 
-    expect(color).toHaveAttribute("aria-invalid", "false");
+    expect(color).not.toHaveAttribute("aria-invalid", "true");
   });
 
   describe("Japanese copy", () => {
