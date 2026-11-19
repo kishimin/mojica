@@ -1,6 +1,8 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
 import { describe, expect, test } from "vitest";
 import ImageGenerationScreen from "./ImageGenerationScreen";
+import { worker } from "@/api/mocks/browser";
 import { setupWithProviders } from "@/tests/test-utils";
 import type { Locale } from "@/types/i18n";
 
@@ -24,6 +26,26 @@ describe("ImageGenerationScreen", () => {
     await user.click(screen.getByRole("button", { name: "画像を生成する" }));
 
     expect(screen.getByRole("alert")).toHaveTextContent("画像を選択してください");
+  });
+
+  test("選択画像と描画文字を送信する", async () => {
+    const requests: FormData[] = [];
+    worker.use(http.post("*/images/frame-file", async ({ request }) => {
+      requests.push(await request.formData());
+      return new HttpResponse(new Uint8Array([137, 80]), { headers: { "Content-Type": "image/png" } });
+    }));
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+    await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
+
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+    await waitFor(() => expect(requests).toHaveLength(1));
+    expect(requests[0].get("frameImage")).toBeInstanceOf(File);
+    expect(requests[0].get("foregroundCharacter")).toBe("A");
+    expect(requests[0].get("backgroundCharacter")).toBe("B");
   });
 
   describe("Japanese copy", () => {
