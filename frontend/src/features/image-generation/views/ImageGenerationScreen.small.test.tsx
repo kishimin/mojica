@@ -101,7 +101,8 @@ describe("ImageGenerationScreen", () => {
     await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
     await user.click(screen.getByRole("button", { name: "画像を生成する" }));
     await started;
-    expect(screen.getByRole("button", { name: "画像を生成する" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "生成中..." })).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("button", { name: "生成中..." })).toBeDisabled();
     await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "C");
     await act(async () => { callbacks.release(); await ready; });
     await waitFor(() => expect(screen.getByRole("button", { name: "画像を生成する" })).toBeEnabled());
