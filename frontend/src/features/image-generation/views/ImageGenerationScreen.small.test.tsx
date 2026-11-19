@@ -177,6 +177,21 @@ describe("ImageGenerationScreen", () => {
     expect(screen.queryByText(/pixels? per side/i)).not.toBeInTheDocument();
   });
 
+  test("画像生成APIのフィールドエラーを入力欄に表示する", async () => {
+    worker.use(http.post("*/images/frame-file", () =>
+      HttpResponse.json({ code: "VALIDATION_ERROR", message: "入力を確認してください。", errors: [{ field: "foregroundCharacter", message: "絵柄の文字を確認してください。" }] }, { status: 422 }),
+    ));
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+    await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+    expect(await screen.findByText("絵柄の文字を確認してください。")).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "絵柄に使う文字" })).toHaveAttribute("aria-invalid", "true");
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
