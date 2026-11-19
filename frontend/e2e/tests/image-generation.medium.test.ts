@@ -6,6 +6,17 @@ test.describe("image generation", () => {
     await imageGenerationPage.dropSourceImage();
     await expect(imageGenerationPage.sourceFileName("dropped.png")).toBeVisible();
   });
+  test("uploads an image and downloads the preview", async ({ imageGenerationPage }) => {
+    await imageGenerationPage.navigate();
+    await imageGenerationPage.fillImageMode({
+      name: "frame.png",
+      mimeType: "image/png",
+      buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAASSURBVChTY2CgJfiPLjAKiAYAPG0BAOp2pS8AAAAASUVORK5CYII=", "base64"),
+    }, "A", "B");
+
+    const download = await imageGenerationPage.submit();
+    expect(download.suggestedFilename()).toMatch(/\.png$/);
+  });
   test("previews the image without starting a download", async ({
     page,
     imageGenerationPage,

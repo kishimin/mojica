@@ -74,6 +74,13 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
       .click();
   };
 
+  const fillImageMode = async (file: { name: string; mimeType: string; buffer: Buffer }, foreground: string, background: string) => {
+    await page.getByRole("radio", { name: locale === "ja" ? "画像を文字で描く" : "Draw images with text" }).check();
+    await page.getByLabel(locale === "ja" ? "元画像" : "Source image").setInputFiles(file);
+    await page.getByRole("textbox", { name: locale === "ja" ? "絵柄に使う文字" : "Pattern characters" }).fill(foreground);
+    await page.getByRole("textbox", { name: locale === "ja" ? "背景に使う文字" : "Background characters" }).fill(background);
+  };
+
   const dropSourceImage = async () => {
     await page.getByRole("radio", { name: locale === "ja" ? "画像を文字で描く" : "Draw images with text" }).check();
     const dataTransfer = await page.evaluateHandle(`(() => {
@@ -120,6 +127,7 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
   return {
     navigate,
     fillText,
+    fillImageMode,
     dropSourceImage,
     sourceFileName,
     fillForegroundCharacter,
