@@ -1,6 +1,4 @@
 import ImageGenerationForm from "../components/ImageGenerationForm/ImageGenerationForm";
-import ImageGenerationModeSelector from "../components/ImageGenerationModeSelector/ImageGenerationModeSelector";
-import { useImageGenerationController } from "../hooks/useImageGenerationController";
 import Paper from "@/components/Paper/Paper";
 import { useI18n } from "@/hooks/use-i18n";
 import { imageGenerationScreenMessages } from "@/i18n/messages";
@@ -9,7 +7,6 @@ import { imageGenerationScreenMessages } from "@/i18n/messages";
 const ImageGenerationScreen = () => {
   const { locale } = useI18n();
   const messages = imageGenerationScreenMessages[locale];
-  const controller = useImageGenerationController(locale);
 
   return (
     <main className={"min-w-0 flex-1 px-0 pt-8 md:px-6 md:pt-12"}>
@@ -28,13 +25,12 @@ const ImageGenerationScreen = () => {
             {messages.description}
           </p>
         </section>
-        <ImageGenerationModeSelector locale={locale} controller={controller} />
         <Paper
           className={
             "w-full min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)]"
           }
         >
-          <ImageGenerationForm locale={locale} controller={controller} />
+          <ImageGenerationForm locale={locale} />
         </Paper>
       </div>
     </main>

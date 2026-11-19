@@ -11,18 +11,14 @@ export const imageGenerationSelectorKeys = {
   downloadButton: "downloadButton",
   preview: "preview",
   imageTypeLabel: "imageTypeLabel",
-  imageMode: "imageMode",
-  sourceImage: "sourceImage",
-  patternCharacters: "patternCharacters",
-  imageBackgroundCharacters: "imageBackgroundCharacters",
 } as const;
 type ImageGenerationSelectorKey =
   (typeof imageGenerationSelectorKeys)[keyof typeof imageGenerationSelectorKeys];
 
 export const imageGenerationSelectors = {
   heading: {
-    ja: /文字で描く。/,
-    en: /Draw with text\./,
+    ja: /文字で、文字を描く。/,
+    en: /Draw letters with letters\./,
   },
   textLabel: {
     ja: /描画する文字列/,
@@ -60,10 +56,6 @@ export const imageGenerationSelectors = {
     ja: /画像タイプ/,
     en: /Image type/,
   },
-  imageMode: { ja: /画像を文字で描く/, en: /Draw images with text/ },
-  sourceImage: { ja: /元画像/, en: /Source image/ },
-  patternCharacters: { ja: /^絵柄に使う文字$/, en: /^Pattern characters$/ },
-  imageBackgroundCharacters: { ja: /^背景に使う文字$/, en: /^Background characters$/ },
 } satisfies Record<ImageGenerationSelectorKey, LocalizedSelector>;
 
 export const imageTypeOptionSelectors = {

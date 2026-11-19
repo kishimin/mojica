@@ -74,25 +74,6 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
       .click();
   };
 
-  const fillImageMode = async (file: { name: string; mimeType: string; buffer: Buffer }, foreground: string, background: string) => {
-    await page.getByRole("radio", { name: imageGenerationSelectors.imageMode[locale] }).check();
-    await page.getByLabel(imageGenerationSelectors.sourceImage[locale]).setInputFiles(file);
-    await page.getByRole("textbox", { name: imageGenerationSelectors.patternCharacters[locale] }).fill(foreground);
-    await page.getByRole("textbox", { name: imageGenerationSelectors.imageBackgroundCharacters[locale] }).fill(background);
-  };
-
-  const dropSourceImage = async () => {
-    await page.getByRole("radio", { name: imageGenerationSelectors.imageMode[locale] }).check();
-    const dataTransfer = await page.evaluateHandle(`(() => {
-      const data = new DataTransfer();
-      data.items.add(new File(["image"], "dropped.png", { type: "image/png" }));
-      return data;
-    })()`);
-    await page.getByLabel(imageGenerationSelectors.sourceImage[locale]).dispatchEvent("drop", { dataTransfer });
-  };
-
-  const sourceFileName = (name: string) => page.getByText(name);
-
   const captureScreenshot = async (path: string) => {
     await page.screenshot({ path, fullPage: true });
   };
@@ -132,9 +113,6 @@ export const imageGenerationPage = (page: Page, locale: Locale) => {
     fillForegroundColor,
     fillBackgroundColor,
     selectType,
-    fillImageMode,
-    dropSourceImage,
-    sourceFileName,
     generate,
     download,
     submit,

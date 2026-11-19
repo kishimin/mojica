@@ -9,7 +9,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("banner")).toBeVisible();
     expect(
-      await screen.findByRole("heading", { name: "文字で描く。" }),
+      await screen.findByRole("heading", { name: "文字で、文字を描く。" }),
     ).toBeVisible();
     expect(
       await screen.findByRole("textbox", { name: "描画する文字列" }),

@@ -48,20 +48,6 @@ export const imageTypeSelectMessages = {
 } satisfies Record<Locale, ImageTypeSelectMessages>;
 
 type ImageGenerationFormMessages = {
-  mode: string;
-  textMode: string;
-  imageMode: string;
-  imageFile: string;
-  imageSelectPrompt: string;
-  imageHelp: string;
-  imageRequired: string;
-  imageOutputTooLarge: string;
-  imageForeground: string;
-  imageForegroundColor: string;
-  imageForegroundColorPicker: string;
-  imageBackground: string;
-  imageBackgroundColor: string;
-  imageBackgroundColorPicker: string;
   text: string;
   foregroundCharacter: string;
   foregroundColor: string;
@@ -76,20 +62,6 @@ type ImageGenerationFormMessages = {
 
 export const imageGenerationFormMessages = {
   ja: {
-    mode: "作成方法",
-    textMode: "文字を文字で描く",
-    imageMode: "画像を文字で描く",
-    imageFile: "元画像",
-    imageSelectPrompt: "画像を選択、またはドラッグ＆ドロップ",
-    imageHelp: "PNG、JPEG、WebP形式で、2 MiB以下の静止画像を選んでください。",
-    imageRequired: "元画像を選択してください。",
-    imageOutputTooLarge: "元画像の縦横のサイズを小さくして、もう一度お試しください。",
-    imageForeground: "絵柄に使う文字",
-    imageForegroundColor: "絵柄の文字色",
-    imageForegroundColorPicker: "絵柄の文字色を選択",
-    imageBackground: "背景に使う文字",
-    imageBackgroundColor: "背景の文字色",
-    imageBackgroundColorPicker: "背景の文字色を選択",
     text: "描画する文字列",
     foregroundCharacter: "描画に使う文字",
     foregroundColor: "描画に使う文字の色",
@@ -102,20 +74,6 @@ export const imageGenerationFormMessages = {
     download: "PNGをダウンロード",
   },
   en: {
-    mode: "Creation method",
-    textMode: "Draw text with text",
-    imageMode: "Draw images with text",
-    imageFile: "Source image",
-    imageSelectPrompt: "Choose an image or drag and drop",
-    imageHelp: "Choose a non-animated PNG, JPEG, or WebP up to 2 MiB.",
-    imageRequired: "Choose a source image.",
-    imageOutputTooLarge: "Reduce the source image dimensions and try again.",
-    imageForeground: "Pattern characters",
-    imageForegroundColor: "Pattern character color",
-    imageForegroundColorPicker: "Choose pattern character color",
-    imageBackground: "Background characters",
-    imageBackgroundColor: "Background character color",
-    imageBackgroundColorPicker: "Choose background character color",
     text: "Text to render",
     foregroundCharacter: "Character used to render text",
     foregroundColor: "Foreground character color",
@@ -139,7 +97,7 @@ type ImageGenerationScreenMessages = {
 
 export const imageGenerationScreenMessages = {
   ja: {
-    heading: "文字で描く。",
+    heading: "文字で、文字を描く。",
     description:
       "好きな文字と2つの色を組み合わせて、文字アート画像を生成します。",
     textHelper: "1〜64文字",
@@ -147,9 +105,9 @@ export const imageGenerationScreenMessages = {
     downloadHelper: "生成した画像を確認してからダウンロードできます。",
   },
   en: {
-    heading: "Draw with text.",
+    heading: "Draw letters with letters.",
     description:
-      "Combine characters and two colors to create text art.",
+      "Combine your favorite characters and two colors to generate text art.",
     textHelper: "1–64 characters",
     characterHelper: "1–128 characters",
     downloadHelper: "Preview the generated image before downloading it.",

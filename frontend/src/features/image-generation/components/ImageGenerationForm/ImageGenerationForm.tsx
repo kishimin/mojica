@@ -1,10 +1,9 @@
 import { Controller } from "react-hook-form";
-import type { ImageGenerationController } from "../../hooks/useImageGenerationController";
+import { useImageGenerationController } from "../../hooks/useImageGenerationController";
 import { downloadGeneratedImage } from "../../utils/downloadGeneratedImage";
 import { toGenerateButtonState } from "../../utils/toGenerateButtonState";
 import GenerateButton from "../GenerateButton/GenerateButton";
 import ImageTypeSelect from "../ImageTypeSelect/ImageTypeSelect";
-import uploadIcon from "@/assets/image-upload.svg";
 import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
@@ -19,12 +18,22 @@ import type { Locale } from "@/types/i18n";
 type ImageGenerationFormProps = {
   /** Locale used for this form's labels. */
   locale: Locale;
-  controller: ImageGenerationController;
 };
 
 /** Renders the image-generation inputs and their initial values. */
-const ImageGenerationForm = ({ locale, controller }: ImageGenerationFormProps) => {
-  const { register, control, errors, isPending, isSubmitting, apiError, remainingRetryAfterSeconds, preview, invalidatePreview, onSubmit, mode, file, setFile, fileError, setFileError } = controller;
+const ImageGenerationForm = ({ locale }: ImageGenerationFormProps) => {
+  const {
+    register,
+    control,
+    errors,
+    isPending,
+    isSubmitting,
+    apiError,
+    remainingRetryAfterSeconds,
+    preview,
+    invalidatePreview,
+    onSubmit,
+  } = useImageGenerationController(locale);
   const messages = imageGenerationFormMessages[locale];
   const screenMessages = imageGenerationScreenMessages[locale];
 
@@ -46,24 +55,15 @@ const ImageGenerationForm = ({ locale, controller }: ImageGenerationFormProps) =
         />
       ) : null}
 
-      {mode === "text" ? <TextField
+      <TextField
         label={messages.text}
         helperText={screenMessages.textHelper}
         errorMessage={getErrorMessage(errors.text?.message)}
         {...register("text")}
-      /> : <div className={"flex flex-col gap-2"}>
-        <span>{messages.imageFile}</span>
-        <label htmlFor={"frame-image"} className={"relative flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-input bg-muted/30 p-4 text-center focus-within:ring-3 focus-within:ring-ring/50"}>
-          <img src={uploadIcon} alt={""} className={"size-8"} />
-          <span>{file?.name ?? messages.imageSelectPrompt}</span>
-          <span id={"frame-image-help"} className={"text-xs text-muted-foreground"}>{messages.imageHelp}</span>
-          <input id={"frame-image"} aria-label={messages.imageFile} className={"absolute inset-0 h-full w-full cursor-pointer opacity-0"} type={"file"} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); setFile(event.dataTransfer.files[0]); setFileError(false); invalidatePreview(); }} accept={"image/png,image/jpeg,image/webp"} aria-describedby={"frame-image-help"} aria-invalid={fileError} aria-errormessage={fileError ? "frame-image-error" : undefined} onChange={(event) => { setFile(event.target.files?.[0]); setFileError(false); }} />
-        </label>
-        {fileError ? <p id={"frame-image-error"} role={"alert"}>{messages.imageRequired}</p> : null}
-      </div>}
+      />
 
       <TextField
-        label={mode === "text" ? messages.foregroundCharacter : messages.imageForeground}
+        label={messages.foregroundCharacter}
         helperText={screenMessages.characterHelper}
         errorMessage={getErrorMessage(errors.foregroundCharacter?.message)}
         {...register("foregroundCharacter")}
@@ -74,8 +74,8 @@ const ImageGenerationForm = ({ locale, controller }: ImageGenerationFormProps) =
         control={control}
         render={({ field }) => (
           <ColorPickerField
-            label={mode === "text" ? messages.foregroundColor : messages.imageForegroundColor}
-            colorPickerLabel={mode === "text" ? messages.foregroundColorPicker : messages.imageForegroundColorPicker}
+            label={messages.foregroundColor}
+            colorPickerLabel={messages.foregroundColorPicker}
             value={field.value}
             onChange={field.onChange}
             errorMessage={getErrorMessage(errors.foregroundColor?.message)}
@@ -84,7 +84,7 @@ const ImageGenerationForm = ({ locale, controller }: ImageGenerationFormProps) =
       />
 
       <TextField
-        label={mode === "text" ? messages.backgroundCharacter : messages.imageBackground}
+        label={messages.backgroundCharacter}
         helperText={screenMessages.characterHelper}
         errorMessage={getErrorMessage(errors.backgroundCharacter?.message)}
         {...register("backgroundCharacter")}
@@ -95,8 +95,8 @@ const ImageGenerationForm = ({ locale, controller }: ImageGenerationFormProps) =
         control={control}
         render={({ field }) => (
           <ColorPickerField
-            label={mode === "text" ? messages.backgroundColor : messages.imageBackgroundColor}
-            colorPickerLabel={mode === "text" ? messages.backgroundColorPicker : messages.imageBackgroundColorPicker}
+            label={messages.backgroundColor}
+            colorPickerLabel={messages.backgroundColorPicker}
             value={field.value}
             onChange={field.onChange}
             errorMessage={getErrorMessage(errors.backgroundColor?.message)}
@@ -104,7 +104,7 @@ const ImageGenerationForm = ({ locale, controller }: ImageGenerationFormProps) =
         )}
       />
 
-      {mode === "text" ? <Controller
+      <Controller
         name={"type"}
         control={control}
         render={({ field }) => (
@@ -114,7 +114,7 @@ const ImageGenerationForm = ({ locale, controller }: ImageGenerationFormProps) =
             errorMessage={getErrorMessage(errors.type?.message)}
           />
         )}
-      /> : null}
+      />
 
       <GenerateButton
         state={toGenerateButtonState({
@@ -135,13 +135,9 @@ const ImageGenerationForm = ({ locale, controller }: ImageGenerationFormProps) =
             {messages.download}
           </Button>
         </div>
-      ) : <div className={"flex flex-col gap-4"}>
-        <div className={"flex min-h-40 items-center justify-center rounded-lg border border-input bg-muted/30 p-4 text-center text-sm text-muted-foreground"}>{messages.previewPlaceholder}</div>
-        <Button type={"button"} disabled>{messages.download}</Button>
-      </div>}
+      ) : <p>{messages.previewPlaceholder}</p>}
     </form>
   );
 };
 
 export default ImageGenerationForm;
-
