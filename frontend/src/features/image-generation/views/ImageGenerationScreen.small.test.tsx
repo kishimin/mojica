@@ -1,6 +1,6 @@
-import { screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import ImageGenerationScreen from "./ImageGenerationScreen";
 import { worker } from "@/api/mocks/browser";
 import { setupWithProviders } from "@/tests/test-utils";
@@ -80,6 +80,31 @@ describe("ImageGenerationScreen", () => {
 
     expect(await screen.findByRole("img", { name: "生成した画像" })).toBeVisible();
     expect(screen.getByRole("button", { name: "PNGをダウンロード" })).toBeEnabled();
+  });
+
+  test("生成中に入力が変わったら古い画像を表示しない", async () => {
+    const callbacks = { started: () => {}, release: () => {} };
+    const started = new Promise<void>((resolve) => { callbacks.started = resolve; });
+    const ready = new Promise<void>((resolve) => { callbacks.release = resolve; });
+    const createUrl = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:old");
+    worker.use(http.post("*/images/frame-file", async () => {
+      callbacks.started();
+      await ready;
+      return new HttpResponse(new Uint8Array([137, 80]), { headers: { "Content-Type": "image/png" } });
+    }));
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+    await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+    await started;
+    expect(screen.getByRole("button", { name: "画像を生成する" })).toBeDisabled();
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "C");
+    await act(async () => { callbacks.release(); await ready; });
+    await waitFor(() => expect(screen.getByRole("button", { name: "画像を生成する" })).toBeEnabled());
+    expect(createUrl).not.toHaveBeenCalled();
+    createUrl.mockRestore();
   });
 
   describe("Japanese copy", () => {
