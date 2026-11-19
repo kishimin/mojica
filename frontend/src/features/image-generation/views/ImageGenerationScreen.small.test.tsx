@@ -200,6 +200,14 @@ describe("ImageGenerationScreen", () => {
     expect(screen.getByRole("button", { name: "PNGをダウンロード" })).toBeDisabled();
   });
 
+  test("画像の選択方法を案内する", async () => {
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+
+    expect(screen.getByText("画像を選択、またはドラッグ＆ドロップ")).toBeVisible();
+    expect(screen.getByLabelText("元画像")).toHaveAccessibleDescription(/PNG/);
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
