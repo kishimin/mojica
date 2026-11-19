@@ -48,9 +48,18 @@ const ImageUploadForm = ({ locale }: Props) => {
         onError: (error) => { void (async () => {
           const response = await parseImageGenerationErrorResponse(error.response?.data);
           if (submittedRevision === revision.current) {
-            const presentation = toImageGenerationApiError(response, locale);
-            setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
-            setApiError(response?.code === "IMAGE_OUTPUT_SIZE_EXCEEDED" ? { ...presentation, description: messages.imageOutputTooLarge } : presentation);
+            const validationErrors = response && "errors" in response ? response.errors : undefined;
+            if (validationErrors?.length) {
+              const errors: Record<string, string> = {};
+              for (const item of validationErrors) {
+                if (item.field && item.message && ["foregroundCharacter", "foregroundColor", "backgroundCharacter", "backgroundColor"].includes(item.field)) errors[item.field] = item.message;
+              }
+              setFieldErrors(errors);
+            } else {
+              const presentation = toImageGenerationApiError(response, locale);
+              setRetryAfterSeconds(toRetryAfterSeconds(error.response?.headers));
+              setApiError(response?.code === "IMAGE_OUTPUT_SIZE_EXCEEDED" ? { ...presentation, description: messages.imageOutputTooLarge } : presentation);
+            }
           }
         })(); },
       }); }}>
