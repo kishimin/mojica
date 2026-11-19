@@ -218,3 +218,16 @@ export const imageGenerationErrorMessages = {
     fallback: "Image-generation error",
   },
 } satisfies Record<Locale, ImageGenerationErrorMessages>;
+
+
+type ImageModeMessages = {
+  mode: string;
+  textMode: string;
+  imageMode: string;
+  sourceImage: string;
+};
+
+export const imageModeMessages = {
+  ja: { mode: "作成方法", textMode: "文字を文字で描く", imageMode: "画像を文字で描く", sourceImage: "元画像" },
+  en: { mode: "Creation method", textMode: "Draw text with text", imageMode: "Draw images with text", sourceImage: "Source image" },
+} satisfies Record<Locale, ImageModeMessages>;

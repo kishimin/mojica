@@ -2,12 +2,13 @@ import { useState } from "react";
 import ImageGenerationForm from "../components/ImageGenerationForm/ImageGenerationForm";
 import Paper from "@/components/Paper/Paper";
 import { useI18n } from "@/hooks/use-i18n";
-import { imageGenerationScreenMessages } from "@/i18n/messages";
+import { imageGenerationScreenMessages, imageModeMessages } from "@/i18n/messages";
 
 /** Renders the localized image-generation page body. */
 const ImageGenerationScreen = () => {
   const { locale } = useI18n();
   const messages = imageGenerationScreenMessages[locale];
+  const modeMessages = imageModeMessages[locale];
   const [mode, setMode] = useState<"text" | "image">("text");
 
   return (
@@ -28,16 +29,16 @@ const ImageGenerationScreen = () => {
           </p>
         </section>
         <fieldset>
-          <legend>{locale === "ja" ? "作成方法" : "Creation method"}</legend>
-          <label><input type={"radio"} name={"mode"} checked={mode === "text"} onChange={() => setMode("text")} />{locale === "ja" ? "文字を文字で描く" : "Draw text with text"}</label>
-          <label><input type={"radio"} name={"mode"} checked={mode === "image"} onChange={() => setMode("image")} />{locale === "ja" ? "画像を文字で描く" : "Draw images with text"}</label>
+          <legend>{modeMessages.mode}</legend>
+          <label><input type={"radio"} name={"mode"} checked={mode === "text"} onChange={() => setMode("text")} />{modeMessages.textMode}</label>
+          <label><input type={"radio"} name={"mode"} checked={mode === "image"} onChange={() => setMode("image")} />{modeMessages.imageMode}</label>
         </fieldset>
         <Paper
           className={
             "w-full min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)]"
           }
         >
-          {mode === "text" ? <ImageGenerationForm locale={locale} /> : <form><label htmlFor={"frame-image"}>{locale === "ja" ? "元画像" : "Source image"}</label><input id={"frame-image"} type={"file"} /></form>}
+          {mode === "text" ? <ImageGenerationForm locale={locale} /> : <form><label htmlFor={"frame-image"}>{modeMessages.sourceImage}</label><input id={"frame-image"} type={"file"} /></form>}
         </Paper>
       </div>
     </main>
