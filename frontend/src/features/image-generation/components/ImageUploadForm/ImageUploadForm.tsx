@@ -43,7 +43,10 @@ const ImageUploadForm = ({ locale }: Props) => {
         onSuccess: (response) => { if (submittedRevision === revision.current) setPreview({ response, url: URL.createObjectURL(response.data) }); },
         onError: (error) => { void (async () => {
           const response = await parseImageGenerationErrorResponse(error.response?.data);
-          if (submittedRevision === revision.current) setApiError(toImageGenerationApiError(response, locale));
+          if (submittedRevision === revision.current) {
+            const presentation = toImageGenerationApiError(response, locale);
+            setApiError(response?.code === "IMAGE_OUTPUT_SIZE_EXCEEDED" ? { ...presentation, description: messages.imageOutputTooLarge } : presentation);
+          }
         })(); },
       }); }}>
       {apiError ? <AlertBanner title={apiError.title} description={apiError.description} /> : null}
