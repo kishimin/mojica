@@ -1,9 +1,10 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { describe, expect, test, vi } from "vitest";
 import ImageGenerationScreen from "./ImageGenerationScreen";
 import { worker } from "@/api/mocks/browser";
-import { setupWithProviders } from "@/tests/test-utils";
+import { setupWithI18n, setupWithProviders } from "@/tests/test-utils";
 import type { Locale } from "@/types/i18n";
 
 const renderScreen = (locale: Locale) =>
@@ -221,6 +222,33 @@ describe("ImageGenerationScreen", () => {
     await user.click(screen.getByRole("button", { name: "画像を生成する" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("入力を確認してください。");
+  });
+
+  test("モード変更後に古い画像を表示しない", async () => {
+    const callbacks = { started: () => {}, release: () => {} };
+    const started = new Promise<void>((resolve) => { callbacks.started = resolve; });
+    const ready = new Promise<void>((resolve) => { callbacks.release = resolve; });
+    const createUrl = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:old");
+    worker.use(http.post("*/images/frame-file", async () => {
+      callbacks.started();
+      await ready;
+      return new HttpResponse(new Uint8Array([137, 80]), { headers: { "Content-Type": "image/png" } });
+    }));
+    const client = new QueryClient();
+    const { user } = setupWithI18n(<QueryClientProvider client={client}><ImageGenerationScreen /></QueryClientProvider>, "ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+    await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+    await started;
+    await user.click(screen.getByRole("radio", { name: "文字を文字で描く" }));
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await act(async () => { callbacks.release(); await ready; });
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    expect(screen.queryByRole("img", { name: "生成した画像" })).not.toBeInTheDocument();
+    expect(createUrl).not.toHaveBeenCalled();
+    createUrl.mockRestore();
   });
 
   describe("Japanese copy", () => {
