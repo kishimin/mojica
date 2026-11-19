@@ -1,14 +1,14 @@
 import type { AxiosResponse } from "axios";
 import { useEffect, useRef, useState } from "react";
 import type { DragEvent, FormEvent } from "react";
-import GenerateButton from "../GenerateButton/GenerateButton";
 import { useRetryAfterCountdown } from "../../hooks/useRetryAfterCountdown";
 import { imageGenerationSchema } from "../../schemas/imageGenerationSchema";
 import { downloadGeneratedImage } from "../../utils/downloadGeneratedImage";
 import { parseImageGenerationErrorResponse } from "../../utils/parseImageGenerationErrorResponse";
-import { toImageGenerationApiError } from "../../utils/toImageGenerationApiError";
 import { toGenerateButtonState } from "../../utils/toGenerateButtonState";
+import { toImageGenerationApiError } from "../../utils/toImageGenerationApiError";
 import { toRetryAfterSeconds } from "../../utils/toRetryAfterSeconds";
+import GenerateButton from "../GenerateButton/GenerateButton";
 import { usePostImagesFrameFile } from "@/api/endpoints/image-upload/image-upload";
 import uploadIcon from "@/assets/image-upload.svg";
 import AlertBanner from "@/components/AlertBanner/AlertBanner";
@@ -47,6 +47,23 @@ const ImageUploadForm = ({ locale }: Props) => {
   const invalidatePreview = () => {
     revision.current += 1;
     setPreview(undefined);
+  };
+
+  const revalidateField = (name: "foregroundCharacter" | "backgroundCharacter", value: string) => {
+    if (!fieldErrors[name]) return;
+    const parsed = imageGenerationSchema.safeParse({
+      text: "x",
+      type: "standard",
+      foregroundCharacter: name === "foregroundCharacter" ? value : pattern,
+      backgroundCharacter: name === "backgroundCharacter" ? value : background,
+      foregroundColor: patternColor,
+      backgroundColor,
+    });
+    const issue = parsed.success ? undefined : parsed.error.issues.find((item) => item.path[0] === name);
+    setFieldErrors((current) => ({
+      ...current,
+      [name]: issue ? imageGenerationValidationMessages[locale][issue.message] ?? issue.message : "",
+    }));
   };
 
   const handleDrop = (event: DragEvent<HTMLInputElement>) => {
@@ -140,11 +157,11 @@ const ImageUploadForm = ({ locale }: Props) => {
         {fileError ? <p id={"frame-image-error"} role={"alert"}>{messages.imageRequired}</p> : null}
       </div>
 
-      <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.pattern} errorMessage={fieldErrors.foregroundCharacter} value={pattern} onChange={(event) => setPattern(event.target.value)} />
+      <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.pattern} errorMessage={fieldErrors.foregroundCharacter} value={pattern} onChange={(event) => { setPattern(event.target.value); revalidateField("foregroundCharacter", event.target.value); }} />
 
       <ColorPickerField label={messages.patternColor} colorPickerLabel={messages.patternColorPicker} value={patternColor} errorMessage={fieldErrors.foregroundColor} onChange={setPatternColor} />
 
-      <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.background} errorMessage={fieldErrors.backgroundCharacter} value={background} onChange={(event) => setBackground(event.target.value)} />
+      <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.background} errorMessage={fieldErrors.backgroundCharacter} value={background} onChange={(event) => { setBackground(event.target.value); revalidateField("backgroundCharacter", event.target.value); }} />
 
       <ColorPickerField label={messages.backgroundColor} colorPickerLabel={messages.backgroundColorPicker} value={backgroundColor} errorMessage={fieldErrors.backgroundColor} onChange={setBackgroundColor} />
 
