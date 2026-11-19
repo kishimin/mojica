@@ -111,6 +111,7 @@ const ImageUploadForm = ({ locale }: Props) => {
     <form onChange={invalidatePreview} onSubmit={handleSubmit}>
       {apiError ? <AlertBanner title={apiError.title} description={apiError.description} /> : null}
       <label htmlFor={"frame-image"}>{messages.sourceImage}</label>
+      <p>{messages.selectImage}</p>
       <input
         id={"frame-image"}
         type={"file"}

@@ -226,6 +226,7 @@ type ImageModeMessages = {
   imageMode: string;
   sourceImage: string;
   imageHelp: string;
+  selectImage: string;
   imageRequired: string;
   imageOutputTooLarge: string;
   pattern: string;
@@ -237,6 +238,6 @@ type ImageModeMessages = {
 };
 
 export const imageModeMessages = {
-  ja: { mode: "作成方法", textMode: "文字を文字で描く", imageMode: "画像を文字で描く", sourceImage: "元画像", imageHelp: "PNG、JPEG、WebP形式で、2 MiB以下の静止画像を選んでください。", imageRequired: "画像を選択してください", imageOutputTooLarge: "元画像の縦横のサイズを小さくして、もう一度お試しください。", pattern: "絵柄に使う文字", background: "背景に使う文字", patternColor: "絵柄の文字色", patternColorPicker: "絵柄の文字色を選択", backgroundColor: "背景の文字色", backgroundColorPicker: "背景の文字色を選択" },
-  en: { mode: "Creation method", textMode: "Draw text with text", imageMode: "Draw images with text", sourceImage: "Source image", imageHelp: "Choose a non-animated PNG, JPEG, or WebP up to 2 MiB.", imageRequired: "Choose an image", imageOutputTooLarge: "Reduce the source image dimensions and try again.", pattern: "Pattern characters", background: "Background characters", patternColor: "Pattern color", patternColorPicker: "Choose pattern color", backgroundColor: "Background color", backgroundColorPicker: "Choose background color" },
+  ja: { mode: "作成方法", textMode: "文字を文字で描く", imageMode: "画像を文字で描く", sourceImage: "元画像", selectImage: "画像を選択、またはドラッグ＆ドロップ", imageHelp: "PNG、JPEG、WebP形式で、2 MiB以下の静止画像を選んでください。", imageRequired: "画像を選択してください", imageOutputTooLarge: "元画像の縦横のサイズを小さくして、もう一度お試しください。", pattern: "絵柄に使う文字", background: "背景に使う文字", patternColor: "絵柄の文字色", patternColorPicker: "絵柄の文字色を選択", backgroundColor: "背景の文字色", backgroundColorPicker: "背景の文字色を選択" },
+  en: { mode: "Creation method", textMode: "Draw text with text", imageMode: "Draw images with text", sourceImage: "Source image", selectImage: "Choose an image or drag and drop", imageHelp: "Choose a non-animated PNG, JPEG, or WebP up to 2 MiB.", imageRequired: "Choose an image", imageOutputTooLarge: "Reduce the source image dimensions and try again.", pattern: "Pattern characters", background: "Background characters", patternColor: "Pattern color", patternColorPicker: "Choose pattern color", backgroundColor: "Background color", backgroundColorPicker: "Choose background color" },
 } satisfies Record<Locale, ImageModeMessages>;
