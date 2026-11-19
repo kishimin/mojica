@@ -225,9 +225,10 @@ type ImageModeMessages = {
   textMode: string;
   imageMode: string;
   sourceImage: string;
+  imageRequired: string;
 };
 
 export const imageModeMessages = {
-  ja: { mode: "作成方法", textMode: "文字を文字で描く", imageMode: "画像を文字で描く", sourceImage: "元画像" },
-  en: { mode: "Creation method", textMode: "Draw text with text", imageMode: "Draw images with text", sourceImage: "Source image" },
+  ja: { mode: "作成方法", textMode: "文字を文字で描く", imageMode: "画像を文字で描く", sourceImage: "元画像", imageRequired: "画像を選択してください" },
+  en: { mode: "Creation method", textMode: "Draw text with text", imageMode: "Draw images with text", sourceImage: "Source image", imageRequired: "Choose an image" },
 } satisfies Record<Locale, ImageModeMessages>;

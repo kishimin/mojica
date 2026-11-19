@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ImageGenerationForm from "../components/ImageGenerationForm/ImageGenerationForm";
+import ImageUploadForm from "../components/ImageUploadForm/ImageUploadForm";
 import Paper from "@/components/Paper/Paper";
 import { useI18n } from "@/hooks/use-i18n";
 import { imageGenerationScreenMessages, imageModeMessages } from "@/i18n/messages";
@@ -38,7 +39,7 @@ const ImageGenerationScreen = () => {
             "w-full min-w-0 px-[var(--layout-form-card-padding-inline)] py-[var(--layout-form-card-padding-block)]"
           }
         >
-          {mode === "text" ? <ImageGenerationForm locale={locale} /> : <form><label htmlFor={"frame-image"}>{modeMessages.sourceImage}</label><input id={"frame-image"} type={"file"} /></form>}
+          {mode === "text" ? <ImageGenerationForm locale={locale} /> : <ImageUploadForm locale={locale} />}
         </Paper>
       </div>
     </main>
