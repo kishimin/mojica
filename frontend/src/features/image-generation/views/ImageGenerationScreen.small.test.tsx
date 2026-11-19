@@ -107,6 +107,20 @@ describe("ImageGenerationScreen", () => {
     createUrl.mockRestore();
   });
 
+  test("画像生成サービスのエラーを表示する", async () => {
+    worker.use(http.post("*/images/frame-file", () =>
+      HttpResponse.json({ code: "IMAGE_GENERATION_FAILED", message: "画像生成に失敗しました。" }, { status: 502 }),
+    ));
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+    await user.type(screen.getByRole("textbox", { name: "背景に使う文字" }), "B");
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("画像生成に失敗しました。");
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
