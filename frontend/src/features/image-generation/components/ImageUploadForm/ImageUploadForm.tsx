@@ -8,6 +8,7 @@ import { parseImageGenerationErrorResponse } from "../../utils/parseImageGenerat
 import { toImageGenerationApiError } from "../../utils/toImageGenerationApiError";
 import { toRetryAfterSeconds } from "../../utils/toRetryAfterSeconds";
 import { usePostImagesFrameFile } from "@/api/endpoints/image-upload/image-upload";
+import uploadIcon from "@/assets/image-upload.svg";
 import AlertBanner from "@/components/AlertBanner/AlertBanner";
 import ColorPickerField from "@/components/ColorPickerField/ColorPickerField";
 import TextField from "@/components/TextField/TextField";
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import {
   generateButtonMessages,
   imageGenerationFormMessages,
+  imageGenerationScreenMessages,
   imageGenerationValidationMessages,
   imageModeMessages,
 } from "@/i18n/messages";
@@ -112,34 +114,48 @@ const ImageUploadForm = ({ locale }: Props) => {
   };
 
   return (
-    <form onChange={invalidatePreview} onSubmit={handleSubmit}>
+    <form className={"min-w-0 flex flex-col gap-6"} onChange={invalidatePreview} onSubmit={handleSubmit}>
       {apiError ? <AlertBanner title={apiError.title} description={apiError.description} /> : null}
-      <label htmlFor={"frame-image"}>{messages.sourceImage}</label>
-      <p>{messages.selectImage}</p>
-      <input
-        id={"frame-image"}
-        type={"file"}
-        accept={"image/png,image/jpeg,image/webp"}
-        aria-describedby={"frame-image-help"}
-        onDragOver={(event) => event.preventDefault()}
-        onDrop={handleDrop}
-        onChange={(event) => { setFile(event.target.files?.[0]); setFileError(false); }}
-      />
-      {file ? <p>{file.name}</p> : null}
-      <p id={"frame-image-help"}>{messages.imageHelp}</p>
-      {fileError ? <p role={"alert"}>{messages.imageRequired}</p> : null}
-      <TextField label={messages.pattern} errorMessage={fieldErrors.foregroundCharacter} value={pattern} onChange={(event) => setPattern(event.target.value)} />
+      <div className={"flex flex-col gap-2"}>
+        <span>{messages.sourceImage}</span>
+        <label htmlFor={"frame-image"} className={"relative flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-input bg-muted/30 p-4 text-center focus-within:ring-3 focus-within:ring-ring/50"}>
+          <img src={uploadIcon} alt={""} className={"size-8"} />
+          <span>{file?.name ?? messages.selectImage}</span>
+          <span id={"frame-image-help"} className={"text-xs text-muted-foreground"}>{messages.imageHelp}</span>
+          <input
+            id={"frame-image"}
+            aria-label={messages.sourceImage}
+            className={"absolute inset-0 h-full w-full cursor-pointer opacity-0"}
+            type={"file"}
+            accept={"image/png,image/jpeg,image/webp"}
+            aria-describedby={"frame-image-help"}
+            aria-invalid={fileError}
+            aria-errormessage={fileError ? "frame-image-error" : undefined}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={handleDrop}
+            onChange={(event) => { setFile(event.target.files?.[0]); setFileError(false); }}
+          />
+        </label>
+        {fileError ? <p id={"frame-image-error"} role={"alert"}>{messages.imageRequired}</p> : null}
+      </div>
+
+      <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.pattern} errorMessage={fieldErrors.foregroundCharacter} value={pattern} onChange={(event) => setPattern(event.target.value)} />
+
       <ColorPickerField label={messages.patternColor} colorPickerLabel={messages.patternColorPicker} value={patternColor} errorMessage={fieldErrors.foregroundColor} onChange={setPatternColor} />
-      <TextField label={messages.background} errorMessage={fieldErrors.backgroundCharacter} value={background} onChange={(event) => setBackground(event.target.value)} />
+
+      <TextField helperText={imageGenerationScreenMessages[locale].characterHelper} label={messages.background} errorMessage={fieldErrors.backgroundCharacter} value={background} onChange={(event) => setBackground(event.target.value)} />
+
       <ColorPickerField label={messages.backgroundColor} colorPickerLabel={messages.backgroundColorPicker} value={backgroundColor} errorMessage={fieldErrors.backgroundColor} onChange={setBackgroundColor} />
-      <Button type={"submit"} disabled={upload.isPending || remainingRetryAfterSeconds > 0}>
+
+      <Button className={"h-12 w-full"} type={"submit"} disabled={upload.isPending || remainingRetryAfterSeconds > 0}>
         {remainingRetryAfterSeconds > 0 ? generateButtonMessages[locale].cooldown(remainingRetryAfterSeconds) : generateButtonMessages[locale].idle}
       </Button>
-      {preview ? <div>
-        <img src={preview.url} alt={imageGenerationFormMessages[locale].previewAlt} />
+      <p className={"text-center text-xs text-helper-foreground"}>{imageGenerationScreenMessages[locale].downloadHelper}</p>
+      {preview ? <div className={"flex flex-col items-center gap-4"}>
+        <img src={preview.url} alt={imageGenerationFormMessages[locale].previewAlt} className={"max-w-full"} />
         <Button type={"button"} onClick={() => downloadGeneratedImage(preview.response)}>{imageGenerationFormMessages[locale].download}</Button>
-      </div> : <div>
-        <p>{imageGenerationFormMessages[locale].previewPlaceholder}</p>
+      </div> : <div className={"flex flex-col gap-4"}>
+        <p className={"flex min-h-40 items-center justify-center rounded-lg border border-input bg-muted/30 p-4 text-center text-sm text-muted-foreground"}>{imageGenerationFormMessages[locale].previewPlaceholder}</p>
         <Button type={"button"} disabled>{imageGenerationFormMessages[locale].download}</Button>
       </div>}
     </form>

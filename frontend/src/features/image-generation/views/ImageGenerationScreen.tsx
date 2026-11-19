@@ -29,10 +29,16 @@ const ImageGenerationScreen = () => {
             {messages.description}
           </p>
         </section>
-        <fieldset>
-          <legend>{modeMessages.mode}</legend>
-          <label><input type={"radio"} name={"mode"} checked={mode === "text"} onChange={() => setMode("text")} />{modeMessages.textMode}</label>
-          <label><input type={"radio"} name={"mode"} checked={mode === "image"} onChange={() => setMode("image")} />{modeMessages.imageMode}</label>
+        <fieldset className={"flex rounded-lg bg-muted p-1"}>
+          <legend className={"sr-only"}>{modeMessages.mode}</legend>
+          <label className={"relative flex-1 cursor-pointer rounded-md p-3 text-center has-checked:bg-primary has-checked:text-primary-foreground focus-within:ring-3 focus-within:ring-ring/50"}>
+            <input className={"absolute inset-0 h-full w-full cursor-pointer opacity-0"} type={"radio"} name={"mode"} checked={mode === "text"} onChange={() => setMode("text")} />
+            {modeMessages.textMode}
+          </label>
+          <label className={"relative flex-1 cursor-pointer rounded-md p-3 text-center has-checked:bg-primary has-checked:text-primary-foreground focus-within:ring-3 focus-within:ring-ring/50"}>
+            <input className={"absolute inset-0 h-full w-full cursor-pointer opacity-0"} type={"radio"} name={"mode"} checked={mode === "image"} onChange={() => setMode("image")} />
+            {modeMessages.imageMode}
+          </label>
         </fieldset>
         <Paper
           className={
