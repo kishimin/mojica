@@ -252,6 +252,18 @@ describe("ImageGenerationScreen", () => {
     createUrl.mockRestore();
   });
 
+  test("入力を修正すると対応する入力エラーが消える", async () => {
+    const { user } = renderScreen("ja");
+    await user.click(screen.getByRole("radio", { name: "画像を文字で描く" }));
+    await user.upload(screen.getByLabelText("元画像"), new File(["image"], "frame.png", { type: "image/png" }));
+    await user.click(screen.getByRole("button", { name: "画像を生成する" }));
+    expect(screen.getByText("描画に使う文字を入力してください。")).toBeVisible();
+
+    await user.type(screen.getByRole("textbox", { name: "絵柄に使う文字" }), "A");
+
+    expect(screen.queryByText("描画に使う文字を入力してください。")).not.toBeInTheDocument();
+  });
+
   describe("Japanese copy", () => {
     test("renders the Japanese image-generation heading", () => {
       renderScreen("ja");
