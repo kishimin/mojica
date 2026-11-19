@@ -163,6 +163,8 @@ const ImageUploadForm = ({ locale }: Props) => {
 
       <ColorPickerField label={messages.backgroundColor} colorPickerLabel={messages.backgroundColorPicker} value={backgroundColor} errorMessage={fieldErrors.backgroundColor} onChange={(value) => { setBackgroundColor(value); revalidateField("backgroundColor", value); }} />
 
+      <p className={"text-xs text-helper-foreground"}>{messages.outputType}</p>
+
       <GenerateButton state={toGenerateButtonState({
         isPending: upload.isPending,
         isSubmitting: false,
