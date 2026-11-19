@@ -83,7 +83,10 @@ const ImageUploadForm = ({ locale }: Props) => {
       {preview ? <div>
         <img src={preview.url} alt={imageGenerationFormMessages[locale].previewAlt} />
         <Button type={"button"} onClick={() => downloadGeneratedImage(preview.response)}>{imageGenerationFormMessages[locale].download}</Button>
-      </div> : null}
+      </div> : <div>
+        <p>{imageGenerationFormMessages[locale].previewPlaceholder}</p>
+        <Button type={"button"} disabled>{imageGenerationFormMessages[locale].download}</Button>
+      </div>}
     </form>
   );
 };
