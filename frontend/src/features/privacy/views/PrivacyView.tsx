@@ -11,6 +11,7 @@ const PrivacyView = () => {
       {locale === "ja" && <p>{"画像の生成時には、入力された文字や設定が生成処理のためにサーバーへ送信されます。"}</p>}
       {locale === "en" && <p>{"We use Google Forms for inquiries. We use the name you provide, including a nickname, and your inquiry to respond and improve the service."}</p>}
       {locale === "en" && <p>{"Google Analytics uses cookies to collect usage information. You can restrict or delete cookies through your browser settings."}</p>}
+      {locale === "en" && <p>{"When you generate an image, your text and settings are sent to a server for processing."}</p>}
     </main>
   );
 };
