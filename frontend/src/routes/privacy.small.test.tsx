@@ -59,13 +59,13 @@ describe("privacy policy", () => {
     expect(screen.getByText(/ブラウザ.*Cookie.*制限/)).toBeVisible();
   });
 
-  // ID: PP-07
-  // Source: Request for an English privacy policy
-  // Arrange: The privacy policy is displayed in English.
-  // Act: Read the inquiry and analytics sections.
-  // Assert: Google Forms, Google Analytics, and cookies are described.
-  // Priority: P0
-  test.todo("英語でお問い合わせとアクセス解析の取扱いを確認する");
+  test("英語でお問い合わせとアクセス解析の取扱いを確認する", async () => {
+    localStorage.setItem("locale", "en");
+    openPage("/privacy");
+
+    expect(await screen.findByText(/Google Forms.*inquiries/)).toBeVisible();
+    expect(screen.getByText(/Google Analytics.*cookies/i)).toBeVisible();
+  });
 
   // ID: PP-08
   // Source: Privacy inquiry destination
