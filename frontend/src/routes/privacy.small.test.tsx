@@ -11,6 +11,22 @@ const openPage = (path: string) => {
 };
 
 describe("privacy policy", () => {
+  // ID: PP-11
+  // Source: Confirmed use of Google Tag Manager for analytics.
+  // Arrange: The privacy policy is displayed in Japanese.
+  // Act: Read the analytics information.
+  // Assert: Google Tag Manager is identified.
+  // Priority: P0
+  test.todo("日本語でタグマネージャーの利用を説明する");
+
+  // ID: PP-12
+  // Source: Confirmed use of Google services.
+  // Arrange: The privacy policy is displayed in either supported language.
+  // Act: Read the Google Forms information.
+  // Assert: A link to Google's privacy policy is available.
+  // Priority: P1
+  test.todo("Googleのプライバシーポリシーへのリンクを表示する");
+
   test("英語で画像生成時に入力を送信することを説明する", async () => {
     localStorage.setItem("locale", "en");
     openPage("/privacy");
