@@ -1,6 +1,6 @@
 import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
 import { screen } from "@testing-library/react";
-import { describe, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import { AppProviders } from "@/app/providers/AppProviders";
 import { createAppRouter } from "@/lib/router";
 import { setup } from "@/tests/test-utils";

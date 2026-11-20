@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/hooks/use-i18n";
 import type { Locale } from "@/types/i18n";
 
@@ -11,6 +12,15 @@ const contactForms = {
     url: "https://docs.google.com/forms/d/e/1FAIpQLSedj8RXI0wSVnIHYu4jyRi7oyZ9jRFH98QGLyXAHtHC10XqFw/viewform",
   },
 } satisfies Record<Locale, { label: string; url: string }>;
+
+const privacyLabel = (locale: Locale) => {
+  switch (locale) {
+    case "ja":
+      return "プライバシーポリシー";
+    case "en":
+      return "Privacy Policy";
+  }
+};
 
 /** Provides the module's public behavior. */
 const AppFooter = () => {
@@ -30,11 +40,10 @@ const AppFooter = () => {
         {contactForms[locale].label}
       </a>
       <Link className={"underline"} to={"/privacy"}>
-        {locale === "ja" ? "プライバシーポリシー" : "Privacy Policy"}
+        {privacyLabel(locale)}
       </Link>
     </footer>
   );
 };
 
 export default AppFooter;
-import { Link } from "@tanstack/react-router";
