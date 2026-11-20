@@ -9,3 +9,4 @@ export * from "./apiErrorResponse";
 export * from "./apiValidationErrorResponse";
 export * from "./apiValidationFieldError";
 export * from "./imageGenerationRequestDto";
+export * from "./postImagesFrameFileBody";

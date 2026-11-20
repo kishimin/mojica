@@ -13,6 +13,12 @@ test.describe("visual regression", () => {
       imageGenerationPage.compareScreenshot("image-generation-home.png"));
   });
 
+  test("keeps the image-generation image mode layout stable", async ({ imageGenerationPage }) => {
+    await imageGenerationPage.navigate();
+    await imageGenerationPage.selectImageMode();
+    await imageGenerationPage.compareScreenshot("image-generation-image-mode.png");
+  });
+
   test("keeps the not-found layout stable", async ({ notFoundPage }) => {
     await test.step("Open the not-found route", () =>
       notFoundPage.navigate("/missing"));
@@ -36,6 +42,12 @@ test.describe("visual regression", () => {
         expect(imageGenerationPage.heading()).toBeVisible());
       await test.step("Compare the English image-generation screenshot", () =>
         imageGenerationPage.compareScreenshot("image-generation-home-en.png"));
+    });
+
+    test("keeps the English image-generation image mode layout stable", async ({ imageGenerationPage }) => {
+      await imageGenerationPage.navigate();
+      await imageGenerationPage.selectImageMode();
+      await imageGenerationPage.compareScreenshot("image-generation-image-mode-en.png");
     });
 
     test("keeps the English not-found layout stable", async ({

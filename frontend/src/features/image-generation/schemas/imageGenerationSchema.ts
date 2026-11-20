@@ -49,6 +49,67 @@ const addGraphemeLimitIssue = (
   }
 };
 
+const imageCharacterFields = {
+  foregroundCharacter: z
+    .string()
+    .min(1, { message: "foregroundCharacter.required" })
+    .superRefine((value, context) => {
+      addGraphemeLimitIssue(
+        value,
+        context,
+        128,
+        "foregroundCharacter.maxLength",
+      );
+    })
+    .regex(printableText, {
+      message: "foregroundCharacter.controlCharacter",
+    }),
+  foregroundColor: z.string().regex(hexColor, {
+    message: "foregroundColor.invalid",
+  }),
+  backgroundCharacter: z
+    .string()
+    .min(1, { message: "backgroundCharacter.required" })
+    .superRefine((value, context) => {
+      addGraphemeLimitIssue(
+        value,
+        context,
+        128,
+        "backgroundCharacter.maxLength",
+      );
+    })
+    .regex(printableText, {
+      message: "backgroundCharacter.controlCharacter",
+    }),
+  backgroundColor: z.string().regex(hexColor, {
+    message: "backgroundColor.invalid",
+  }),
+};
+
+const validateCharacterCombination = (
+  { foregroundCharacter, backgroundCharacter }: { foregroundCharacter: string; backgroundCharacter: string },
+  context: z.RefinementCtx,
+) => {
+  if (
+    containsVisibleCharacter(foregroundCharacter) ||
+    containsVisibleCharacter(backgroundCharacter)
+  ) {
+    return;
+  }
+
+  context.addIssue({
+    code: "custom",
+    message: "characterCombination.required",
+    path: ["foregroundCharacter"],
+  });
+  context.addIssue({
+    code: "custom",
+    message: "characterCombination.required",
+    path: ["backgroundCharacter"],
+  });
+};
+
+
 export const imageGenerationSchema = z
   .object({
     text: z
@@ -74,62 +135,15 @@ export const imageGenerationSchema = z
       .superRefine((value, context) => {
         addGraphemeLimitIssue(value, context, 64, "text.maxLength");
       }),
-    foregroundCharacter: z
-      .string()
-      .min(1, { message: "foregroundCharacter.required" })
-      .superRefine((value, context) => {
-        addGraphemeLimitIssue(
-          value,
-          context,
-          128,
-          "foregroundCharacter.maxLength",
-        );
-      })
-      .regex(printableText, {
-        message: "foregroundCharacter.controlCharacter",
-      }),
-    foregroundColor: z.string().regex(hexColor, {
-      message: "foregroundColor.invalid",
-    }),
-    backgroundCharacter: z
-      .string()
-      .min(1, { message: "backgroundCharacter.required" })
-      .superRefine((value, context) => {
-        addGraphemeLimitIssue(
-          value,
-          context,
-          128,
-          "backgroundCharacter.maxLength",
-        );
-      })
-      .regex(printableText, {
-        message: "backgroundCharacter.controlCharacter",
-      }),
-    backgroundColor: z.string().regex(hexColor, {
-      message: "backgroundColor.invalid",
-    }),
+    ...imageCharacterFields,
     type: z.enum(imageTypeValues, {
       error: "imageType.invalid",
     }),
   })
-  .superRefine(({ foregroundCharacter, backgroundCharacter }, context) => {
-    if (
-      containsVisibleCharacter(foregroundCharacter) ||
-      containsVisibleCharacter(backgroundCharacter)
-    ) {
-      return;
-    }
+  .superRefine(validateCharacterCombination);
 
-    context.addIssue({
-      code: "custom",
-      message: "characterCombination.required",
-      path: ["foregroundCharacter"],
-    });
-    context.addIssue({
-      code: "custom",
-      message: "characterCombination.required",
-      path: ["backgroundCharacter"],
-    });
-  });
+export const imageUploadSchema = z
+  .object(imageCharacterFields)
+  .superRefine(validateCharacterCombination);
 
 export type ImageGenerationFormValues = z.infer<typeof imageGenerationSchema>;

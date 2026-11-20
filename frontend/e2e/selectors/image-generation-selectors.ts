@@ -11,11 +11,19 @@ export const imageGenerationSelectorKeys = {
   downloadButton: "downloadButton",
   preview: "preview",
   imageTypeLabel: "imageTypeLabel",
+  imageMode: "imageMode",
+  sourceImage: "sourceImage",
+  imageForeground: "imageForeground",
+  imageBackground: "imageBackground",
 } as const;
 type ImageGenerationSelectorKey =
   (typeof imageGenerationSelectorKeys)[keyof typeof imageGenerationSelectorKeys];
 
 export const imageGenerationSelectors = {
+  imageMode: { ja: /画像を文字で描く/, en: /Draw images with text/ },
+  sourceImage: { ja: /元画像/, en: /Source image/ },
+  imageForeground: { ja: /絵柄に使う文字/, en: /Pattern characters/ },
+  imageBackground: { ja: /背景に使う文字/, en: /Background characters/ },
   heading: {
     ja: /文字で、文字を描く。/,
     en: /Draw letters with letters\./,
