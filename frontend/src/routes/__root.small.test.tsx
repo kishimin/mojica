@@ -25,6 +25,14 @@ describe("root route wiring", () => {
     expect(await screen.findByRole("heading", { name: "プライバシーポリシー" })).toBeVisible();
   });
 
+  test("renders the privacy policy in English", async () => {
+    localStorage.setItem("locale", "en");
+    setupWithRouter("/privacy");
+
+    expect(await screen.findByRole("heading", { name: "Privacy Policy" })).toBeVisible();
+    expect(screen.getByText(/Google Analytics through Google Tag Manager/)).toBeVisible();
+  });
+
   test("renders the home screen inside the shared application shell", async () => {
     setupWithRouter("/");
 

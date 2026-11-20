@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/hooks/use-i18n";
 import type { Locale } from "@/types/i18n";
 
@@ -19,7 +20,7 @@ const AppFooter = () => {
   return (
     <footer
       className={
-        "flex h-[var(--layout-footer-height)] items-center justify-center gap-4 px-6 text-center text-sm text-helper-foreground"
+        "flex min-h-[var(--layout-footer-height)] flex-wrap items-center justify-center gap-4 px-6 py-3 text-center text-sm text-helper-foreground"
       }
     >
       {"© kishimin 2026"}
@@ -29,6 +30,9 @@ const AppFooter = () => {
       >
         {contactForms[locale].label}
       </a>
+      <Link className={"underline"} to={"/privacy"}>
+        {locale === "ja" ? "プライバシーポリシー" : "Privacy Policy"}
+      </Link>
     </footer>
   );
 };

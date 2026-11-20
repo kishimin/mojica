@@ -1,39 +1,40 @@
+import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
-import AppFooter from "./AppFooter";
-import { setupWithI18n } from "@/app/tests/test-utils";
+import { createAppRouter } from "@/lib/router";
 import { I18nProvider } from "@/providers/I18nProvider";
 
+const renderFooter = (locale: "ja" | "en" = "ja") => {
+  const router = createAppRouter({ history: createMemoryHistory({ initialEntries: ["/privacy"] }) });
+  return render(<I18nProvider initialLocale={locale}><RouterProvider router={router} /></I18nProvider>);
+};
+
 describe("AppFooter", () => {
-  test("renders the application footer as a contentinfo landmark", () => {
-    setupWithI18n(<AppFooter />);
+  test("renders the application footer as a contentinfo landmark", async () => {
+    renderFooter();
 
-    expect(screen.getByRole("contentinfo")).toBeVisible();
+    expect(await screen.findByRole("contentinfo")).toBeVisible();
   });
 
-  test("displays the documented copyright text", () => {
-    setupWithI18n(<AppFooter />);
+  test("displays the documented copyright text", async () => {
+    renderFooter();
 
-    expect(screen.getByText("© kishimin 2026")).toBeVisible();
+    expect(await screen.findByText("© kishimin 2026")).toBeVisible();
   });
 
-  test("links to the contact form", () => {
-    setupWithI18n(<AppFooter />);
+  test("links to the contact form", async () => {
+    renderFooter();
 
-    expect(screen.getByRole("link", { name: "お問い合わせ" })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: "お問い合わせ" })).toHaveAttribute(
       "href",
       "https://docs.google.com/forms/d/e/1FAIpQLSdG8CcjnmGBseY6ExWhEidXutkXzyU3VmVrhFfQs9crJeOndQ/viewform",
     );
   });
 
-  test("shows the contact link in English for the English locale", () => {
-    render(
-      <I18nProvider initialLocale={"en"}>
-        <AppFooter />
-      </I18nProvider>,
-    );
+  test("shows the contact link in English for the English locale", async () => {
+    renderFooter("en");
 
-    expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: "Contact" })).toHaveAttribute(
       "href",
       "https://docs.google.com/forms/d/e/1FAIpQLSedj8RXI0wSVnIHYu4jyRi7oyZ9jRFH98QGLyXAHtHC10XqFw/viewform",
     );
