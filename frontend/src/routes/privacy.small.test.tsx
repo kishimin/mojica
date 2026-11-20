@@ -43,13 +43,13 @@ describe("privacy policy", () => {
     expect(await screen.findByRole("heading", { name: "Privacy Policy" })).toBeVisible();
   });
 
-  // ID: PP-05
-  // Source: Confirmed use of Google Forms for inquiries
-  // Arrange: The privacy policy is displayed in Japanese.
-  // Act: Read the inquiry section.
-  // Assert: Google Forms and the use of inquiry information are described.
-  // Priority: P0
-  test.todo("日本語でお問い合わせ情報の取扱いを確認する");
+  test("日本語でお問い合わせ情報の取扱いを確認する", async () => {
+    localStorage.setItem("locale", "ja");
+    openPage("/privacy");
+
+    expect(await screen.findByText(/Googleフォーム.*お名前.*お問い合わせ内容/)).toBeVisible();
+    expect(screen.getByText(/お問い合わせへの対応.*サービスの改善/)).toBeVisible();
+  });
 
   // ID: PP-06
   // Source: Confirmed use of Google Analytics
