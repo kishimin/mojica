@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/hooks/use-i18n";
 
 /** Displays the privacy policy. */
@@ -16,6 +17,7 @@ const PrivacyView = () => {
           <p>{"GoogleアナリティクスはCookieなどを利用して利用状況を収集します。ブラウザの設定からCookieの保存を制限または削除できます。"}</p>
           <h2 className={"text-xl font-semibold"}>{"画像の生成"}</h2>
           <p>{"画像の生成時には、入力された文字や設定が生成処理のためにサーバーへ送信されます。"}</p>
+          <Link className={"underline"} to={"/"}>{"トップページへ戻る"}</Link>
         </main>
       );
     case "en":
@@ -30,6 +32,7 @@ const PrivacyView = () => {
           <p>{"Google Analytics uses cookies to collect usage information. You can restrict or delete cookies through your browser settings."}</p>
           <h2 className={"text-xl font-semibold"}>{"Image generation"}</h2>
           <p>{"When you generate an image, your text and settings are sent to a server for processing."}</p>
+          <Link className={"underline"} to={"/"}>{"Back to home"}</Link>
         </main>
       );
   }
