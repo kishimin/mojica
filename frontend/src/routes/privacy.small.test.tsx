@@ -34,13 +34,14 @@ describe("privacy policy", () => {
     expect(await screen.findByRole("heading", { name: "プライバシーポリシー" })).toBeVisible();
   });
 
-  // ID: PP-04
-  // Source: Request to support English
-  // Arrange: The home page is displayed in English.
-  // Act: Follow the privacy policy link in the footer.
-  // Assert: The English privacy policy is displayed.
-  // Priority: P0
-  test.todo("フッターから英語のプライバシーポリシーを開く");
+  test("フッターから英語のプライバシーポリシーを開く", async () => {
+    localStorage.setItem("locale", "en");
+    const { user } = openPage("/");
+
+    await user.click(await screen.findByRole("link", { name: "Privacy Policy" }));
+
+    expect(await screen.findByRole("heading", { name: "Privacy Policy" })).toBeVisible();
+  });
 
   // ID: PP-05
   // Source: Confirmed use of Google Forms for inquiries
