@@ -11,13 +11,12 @@ const openPage = (path: string) => {
 };
 
 describe("privacy policy", () => {
-  // ID: PP-11
-  // Source: Confirmed use of Google Tag Manager for analytics.
-  // Arrange: The privacy policy is displayed in Japanese.
-  // Act: Read the analytics information.
-  // Assert: Google Tag Manager is identified.
-  // Priority: P0
-  test.todo("日本語でタグマネージャーの利用を説明する");
+  test("日本語でタグマネージャーの利用を説明する", async () => {
+    localStorage.setItem("locale", "ja");
+    openPage("/privacy");
+
+    expect(await screen.findByText(/Googleタグマネージャー.*Googleアナリティクス/)).toBeVisible();
+  });
 
   // ID: PP-12
   // Source: Confirmed use of Google services.
