@@ -29,8 +29,12 @@ const AppFooter = () => {
       >
         {contactForms[locale].label}
       </a>
+      <Link className={"underline"} to={"/privacy"}>
+        {"プライバシーポリシー"}
+      </Link>
     </footer>
   );
 };
 
 export default AppFooter;
+import { Link } from "@tanstack/react-router";
