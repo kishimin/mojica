@@ -18,13 +18,17 @@ describe("privacy policy", () => {
     expect(await screen.findByText(/Googleタグマネージャー.*Googleアナリティクス/)).toBeVisible();
   });
 
-  // ID: PP-12
-  // Source: Confirmed use of Google services.
-  // Arrange: The privacy policy is displayed in either supported language.
-  // Act: Read the Google Forms information.
-  // Assert: A link to Google's privacy policy is available.
-  // Priority: P1
-  test.todo("Googleのプライバシーポリシーへのリンクを表示する");
+  test.each([
+    ["ja", "Googleのプライバシーポリシー"],
+    ["en", "Google Privacy Policy"],
+  ])("%sでGoogleのプライバシーポリシーへのリンクを表示する", async (locale, label) => {
+    localStorage.setItem("locale", locale);
+    openPage("/privacy");
+
+    expect(await screen.findByRole("link", { name: label })).toHaveAttribute(
+      "href", `https://policies.google.com/privacy?hl=${locale}`,
+    );
+  });
 
   test("英語で画像生成時に入力を送信することを説明する", async () => {
     localStorage.setItem("locale", "en");
