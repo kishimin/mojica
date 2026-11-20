@@ -30,7 +30,7 @@ const AppFooter = () => {
         {contactForms[locale].label}
       </a>
       <Link className={"underline"} to={"/privacy"}>
-        {"プライバシーポリシー"}
+        {locale === "ja" ? "プライバシーポリシー" : "Privacy Policy"}
       </Link>
     </footer>
   );
