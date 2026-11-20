@@ -29,7 +29,7 @@ const AppFooter = () => {
   return (
     <footer
       className={
-        "flex h-[var(--layout-footer-height)] items-center justify-center gap-4 px-6 text-center text-sm text-helper-foreground"
+        "flex min-h-[var(--layout-footer-height)] flex-wrap items-center justify-center gap-4 px-6 py-3 text-center text-sm text-helper-foreground"
       }
     >
       {"© kishimin 2026"}
