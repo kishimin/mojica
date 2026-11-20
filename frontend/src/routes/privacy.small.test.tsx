@@ -1,5 +1,5 @@
 import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { AppProviders } from "@/app/providers/AppProviders";
 import { createAppRouter } from "@/lib/router";
@@ -18,13 +18,12 @@ describe("privacy policy", () => {
     expect(await screen.findByText(/Google Analytics.*Google Tag Manager/)).toBeVisible();
   });
 
-  // ID: PP-14
-  // Source: User request to omit the operator name from the policy.
-  // Arrange: The privacy policy is displayed in either language.
-  // Act: Read its main content.
-  // Assert: The name kishimin is not displayed in the policy text.
-  // Priority: P0
-  test.todo("ポリシー本文に運営者名を表示しない");
+  test.each(["ja", "en"])("%sのポリシー本文に運営者名を表示しない", async (locale) => {
+    localStorage.setItem("locale", locale);
+    openPage("/privacy");
+
+    expect(within(await screen.findByRole("main")).queryByText(/kishimin/i)).not.toBeInTheDocument();
+  });
 
   test("日本語でタグマネージャーの利用を説明する", async () => {
     localStorage.setItem("locale", "ja");
