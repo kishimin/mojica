@@ -1,13 +1,22 @@
+import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
+import { screen } from "@testing-library/react";
 import { describe, test } from "vitest";
+import { AppProviders } from "@/app/providers/AppProviders";
+import { createAppRouter } from "@/lib/router";
+import { setup } from "@/tests/test-utils";
+
+const openPage = (path: string) => {
+  const history = createMemoryHistory({ initialEntries: [path] });
+  return setup(<AppProviders><RouterProvider router={createAppRouter({ history })} /></AppProviders>);
+};
 
 describe("privacy policy", () => {
-  // ID: PP-01
-  // Source: Request for a privacy policy in Japanese
-  // Arrange: The selected language is Japanese.
-  // Act: Open the privacy policy URL.
-  // Assert: A Japanese privacy policy heading is displayed.
-  // Priority: P0
-  test.todo("日本語でプライバシーポリシーを開く");
+  test("日本語でプライバシーポリシーを開く", async () => {
+    localStorage.setItem("locale", "ja");
+    openPage("/privacy");
+
+    expect(await screen.findByRole("heading", { name: "プライバシーポリシー" })).toBeVisible();
+  });
 
   // ID: PP-02
   // Source: Request for a privacy policy in English
