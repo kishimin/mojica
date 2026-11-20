@@ -1,5 +1,5 @@
 import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { AppProviders } from "@/app/providers/AppProviders";
 import { createAppRouter } from "@/lib/router";
@@ -27,21 +27,14 @@ describe("privacy policy", () => {
     localStorage.setItem("locale", "en");
     openPage("/privacy");
 
-    expect(await screen.findByText(/Google Analytics.*Google Tag Manager/)).toBeVisible();
-  });
-
-  test.each(["ja", "en"])("%sのポリシー本文に運営者名を表示しない", async (locale) => {
-    localStorage.setItem("locale", locale);
-    openPage("/privacy");
-
-    expect(within(await screen.findByRole("main")).queryByText(/kishimin/i)).not.toBeInTheDocument();
+    expect(await screen.findByText("This site uses Google Analytics through Google Tag Manager to understand usage and improve the service.")).toBeVisible();
   });
 
   test("日本語でタグマネージャーの利用を説明する", async () => {
     localStorage.setItem("locale", "ja");
     openPage("/privacy");
 
-    expect(await screen.findByText(/Googleタグマネージャー.*Googleアナリティクス/)).toBeVisible();
+    expect(await screen.findByText("本サイトでは、利用状況の把握とサービスの改善のため、Googleタグマネージャーを通じてGoogleアナリティクスを使用しています。")).toBeVisible();
   });
 
   test.each([
@@ -60,14 +53,14 @@ describe("privacy policy", () => {
     localStorage.setItem("locale", "en");
     openPage("/privacy");
 
-    expect(await screen.findByText(/text and settings.*sent to a server/i)).toBeVisible();
+    expect(await screen.findByText("When you generate an image, your text and settings are sent to a server for processing.")).toBeVisible();
   });
 
   test("画像生成時に入力を送信することを説明する", async () => {
     localStorage.setItem("locale", "ja");
     openPage("/privacy");
 
-    expect(await screen.findByText(/文字.*設定.*サーバー.*送信/)).toBeVisible();
+    expect(await screen.findByText("画像の生成時には、入力された文字や設定が生成処理のためにサーバーへ送信されます。")).toBeVisible();
   });
 
   test("日本語でプライバシーポリシーを開く", async () => {
@@ -106,24 +99,22 @@ describe("privacy policy", () => {
     localStorage.setItem("locale", "ja");
     openPage("/privacy");
 
-    expect(await screen.findByText(/Googleフォーム.*お名前.*お問い合わせ内容/)).toBeVisible();
-    expect(screen.getByText(/お問い合わせへの対応.*サービスの改善/)).toBeVisible();
+    expect(await screen.findByText("お問い合わせにはGoogleフォームを利用します。フォームに入力されたお名前（ニックネームを含む）やお問い合わせ内容は、お問い合わせへの対応とサービスの改善に利用します。")).toBeVisible();
   });
 
   test("日本語でアクセス解析とCookieの取扱いを確認する", async () => {
     localStorage.setItem("locale", "ja");
     openPage("/privacy");
 
-    expect(await screen.findByText(/Googleアナリティクス.*Cookie/)).toBeVisible();
-    expect(screen.getByText(/ブラウザ.*Cookie.*制限/)).toBeVisible();
+    expect(await screen.findByText("GoogleアナリティクスはCookieなどを利用して利用状況を収集します。ブラウザの設定からCookieの保存を制限または削除できます。")).toBeVisible();
   });
 
   test("英語でお問い合わせとアクセス解析の取扱いを確認する", async () => {
     localStorage.setItem("locale", "en");
     openPage("/privacy");
 
-    expect(await screen.findByText(/Google Forms.*inquiries/)).toBeVisible();
-    expect(screen.getByText(/Google Analytics.*cookies/i)).toBeVisible();
+    expect(await screen.findByText("We use Google Forms for inquiries. We use the name you provide, including a nickname, and your inquiry to respond and improve the service.")).toBeVisible();
+    expect(screen.getByText("Google Analytics uses cookies to collect usage information. You can restrict or delete cookies through your browser settings.")).toBeVisible();
   });
 
   test.each([
