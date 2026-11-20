@@ -51,13 +51,13 @@ describe("privacy policy", () => {
     expect(screen.getByText(/お問い合わせへの対応.*サービスの改善/)).toBeVisible();
   });
 
-  // ID: PP-06
-  // Source: Confirmed use of Google Analytics
-  // Arrange: The privacy policy is displayed in Japanese.
-  // Act: Read the analytics section.
-  // Assert: Google Analytics and cookies are described.
-  // Priority: P0
-  test.todo("日本語でアクセス解析とCookieの取扱いを確認する");
+  test("日本語でアクセス解析とCookieの取扱いを確認する", async () => {
+    localStorage.setItem("locale", "ja");
+    openPage("/privacy");
+
+    expect(await screen.findByText(/Googleアナリティクス.*Cookie/)).toBeVisible();
+    expect(screen.getByText(/ブラウザ.*Cookie.*制限/)).toBeVisible();
+  });
 
   // ID: PP-07
   // Source: Request for an English privacy policy
