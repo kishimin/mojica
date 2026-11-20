@@ -11,13 +11,12 @@ const openPage = (path: string) => {
 };
 
 describe("privacy policy", () => {
-  // ID: PP-10
-  // Source: Image generation sends text and settings to the API.
-  // Arrange: The privacy policy is displayed in English.
-  // Act: Read the explanation of image generation.
-  // Assert: The text and settings are sent to a server for processing.
-  // Priority: P0
-  test.todo("英語で画像生成時に入力を送信することを説明する");
+  test("英語で画像生成時に入力を送信することを説明する", async () => {
+    localStorage.setItem("locale", "en");
+    openPage("/privacy");
+
+    expect(await screen.findByText(/text and settings.*sent to a server/i)).toBeVisible();
+  });
 
   test("画像生成時に入力を送信することを説明する", async () => {
     localStorage.setItem("locale", "ja");
