@@ -17,6 +17,14 @@ const setupWithRouter = (initialEntry: string) => {
 };
 
 describe("root route wiring", () => {
+  test("opens the privacy policy from the footer", async () => {
+    const { user } = setupWithRouter("/");
+
+    await user.click(await screen.findByRole("link", { name: "プライバシーポリシー" }));
+
+    expect(await screen.findByRole("heading", { name: "プライバシーポリシー" })).toBeVisible();
+  });
+
   test("renders the home screen inside the shared application shell", async () => {
     setupWithRouter("/");
 
