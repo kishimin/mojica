@@ -18,13 +18,12 @@ describe("privacy policy", () => {
     expect(await screen.findByRole("heading", { name: "プライバシーポリシー" })).toBeVisible();
   });
 
-  // ID: PP-02
-  // Source: Request for a privacy policy in English
-  // Arrange: The selected language is English.
-  // Act: Open the privacy policy URL.
-  // Assert: An English privacy policy heading is displayed.
-  // Priority: P0
-  test.todo("英語でプライバシーポリシーを開く");
+  test("英語でプライバシーポリシーを開く", async () => {
+    localStorage.setItem("locale", "en");
+    openPage("/privacy");
+
+    expect(await screen.findByRole("heading", { name: "Privacy Policy" })).toBeVisible();
+  });
 
   // ID: PP-03
   // Source: Request to add a privacy policy to mojica
