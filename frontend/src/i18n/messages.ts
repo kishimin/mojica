@@ -1,6 +1,16 @@
 import type { Locale } from "@/types/i18n";
 import type { ImageType } from "@/types/image-type";
 
+type AppFooterMessages = {
+  contact: string;
+  privacy: string;
+};
+
+export const appFooterMessages = {
+  ja: { contact: "お問い合わせ", privacy: "プライバシーポリシー" },
+  en: { contact: "Contact", privacy: "Privacy Policy" },
+} satisfies Record<Locale, AppFooterMessages>;
+
 type GenerateButtonMessages = {
   idle: string;
   submitting: string;
