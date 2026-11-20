@@ -11,6 +11,18 @@ const openPage = (path: string) => {
 };
 
 describe("privacy policy", () => {
+  test.each([
+    ["ja", "トップページへ戻る", "文字で、文字を描く。"],
+    ["en", "Back to home", "Draw letters with letters."],
+  ])("%sのプライバシーポリシーからトップページへ戻る", async (locale, link, heading) => {
+    localStorage.setItem("locale", locale);
+    const { user } = openPage("/privacy");
+
+    await user.click(await screen.findByRole("link", { name: link }));
+
+    expect(await screen.findByRole("heading", { name: heading })).toBeVisible();
+  });
+
   test("英語でタグマネージャーの利用を説明する", async () => {
     localStorage.setItem("locale", "en");
     openPage("/privacy");
