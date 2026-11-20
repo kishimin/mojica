@@ -1,30 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/hooks/use-i18n";
+import { appFooterMessages } from "@/i18n/messages";
 import type { Locale } from "@/types/i18n";
 
 const contactForms = {
-  ja: {
-    label: "お問い合わせ",
-    url: "https://docs.google.com/forms/d/e/1FAIpQLSdG8CcjnmGBseY6ExWhEidXutkXzyU3VmVrhFfQs9crJeOndQ/viewform",
-  },
-  en: {
-    label: "Contact",
-    url: "https://docs.google.com/forms/d/e/1FAIpQLSedj8RXI0wSVnIHYu4jyRi7oyZ9jRFH98QGLyXAHtHC10XqFw/viewform",
-  },
-} satisfies Record<Locale, { label: string; url: string }>;
-
-const privacyLabel = (locale: Locale) => {
-  switch (locale) {
-    case "ja":
-      return "プライバシーポリシー";
-    case "en":
-      return "Privacy Policy";
-  }
-};
+  ja: "https://docs.google.com/forms/d/e/1FAIpQLSdG8CcjnmGBseY6ExWhEidXutkXzyU3VmVrhFfQs9crJeOndQ/viewform",
+  en: "https://docs.google.com/forms/d/e/1FAIpQLSedj8RXI0wSVnIHYu4jyRi7oyZ9jRFH98QGLyXAHtHC10XqFw/viewform",
+} satisfies Record<Locale, string>;
 
 /** Provides the module's public behavior. */
 const AppFooter = () => {
   const { locale } = useI18n();
+  const messages = appFooterMessages[locale];
 
   return (
     <footer
@@ -35,12 +22,12 @@ const AppFooter = () => {
       {"© kishimin 2026"}
       <a
         className={"underline"}
-        href={contactForms[locale].url}
+        href={contactForms[locale]}
       >
-        {contactForms[locale].label}
+        {messages.contact}
       </a>
       <Link className={"underline"} to={"/privacy"}>
-        {privacyLabel(locale)}
+        {messages.privacy}
       </Link>
     </footer>
   );
