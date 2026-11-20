@@ -67,11 +67,15 @@ describe("privacy policy", () => {
     expect(screen.getByText(/Google Analytics.*cookies/i)).toBeVisible();
   });
 
-  // ID: PP-08
-  // Source: Privacy inquiry destination
-  // Arrange: The privacy policy is displayed.
-  // Act: Follow the contact link in the footer.
-  // Assert: The appropriate Google Forms URL is available for the active language.
-  // Priority: P1
-  test.todo("プライバシーに関する問い合わせ先を利用する");
+  test.each([
+    ["ja", "お問い合わせ", "1FAIpQLSdG8CcjnmGBseY6ExWhEidXutkXzyU3VmVrhFfQs9crJeOndQ"],
+    ["en", "Contact", "1FAIpQLSedj8RXI0wSVnIHYu4jyRi7oyZ9jRFH98QGLyXAHtHC10XqFw"],
+  ])("%sでプライバシーに関する問い合わせ先を利用する", async (locale, label, formId) => {
+    localStorage.setItem("locale", locale);
+    openPage("/privacy");
+
+    expect(await screen.findByRole("link", { name: label })).toHaveAttribute(
+      "href", `https://docs.google.com/forms/d/e/${formId}/viewform`,
+    );
+  });
 });
