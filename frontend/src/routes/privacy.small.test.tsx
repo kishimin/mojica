@@ -11,13 +11,12 @@ const openPage = (path: string) => {
 };
 
 describe("privacy policy", () => {
-  // ID: PP-13
-  // Source: Confirmed Google Analytics configuration.
-  // Arrange: The privacy policy is displayed in English.
-  // Act: Read the analytics information.
-  // Assert: Google Tag Manager is identified.
-  // Priority: P0
-  test.todo("英語でタグマネージャーの利用を説明する");
+  test("英語でタグマネージャーの利用を説明する", async () => {
+    localStorage.setItem("locale", "en");
+    openPage("/privacy");
+
+    expect(await screen.findByText(/Google Analytics.*Google Tag Manager/)).toBeVisible();
+  });
 
   // ID: PP-14
   // Source: User request to omit the operator name from the policy.
