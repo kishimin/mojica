@@ -11,6 +11,22 @@ const openPage = (path: string) => {
 };
 
 describe("privacy policy", () => {
+  // ID: PP-13
+  // Source: Confirmed Google Analytics configuration.
+  // Arrange: The privacy policy is displayed in English.
+  // Act: Read the analytics information.
+  // Assert: Google Tag Manager is identified.
+  // Priority: P0
+  test.todo("英語でタグマネージャーの利用を説明する");
+
+  // ID: PP-14
+  // Source: User request to omit the operator name from the policy.
+  // Arrange: The privacy policy is displayed in either language.
+  // Act: Read its main content.
+  // Assert: The name kishimin is not displayed in the policy text.
+  // Priority: P0
+  test.todo("ポリシー本文に運営者名を表示しない");
+
   test("日本語でタグマネージャーの利用を説明する", async () => {
     localStorage.setItem("locale", "ja");
     openPage("/privacy");
