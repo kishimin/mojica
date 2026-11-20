@@ -25,13 +25,14 @@ describe("privacy policy", () => {
     expect(await screen.findByRole("heading", { name: "Privacy Policy" })).toBeVisible();
   });
 
-  // ID: PP-03
-  // Source: Request to add a privacy policy to mojica
-  // Arrange: The home page is displayed in Japanese.
-  // Act: Follow the privacy policy link in the footer.
-  // Assert: The Japanese privacy policy is displayed.
-  // Priority: P0
-  test.todo("フッターから日本語のプライバシーポリシーを開く");
+  test("フッターから日本語のプライバシーポリシーを開く", async () => {
+    localStorage.setItem("locale", "ja");
+    const { user } = openPage("/");
+
+    await user.click(await screen.findByRole("link", { name: "プライバシーポリシー" }));
+
+    expect(await screen.findByRole("heading", { name: "プライバシーポリシー" })).toBeVisible();
+  });
 
   // ID: PP-04
   // Source: Request to support English
